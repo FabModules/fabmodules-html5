@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /usr/local/bin/mod_server
+node mod_server.js

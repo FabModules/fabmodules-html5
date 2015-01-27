@@ -1,0 +1,37 @@
+#!/bin/bash
+wget -x http://mod.cba.mit.edu/index.html
+wget -x http://mod.cba.mit.edu/mod_settings
+wget -x http://mod.cba.mit.edu/mod_get
+wget -x http://mod.cba.mit.edu/mod_serve
+wget -x http://mod.cba.mit.edu/mod_index
+wget -x http://mod.cba.mit.edu/mods/mod_file.js
+wget -x http://mod.cba.mit.edu/mods/mod_ui.js
+wget -x http://mod.cba.mit.edu/inputs/mod_inputs.js
+wget -x http://mod.cba.mit.edu/inputs/mod_png.js
+wget -x http://mod.cba.mit.edu/inputs/mod_settings.js
+wget -x http://mod.cba.mit.edu/inputs/mod_stl.js
+wget -x http://mod.cba.mit.edu/inputs/mod_svg.js
+wget -x http://mod.cba.mit.edu/inputs/mod_svg_path.js
+wget -x http://mod.cba.mit.edu/inputs/mod_vol.js
+wget -x http://mod.cba.mit.edu/inputs/mod_vol_view.js
+wget -x http://mod.cba.mit.edu/outputs/mod_Epilog.js
+wget -x http://mod.cba.mit.edu/outputs/mod_eps.js
+wget -x http://mod.cba.mit.edu/outputs/mod_G.js
+wget -x http://mod.cba.mit.edu/outputs/mod_outputs.js
+wget -x http://mod.cba.mit.edu/outputs/mod_Oxford.js
+wget -x http://mod.cba.mit.edu/outputs/mod_Roland_mill.js
+wget -x http://mod.cba.mit.edu/outputs/mod_Roland_vinyl.js
+wget -x http://mod.cba.mit.edu/outputs/mod_Shopbot.js
+wget -x http://mod.cba.mit.edu/outputs/mod_svg.js
+wget -x http://mod.cba.mit.edu/outputs/mod_Trotec.js
+wget -x http://mod.cba.mit.edu/processes/mod_image.js
+wget -x http://mod.cba.mit.edu/processes/mod_mesh.js
+wget -x http://mod.cba.mit.edu/processes/mod_mesh_view.js
+wget -x http://mod.cba.mit.edu/processes/mod_path.js
+wget -x http://mod.cba.mit.edu/processes/mod_path_view.js
+wget -x http://mod.cba.mit.edu/processes/mod_path_worker.js
+wget -x http://mod.cba.mit.edu/processes/mod_processes.js
+wget -x http://mod.cba.mit.edu/mod_server/mod_server.js
+wget -x http://mod.cba.mit.edu/mod_server/mod_serial.py
+cd mod.cba.mit.edu/mod_server
+npm install ws
