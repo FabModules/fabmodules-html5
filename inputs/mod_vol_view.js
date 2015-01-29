@@ -12,6 +12,13 @@
 // liability.
 //
 
+define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+
+   var ui = require('mods/mod_ui');
+   var globals = require('mods/mod_globals');
+   
+   var findEl = globals.findEl;
+   
 //
 // mod_vol_hist_draw
 //    draw histogram
@@ -24,16 +31,16 @@ function mod_vol_hist_draw(hist,vmin,vmax) {
    //
    // clear display
    //
-   mod_ui_clear()   
+   ui.ui_clear()   
    //
    // set up canvas
    //
-   var canvas = document.getElementById("mod_input_canvas")
+   var canvas = findEl("mod_input_canvas")
    canvas.style.display = "inline"
    var owidth = canvas.offsetWidth
    var oheight = canvas.offsetHeight
    canvas.style.display = "none"
-   var canvas = document.getElementById("mod_gl_canvas")
+   var canvas = findEl("mod_gl_canvas")
    canvas.style.display = "inline"
    canvas.focus()
    canvas.width = owidth
@@ -41,13 +48,13 @@ function mod_vol_hist_draw(hist,vmin,vmax) {
    //
    // set up canvas event handlers
    //
-   if (document.mod.dx == "") document.mod.dx = 0
-   if (document.mod.dy == "") document.mod.dy = 0
-   if (document.mod.dz == "") document.mod.dz = 0
-   if (document.mod.rx == "") document.mod.rx = 0
-   if (document.mod.ry == "") document.mod.ry = 0
-   if (document.mod.rz == "") document.mod.rz = 0
-   if (document.mod.s == "") document.mod.s = 1
+   if (globals.dx == "") globals.dx = 0
+   if (globals.dy == "") globals.dy = 0
+   if (globals.dz == "") globals.dz = 0
+   if (globals.rx == "") globals.rx = 0
+   if (globals.ry == "") globals.ry = 0
+   if (globals.rz == "") globals.rz = 0
+   if (globals.s == "") globals.s = 1
    canvas.oncontextmenu = function(evt) {
       evt.preventDefault()
       evt.stopPropagation()
@@ -55,15 +62,15 @@ function mod_vol_hist_draw(hist,vmin,vmax) {
    canvas.onmousedown = function(evt) {
       var x = vmin + (vmax-vmin) * (evt.clientX - evt.target.offsetParent.offsetLeft) / owidth
       if (evt.button == 0)
-         document.getElementById("mod_min_threshold").value = x
+         findEl("mod_min_threshold").value = x
       else if (evt.button == 2)
-         document.getElementById("mod_max_threshold").value = x
+         findEl("mod_max_threshold").value = x
       }
    canvas.onmousemove = function(evt) {
       var x = vmin + (vmax-vmin) * (evt.clientX - evt.target.offsetParent.offsetLeft) / owidth
       var i = Math.floor(len * (evt.clientX - evt.target.offsetParent.offsetLeft) / owidth)
-      var y = hist[i]/document.mod.vol.hmax
-      mod_ui_prompt('value: '+x.toFixed(3)+', amplitude: '+y.toFixed(3)+'; left: min, right: max')
+      var y = hist[i]/globals.vol.hmax
+      ui.ui_prompt('value: '+x.toFixed(3)+', amplitude: '+y.toFixed(3)+'; left: min, right: max')
       }
    //
    // set up GL
@@ -137,15 +144,15 @@ function mod_vol_hist_draw(hist,vmin,vmax) {
       lines[6*b+3] = 2*(b+1)/(len-1) - 1
       lines[6*b+4] = hist[b+1]
       lines[6*b+5] = 0
-      if (hist[b] > document.mod.vol.hmax)
-         document.mod.vol.hmax = hist[b]
+      if (hist[b] > globals.vol.hmax)
+         globals.vol.hmax = hist[b]
       }
    //
    // scale and gamma
    //
    for (var b = 0; b < (len-1); ++b) {
-      lines[6*b+1] = Math.pow(lines[6*b+1]/document.mod.vol.hmax,0.1)
-      lines[6*b+4] = Math.pow(lines[6*b+4]/document.mod.vol.hmax,0.1)
+      lines[6*b+1] = Math.pow(lines[6*b+1]/globals.vol.hmax,0.1)
+      lines[6*b+4] = Math.pow(lines[6*b+4]/globals.vol.hmax,0.1)
       }
    //
    // buffer
@@ -175,8 +182,8 @@ function mod_vol_hist_draw(hist,vmin,vmax) {
    //
    // draw path
    //
-   draw(document.mod.s,document.mod.dx,document.mod.dy,document.mod.rx,document.mod.rz)
-   mod_ui_prompt("left: pan, scroll: zoom, right: rotate, c: connections")
+   draw(globals.s,globals.dx,globals.dy,globals.rx,globals.rz)
+   ui.ui_prompt("left: pan, scroll: zoom, right: rotate, c: connections")
    //
    // matrix routines
    //
@@ -276,6 +283,11 @@ function mod_vol_hist_draw(hist,vmin,vmax) {
       //      
       gl.flush()
       }
-   document.mod.mesh.draw = draw
+   globals.mesh.draw = draw
    }
 
+   return {
+      hist_draw: mod_vol_hist_draw
+   }
+
+});

@@ -15,6 +15,9 @@
 //
 // load process modules
 //
+
+/*
+
 var script = document.createElement("script")
 script.type = "text/javascript"
 script.src = "processes/mod_image.js"
@@ -45,3 +48,4 @@ script.type = "text/javascript"
 script.src = "processes/mod_path_worker.js"
 document.body.appendChild(script)
 
+*/

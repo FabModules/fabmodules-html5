@@ -11,253 +11,306 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
+define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mods/mod_file', 'processes/mod_mesh', 'processes/mod_mesh_view'], function(require) {
 
-//
-// mod_load_handler
-//   file load handler
-//
-function mod_load_handler() {
-   var file = document.getElementById("mod_file_input")
-   file.setAttribute("onchange","mod_stl_read_handler()")
+   var ui = require('mods/mod_ui');
+   var globals = require('mods/mod_globals');
+   var outputs = require('outputs/mod_outputs');
+   var fileUtils = require('mods/mod_file');
+   var meshUtils = require('processes/mod_mesh');
+   var meshView = require('processes/mod_mesh_view');
+   var findEl = globals.findEl;
+   //
+   // mod_load_handler
+   //   file load handler
+   //
+
+   function mod_load_handler() {
+      var file = findEl("mod_file_input")
+      // file.setAttribute("onchange", "mod_stl_read_handler()")
+      file.addEventListener('change', function(){
+         mod_stl_read_handler();
+      });
    }
-//
-// mod_stl_read_handler
-//    STL read handler
-//
-function mod_stl_read_handler(event) {
    //
-   // get input file
+   // mod_stl_read_handler
+   //    STL read handler
    //
-   var file_input = document.getElementById("mod_file_input")
-   document.mod.input_file = file_input.files[0]
-   document.mod.input_name = file_input.files[0].name
-   document.mod.input_basename = mod_file_basename(document.mod.input_name)
-   //
-   // read as array buffer
-   //
-   var file_reader = new FileReader()
-   file_reader.onload = mod_stl_load_handler
-   file_reader.readAsArrayBuffer(document.mod.input_file)
+
+   function mod_stl_read_handler(event) {
+      //
+      // get input file
+      //
+      var file_input = findEl("mod_file_input")
+      globals.input_file = file_input.files[0]
+      globals.input_name = file_input.files[0].name
+      globals.input_basename = fileUtils.basename(globals.input_name)
+      //
+      // read as array buffer
+      //
+      var file_reader = new FileReader()
+      file_reader.onload = mod_stl_load_handler
+      file_reader.readAsArrayBuffer(globals.input_file)
    }
-//
-// mod_stl_load_handler
-//    STL load handler
-//
-function mod_stl_load_handler(event) {
    //
-   // read mesh
+   // mod_stl_load_handler
+   //    STL load handler
    //
-   mod_ui_prompt("reading STL")
-   ret = mod_stl_read(event.target.result)
-   if (!ret) {
-      mod_ui_prompt("must be binary STL")
-      return
+
+   function mod_stl_load_handler(event) {
+      //
+      // read mesh
+      //
+      ui.ui_prompt("reading STL")
+      ret = mod_stl_read(event.target.result)
+      if (!ret) {
+         ui.ui_prompt("must be binary STL")
+         return
       }
-   //
-   //
-   // set up UI
-   //
-   controls = document.getElementById("mod_input_controls")
-   controls.innerHTML = "<b>input</b><br>"
-   controls.innerHTML += "file: "+document.mod.input_name
-   controls.innerHTML += "<br>triangles: "+document.mod.mesh.length
-   controls.innerHTML += "<br>xmin: "+document.mod.mesh.xmin.toFixed(3)
-   controls.innerHTML += " xmax: "+document.mod.mesh.xmax.toFixed(3)
-   controls.innerHTML += "<br>ymin: "+document.mod.mesh.ymin.toFixed(3)
-   controls.innerHTML += " ymax: "+document.mod.mesh.ymax.toFixed(3)
-   controls.innerHTML += "<br>zmin: "+document.mod.mesh.zmin.toFixed(3)
-   controls.innerHTML += " zmax: "+document.mod.mesh.zmax.toFixed(3)
-   controls.innerHTML += "<br>units/in: "
-   document.mod.mesh.units = 1
-   controls.innerHTML += "<input type='text' id='mod_units' size='3' value="+document.mod.mesh.units+" onkeyup='{\
-      document.mod.mesh.units = \
-         parseFloat(document.getElementById(\"mod_units\").value);\
-      document.getElementById(\"mod_mm\").innerHTML = \
-         (25.4*(document.mod.mesh.xmax-document.mod.mesh.xmin)/document.mod.mesh.units).toFixed(3)+\" x \"+\
-         (25.4*(document.mod.mesh.ymax-document.mod.mesh.ymin)/document.mod.mesh.units).toFixed(3)+\" x \"+\
-         (25.4*(document.mod.mesh.zmax-document.mod.mesh.zmin)/document.mod.mesh.units).toFixed(3)+\" mm\";\
-      document.getElementById(\"mod_in\").innerHTML = \
-         ((document.mod.mesh.xmax-document.mod.mesh.xmin)/document.mod.mesh.units).toFixed(3)+\" x \"+\
-         ((document.mod.mesh.ymax-document.mod.mesh.ymin)/document.mod.mesh.units).toFixed(3)+\" x \"+\
-         ((document.mod.mesh.zmax-document.mod.mesh.zmin)/document.mod.mesh.units).toFixed(3)+\" in\";\
-      document.mod.width = Math.floor(0.5+document.mod.dpi*\
-         (document.mod.mesh.xmax-document.mod.mesh.xmin)/(document.mod.mesh.s*document.mod.mesh.units));\
-      document.getElementById(\"mod_px\").innerHTML = \
-         \"width: \"+document.mod.width+\" px\";\
-         }'>"
-   controls.innerHTML += "<br><span id='mod_mm'>"+
-      (25.4*(document.mod.mesh.xmax-document.mod.mesh.xmin)/document.mod.mesh.units).toFixed(3)+" x "+
-      (25.4*(document.mod.mesh.ymax-document.mod.mesh.ymin)/document.mod.mesh.units).toFixed(3)+" x "+
-      (25.4*(document.mod.mesh.zmax-document.mod.mesh.zmin)/document.mod.mesh.units).toFixed(3)+" mm</span>"
-   controls.innerHTML += "<br><span id='mod_in'>"+
-      ((document.mod.mesh.xmax-document.mod.mesh.xmin)/document.mod.mesh.units).toFixed(3)+" x "+
-      ((document.mod.mesh.ymax-document.mod.mesh.ymin)/document.mod.mesh.units).toFixed(3)+" x "+
-      ((document.mod.mesh.zmax-document.mod.mesh.zmin)/document.mod.mesh.units).toFixed(3)+" in</span>"
-   controls.innerHTML += "<br>view z angle: "
-   controls.innerHTML += "<input type='text' id='mod_rz' size='3' value='0' onkeyup='{\
-      document.mod.mesh.rz = Math.PI*parseFloat(this.value)/180;\
-      document.mod.mesh.draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,document.mod.mesh.rx,document.mod.mesh.rz);\
-      }'>"
-   controls.innerHTML += "<br>view x angle: "
-   controls.innerHTML += "<input type='text' id='mod_rx' size='3' value='0' onkeyup='{\
-      document.mod.mesh.rx = Math.PI*parseFloat(this.value)/180;\
-      document.mod.mesh.draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,document.mod.mesh.rx,document.mod.mesh.rz);\
-      }'>"
-   controls.innerHTML += "<br>view y offset: "
-   controls.innerHTML += "<input type='text' id='mod_dy' size='3' value='0' onkeyup='{\
-      document.mod.mesh.dy = parseFloat(this.value);\
-      document.mod.mesh.draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,document.mod.mesh.rx,document.mod.mesh.rz);\
-      }'>"
-   controls.innerHTML += "<br>view x offset: "
-   controls.innerHTML += "<input type='text' id='mod_dx' size='3' value='0' onkeyup='{\
-      document.mod.mesh.dx = parseFloat(this.value);\
-      document.mod.mesh.draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,document.mod.mesh.rx,document.mod.mesh.rz);\
-      }'>"
-   controls.innerHTML += "<br>view scale: "
-   controls.innerHTML += "<input type='text' id='mod_s' size='3' value='1' onkeyup='{\
-      document.mod.mesh.s = parseFloat(this.value);\
-      document.mod.width = Math.floor(0.5+document.mod.dpi*\
-         (document.mod.mesh.xmax-document.mod.mesh.xmin)/(document.mod.mesh.s*document.mod.mesh.units));\
-      document.getElementById(\"mod_px\").innerHTML = \
-         \"width: \"+document.mod.width+\" px\";\
-      document.mod.mesh.draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,document.mod.mesh.rx,document.mod.mesh.rz);\
-      }'>"
-   controls.innerHTML += "<br><input type='button' value='show mesh' onclick='{\
-      mod_ui_clear();\
-      var label = document.getElementById(\"mod_processes_label\");\
-      label.style.display = \"none\";\
-      var div = document.getElementById(\"mod_output_controls\");\
-      div.innerHTML = \"\";\
-      var div = document.getElementById(\"mod_process_controls\");\
-      div.innerHTML = \"\";\
-      mod_mesh_draw(document.mod.mesh);\
-      }'>"
-   controls.innerHTML += "<br>dpi: "
-   document.mod.dpi = 100
-   controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value="+document.mod.dpi+" onkeyup='{\
-      document.mod.dpi = \
-         parseFloat(document.getElementById(\"mod_dpi\").value);\
-      document.mod.width = Math.floor(0.5+document.mod.dpi*\
-         (document.mod.mesh.xmax-document.mod.mesh.xmin)/(document.mod.mesh.s*document.mod.mesh.units));\
-      document.getElementById(\"mod_px\").innerHTML = \
-         \"width: \"+document.mod.width+\" px\";\
-      }'>"
-   document.mod.width =
-      (document.mod.dpi*(document.mod.mesh.xmax-document.mod.mesh.xmin)/document.mod.mesh.units).toFixed(0)
-   controls.innerHTML += "<br><span id='mod_px'>"+
-      "width: "+document.mod.width+" px</span>"
-   controls.innerHTML += "<br><input type='button' value='calculate height map' onclick='{\
-      mod_ui_clear();\
-      var label = document.getElementById(\"mod_processes_label\");\
-      label.style.display = \"none\";\
-      var div = document.getElementById(\"mod_output_controls\");\
-      div.innerHTML = \"\";\
-      var div = document.getElementById(\"mod_process_controls\");\
-      div.innerHTML = \"\";\
-      var canvas = document.getElementById(\"mod_input_canvas\");\
-      document.mod.width = Math.floor(0.5+document.mod.dpi*\
-         (document.mod.mesh.xmax-document.mod.mesh.xmin)/(document.mod.mesh.s*document.mod.mesh.units));\
-      document.mod.height = document.mod.width;\
-      canvas.width = document.mod.width;\
-      canvas.height = document.mod.width;\
-      canvas.style.display = \"inline\";\
-      var ctx = canvas.getContext(\"2d\");\
-      var process_canvas = document.getElementById(\"mod_process_canvas\");\
-      process_canvas.width = document.mod.width;\
-      process_canvas.height = document.mod.width;\
-      var output_canvas = document.getElementById(\"mod_output_canvas\");\
-      output_canvas.width = document.mod.width;\
-      output_canvas.height = document.mod.width;\
-      var img = ctx.getImageData(0,0,canvas.width,canvas.height);\
-      mod_mesh_height_map(document.mod.mesh,img);\
-      ctx.putImageData(img,0,0);\
-      mod_ui_prompt(\"\");\
-      }'>"
-   //
-   // draw mesh
-   //
-   mod_mesh_draw(document.mod.mesh)
-   //
-   // call outputs
-   //
-   mod_ui_prompt("output format?")
-   mod_outputs()
+      //
+      //
+      // set up UI
+      //
+      controls = findEl("mod_input_controls")
+      controls.innerHTML = "<b>input</b><br>"
+      controls.innerHTML += "file: " + globals.input_name
+      controls.innerHTML += "<br>triangles: " + globals.mesh.length
+      controls.innerHTML += "<br>xmin: " + globals.mesh.xmin.toFixed(3)
+      controls.innerHTML += " xmax: " + globals.mesh.xmax.toFixed(3)
+      controls.innerHTML += "<br>ymin: " + globals.mesh.ymin.toFixed(3)
+      controls.innerHTML += " ymax: " + globals.mesh.ymax.toFixed(3)
+      controls.innerHTML += "<br>zmin: " + globals.mesh.zmin.toFixed(3)
+      controls.innerHTML += " zmax: " + globals.mesh.zmax.toFixed(3)
+      controls.innerHTML += "<br>units/in: "
+      globals.mesh.units = 1
+      controls.innerHTML += "<input type='text' id='mod_units' size='3' value=" + globals.mesh.units + ">";
+      
+      findEl("mod_units").addEventListener("keyup", function(){
+         
+         globals.mesh.units = parseFloat(findEl("mod_units").value);
+         
+         findEl("mod_mm").innerHTML = 
+            (25.4*(globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3)+" x "+
+            (25.4*(globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3)+" x "+
+            (25.4*(globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3)+" mm";
+
+         findEl("mod_in").innerHTML = 
+            ((globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3)+" x "+
+            ((globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3)+" x "+
+            ((globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3)+" in";
+            
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
+         
+         findEl("mod_px").innerHTML = "width: "+globals.width+" px";
+            
+      });
+      
+         
+      controls.innerHTML += "<br><span id='mod_mm'>" +
+         (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
+         (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
+         (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " mm</span>"
+      
+      controls.innerHTML += "<br><span id='mod_in'>" +
+         ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
+         ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
+         ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " in</span>"
+      
+      controls.innerHTML += "<br>view z angle: "
+      
+      controls.innerHTML += "<input type='text' id='mod_rz' size='3' value='0'>";
+      
+      findEl("mod_rz").addEventListener("keyup", function(){
+         globals.mesh.rz = Math.PI*parseFloat(this.value)/180;
+         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+      });
+      
+      
+      controls.innerHTML += "<br>view x angle: "
+      controls.innerHTML += "<input type='text' id='mod_rx' size='3' value='0'>";
+      
+      
+      findEl("mod_rx").addEventListener("keyup", function(){
+         globals.mesh.rx = Math.PI*parseFloat(this.value)/180;
+         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+      });
+   
+      controls.innerHTML += "<br>view y offset: "
+      controls.innerHTML += "<input type='text' id='mod_dy' size='3' value='0'>";
+      findEl("mod_dy").addEventListener("keyup", function(){
+         globals.mesh.dy = parseFloat(this.value);
+         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+      });
+
+      controls.innerHTML += "<br>view x offset: "
+      controls.innerHTML += "<input type='text' id='mod_dx' size='3' value='0'>";
+      findEl("mod_dx").addEventListener("keyup", function(){
+         globals.mesh.dx = parseFloat(this.value);
+         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+      });
+
+      controls.innerHTML += "<br>view scale: "
+      controls.innerHTML += "<input type='text' id='mod_s' size='3' value='1'>";
+      findEl("mod_s").addEventListener("keyup", function(){
+         globals.mesh.s = parseFloat(this.value);
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
+         findEl("mod_px").innerHTML = "width: "+globals.width+" px";
+         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+      });
+      controls.innerHTML += "<br><input id='show_mesh' type='button' value='show mesh'>";
+      findEl('show_mesh').addEventListener("click", function(){
+         ui.ui_clear();
+         var label = findEl("mod_processes_label");
+         label.style.display = "none";
+         var div = findEl("mod_output_controls");
+         div.innerHTML = "";
+         var div = findEl("mod_process_controls");
+         div.innerHTML = "";
+         meshUtils.draw(globals.mesh);
+      });
+      
+      controls.innerHTML += "<br>dpi: "
+      globals.dpi = 100
+      controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value=" + globals.dpi + ">";
+      
+      findEl("mod_dpi").addEventListener("keyup", function(){
+         globals.dpi = parseFloat(findEl("mod_dpi").value);
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
+         findEl("mod_px").innerHTML = "width: "+globals.width+" px";
+      });
+
+      globals.width =(globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
+      controls.innerHTML += "<br><span id='mod_px'>" +
+         "width: " + globals.width + " px</span>"
+      controls.innerHTML += "<br><input type='button' id='calculate_height_map' value='calculate height map'>";
+      
+      findEl('calculate_height_map').addEventListener("click", function(){
+         ui.ui_clear();
+         var label = findEl("mod_processes_label");
+         label.style.display = "none";
+         var div = findEl("mod_output_controls");
+         div.innerHTML = "";
+         var div = findEl("mod_process_controls");
+         div.innerHTML = "";
+         var canvas = findEl("mod_input_canvas");
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
+         globals.height = globals.width;
+         canvas.width = globals.width;
+         canvas.height = globals.width;
+         canvas.style.display = "inline";
+         var ctx = canvas.getContext("2d");
+         var process_canvas = findEl("mod_process_canvas");
+         process_canvas.width = globals.width;
+         process_canvas.height = globals.width;
+         var output_canvas = findEl("mod_output_canvas");
+         output_canvas.width = globals.width;
+         output_canvas.height = globals.width;
+         var img = ctx.getImageData(0,0,canvas.width,canvas.height);
+         meshUtils.height_map(globals.mesh,img);
+         ctx.putImageData(img,0,0);
+         ui.ui_prompt("");
+      });
+      
+      //
+      // draw mesh
+      //
+      meshView.mesh_draw(globals.mesh)
+      //
+      // call outputs
+      //
+      ui.ui_prompt("output format?")
+      outputs.init()
    }
-//
-// mod_stl_read
-//    read mesh from STL buffer
-//
-function mod_stl_read(buf) {
-   var endian = true
-   var xmin = Number.MAX_VALUE
-   var xmax = -Number.MAX_VALUE
-   var ymin = Number.MAX_VALUE
-   var ymax = -Number.MAX_VALUE
-   var zmin = Number.MAX_VALUE
-   var zmax = -Number.MAX_VALUE
-   function getx() {
-      var x = view.getFloat32(pos,endian)
-      pos += 4
-      if (x > xmax)
-         xmax = x
-      if (x < xmin)
-         xmin = x
-      return x}
-   function gety() {
-      var y = view.getFloat32(pos,endian)
-      pos += 4
-      if (y > ymax)
-         ymax = y
-      if (y < ymin)
-         ymin = y
-      return y}
-   function getz() {
-      var z = view.getFloat32(pos,endian)
-      pos += 4
-      if (z > zmax)
-         zmax = z
-      if (z < zmin)
-         zmin = z
-      return z}
-   var view = new DataView(buf)
    //
-   // check for binary STL
+   // mod_stl_read
+   //    read mesh from STL buffer
    //
-   if ((view.getUint8(0) == 115) && (view.getUint8(1) == 111) && (view.getUint8(2) == 108)
-      && (view.getUint8(3) == 105) && (view.getUint8(4) == 100))
+
+   function mod_stl_read(buf) {
+      var endian = true
+      var xmin = Number.MAX_VALUE
+      var xmax = -Number.MAX_VALUE
+      var ymin = Number.MAX_VALUE
+      var ymax = -Number.MAX_VALUE
+      var zmin = Number.MAX_VALUE
+      var zmax = -Number.MAX_VALUE
+
+         function getx() {
+            var x = view.getFloat32(pos, endian)
+            pos += 4
+            if (x > xmax)
+               xmax = x
+            if (x < xmin)
+               xmin = x
+            return x
+         }
+
+         function gety() {
+            var y = view.getFloat32(pos, endian)
+            pos += 4
+            if (y > ymax)
+               ymax = y
+            if (y < ymin)
+               ymin = y
+            return y
+         }
+
+         function getz() {
+            var z = view.getFloat32(pos, endian)
+            pos += 4
+            if (z > zmax)
+               zmax = z
+            if (z < zmin)
+               zmin = z
+            return z
+         }
+      var view = new DataView(buf)
+      //
+      // check for binary STL
+      //
+      if ((view.getUint8(0) == 115) && (view.getUint8(1) == 111) && (view.getUint8(2) == 108) && (view.getUint8(3) == 105) && (view.getUint8(4) == 100))
       //
       // "solid" found, check if binary anyway by multiple of 50 bytes records (Solidworks hack)
       //
-      if (Math.floor((view.byteLength-(80+4))/50) != ((view.byteLength-(80+4))/50))
-         return false
-   var ntriangles = view.getUint32(80,endian)
-   var pos = 84
-   document.mod.mesh = []
-   for (var i = 0; i < ntriangles; ++i) {
-      pos += 12
-      var x0 = getx()
-      var y0 = gety()
-      var z0 = getz()
-      var x1 = getx()
-      var y1 = gety()
-      var z1 = getz()
-      var x2 = getx()
-      var y2 = gety()
-      var z2 = getz()
-      document.mod.mesh[document.mod.mesh.length] = [[x0,y0,z0],[x1,y1,z1],[x2,y2,z2]]
-      pos += 2
+         if (Math.floor((view.byteLength - (80 + 4)) / 50) != ((view.byteLength - (80 + 4)) / 50))
+            return false
+      var ntriangles = view.getUint32(80, endian)
+      var pos = 84
+      globals.mesh = []
+      for (var i = 0; i < ntriangles; ++i) {
+         pos += 12
+         var x0 = getx()
+         var y0 = gety()
+         var z0 = getz()
+         var x1 = getx()
+         var y1 = gety()
+         var z1 = getz()
+         var x2 = getx()
+         var y2 = gety()
+         var z2 = getz()
+         globals.mesh[globals.mesh.length] = [
+            [x0, y0, z0],
+            [x1, y1, z1],
+            [x2, y2, z2]
+         ]
+         pos += 2
       }
-   document.mod.mesh.xmin = xmin
-   document.mod.mesh.xmax = xmax
-   document.mod.mesh.ymin = ymin
-   document.mod.mesh.ymax = ymax
-   document.mod.mesh.zmin = zmin
-   document.mod.mesh.zmax = zmax
-   document.mod.mesh.rz = 0
-   document.mod.mesh.rx = 0
-   document.mod.mesh.dy = 0
-   document.mod.mesh.dx = 0
-   document.mod.mesh.s = 1
-   return true
+      globals.mesh.xmin = xmin
+      globals.mesh.xmax = xmax
+      globals.mesh.ymin = ymin
+      globals.mesh.ymax = ymax
+      globals.mesh.zmin = zmin
+      globals.mesh.zmax = zmax
+      globals.mesh.rz = 0
+      globals.mesh.rx = 0
+      globals.mesh.dy = 0
+      globals.mesh.dx = 0
+      globals.mesh.s = 1
+      return true
    }
 
+
+   return {
+      mod_load_handler: mod_load_handler
+   }
+});

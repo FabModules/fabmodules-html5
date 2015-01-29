@@ -46,6 +46,7 @@ echo 'as is; no warranty is provided, and users accept all<br>' >> mods.html
 echo 'liability.' >> mods.html
 echo "#!/bin/bash" > mod_get
 awk '{ printf "wget -x http://mod.cba.mit.edu/" $0 "\n" }' mods.tmp >> mod_get
+echo "wget -x http://requirejs.org/docs/release/2.1.15/minified/require.js -O mod.cba.mit.edu/require.js" >> mod_get
 echo "cd mod.cba.mit.edu/mod_server" >> mod_get
 echo "npm install ws" >> mod_get
 rm mods.tmp

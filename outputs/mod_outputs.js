@@ -11,7 +11,8 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-
+define(['mods/mod_ui'],function(ui){
+   
 //
 // output types and handlers
 //
@@ -46,7 +47,7 @@ function mod_outputs() {
    label.innerHTML ="output format"
    label.style.display = "block"
    label.onclick = function (e) {
-      mod_ui_clear()
+      ui.ui_clear()
       var input_canvas = document.getElementById("mod_input_canvas")
       input_canvas.style.display = "inline"
       var label = document.getElementById("mod_processes_label")
@@ -55,13 +56,18 @@ function mod_outputs() {
       div.innerHTML = ""
       var div = document.getElementById("mod_process_controls")
       div.innerHTML = ""
-      mod_ui_menu_action(output_array,"mod_outputs")
+      ui.ui_menu_action(output_array,"mod_outputs")
       }
    label.onmouseover = function (e) {
-      this.style.background = highlight_background_color
+      this.style.background = ui.defaults.highlight_background_color
       }
    label.onmouseout = function (e) {
-      this.style.background = background_color
+      this.style.background = ui.defaults.background_color
       }
    }
 
+   return {
+      init: mod_outputs
+   }
+
+});

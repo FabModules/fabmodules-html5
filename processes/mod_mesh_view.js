@@ -12,6 +12,13 @@
 // liability.
 //
 
+define(['require','mods/mod_globals', 'mods/mod_ui'], function(require){
+   
+   
+   var globals = require('mods/mod_globals');
+   var ui = require('mods/mod_ui');
+   var findEl = globals.findEl;
+
 //
 // mod_mesh_draw
 //    draw mesh
@@ -22,16 +29,16 @@ function mod_mesh_draw(mesh) {
    //
    // clear display
    //
-   mod_ui_clear()   
+   ui.ui_clear()   
    //
    // set up canvas
    //
-   var canvas = document.getElementById("mod_input_canvas")
+   var canvas = findEl("mod_input_canvas")
    canvas.style.display = "inline"
    var owidth = canvas.offsetWidth
    var oheight = canvas.offsetHeight
    canvas.style.display = "none"
-   var canvas = document.getElementById("mod_gl_canvas")
+   var canvas = findEl("mod_gl_canvas")
    canvas.style.display = "inline"
    canvas.focus()
    canvas.width = owidth
@@ -39,79 +46,79 @@ function mod_mesh_draw(mesh) {
    //
    // set up canvas event handlers
    //
-   if (document.mod.dx == "") document.mod.dx = 0
-   if (document.mod.dy == "") document.mod.dy = 0
-   if (document.mod.dz == "") document.mod.dz = 0
-   if (document.mod.rx == "") document.mod.rx = 0
-   if (document.mod.ry == "") document.mod.ry = 0
-   if (document.mod.rz == "") document.mod.rz = 0
-   if (document.mod.s == "") document.mod.s = 1
-   document.mod.down = false
+   if (globals.dx == "") globals.dx = 0
+   if (globals.dy == "") globals.dy = 0
+   if (globals.dz == "") globals.dz = 0
+   if (globals.rx == "") globals.rx = 0
+   if (globals.ry == "") globals.ry = 0
+   if (globals.rz == "") globals.rz = 0
+   if (globals.s == "") globals.s = 1
+   globals.down = false
    canvas.oncontextmenu = function(evt) {
       evt.preventDefault()
       evt.stopPropagation()
       }
    canvas.onmousedown = function(evt) {
-      document.mod.down = true
-      document.mod.button = evt.button
-      document.mod.xdown = evt.clientX
-      document.mod.ydown = evt.clientY
+      globals.down = true
+      globals.button = evt.button
+      globals.xdown = evt.clientX
+      globals.ydown = evt.clientY
       }
    canvas.onmouseup = function(evt) {
-      document.mod.down = false
-      if (document.mod.button == 0) {
-         document.mod.mesh.dx = document.mod.mesh.dx + 2*(evt.clientX - document.mod.xdown)/
-            (canvas.offsetWidth*document.mod.mesh.s)
-         document.mod.mesh.dy = document.mod.mesh.dy-2*(evt.clientY - document.mod.ydown)/
-            (canvas.offsetWidth*document.mod.mesh.s)
-         draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,
-            document.mod.mesh.rx,document.mod.mesh.rz)
+      globals.down = false
+      if (globals.button == 0) {
+         globals.mesh.dx = globals.mesh.dx + 2*(evt.clientX - globals.xdown)/
+            (canvas.offsetWidth*globals.mesh.s)
+         globals.mesh.dy = globals.mesh.dy-2*(evt.clientY - globals.ydown)/
+            (canvas.offsetWidth*globals.mesh.s)
+         draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,
+            globals.mesh.rx,globals.mesh.rz)
          }
-      else if (document.mod.button == 2) {
-         document.mod.mesh.rz = document.mod.mesh.rz + Math.PI*(evt.clientX - document.mod.xdown)/
+      else if (globals.button == 2) {
+         globals.mesh.rz = globals.mesh.rz + Math.PI*(evt.clientX - globals.xdown)/
             canvas.offsetWidth
-         document.mod.mesh.rx = document.mod.mesh.rx - Math.PI*(evt.clientY - document.mod.ydown)/
+         globals.mesh.rx = globals.mesh.rx - Math.PI*(evt.clientY - globals.ydown)/
             canvas.offsetHeight
          }
       }
    canvas.onmousemove = function(evt) {
-      if (document.mod.down == false)
+      if (globals.down == false)
          return
-      if (document.mod.button == 0) {
-         var dx = document.mod.mesh.dx + 2*(evt.clientX - document.mod.xdown)/
-            (canvas.offsetWidth*document.mod.mesh.s)
-         var dy = document.mod.mesh.dy-2*(evt.clientY - document.mod.ydown)/
-            (canvas.offsetWidth*document.mod.mesh.s)
-         draw(document.mod.mesh.s,dx,dy,document.mod.mesh.rx,document.mod.mesh.rz)
-         document.getElementById("mod_dx").value = dx.toFixed(3)
-         document.getElementById("mod_dy").value = dy.toFixed(3)
+      if (globals.button == 0) {
+         var dx = globals.mesh.dx + 2*(evt.clientX - globals.xdown)/
+            (canvas.offsetWidth*globals.mesh.s)
+         var dy = globals.mesh.dy-2*(evt.clientY - globals.ydown)/
+            (canvas.offsetWidth*globals.mesh.s)
+         draw(globals.mesh.s,dx,dy,globals.mesh.rx,globals.mesh.rz)
+         findEl("mod_dx").value = dx.toFixed(3)
+         findEl("mod_dy").value = dy.toFixed(3)
          }
-      else if (document.mod.button == 2) {
-         var rz = document.mod.mesh.rz + Math.PI*(evt.clientX - document.mod.xdown)/
+      else if (globals.button == 2) {
+         var rz = globals.mesh.rz + Math.PI*(evt.clientX - globals.xdown)/
             canvas.offsetWidth
-         var rx = document.mod.mesh.rx - Math.PI*(evt.clientY - document.mod.ydown)/
+         var rx = globals.mesh.rx - Math.PI*(evt.clientY - globals.ydown)/
             canvas.offsetWidth
-         draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,rx,rz)
-         document.getElementById("mod_rx").value = (180*rx/Math.PI).toFixed(3)
-         document.getElementById("mod_rz").value = (180*rz/Math.PI).toFixed(3)
+         draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,rx,rz)
+         findEl("mod_rx").value = (180*rx/Math.PI).toFixed(3)
+         findEl("mod_rz").value = (180*rz/Math.PI).toFixed(3)
          }
       }
    canvas.onwheel = function(evt) {
       evt.preventDefault()
       evt.stopPropagation()
       if (evt.deltaY < 0) {
-         document.mod.mesh.s *= 1.1
+         globals.mesh.s *= 1.1
          }
       else {
-         document.mod.mesh.s *= 0.9
+         globals.mesh.s *= 0.9
          }
-      document.mod.width = Math.floor(0.5+document.mod.dpi*
-         (document.mod.mesh.xmax-document.mod.mesh.xmin)/(document.mod.mesh.s*document.mod.mesh.units))
-      document.getElementById("mod_px").innerHTML = 
-         "width: "+document.mod.width+" px"
-      draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,
-         document.mod.mesh.rx,document.mod.mesh.rz)
-      document.getElementById("mod_s").value = document.mod.mesh.s.toFixed(3)
+      globals.width = Math.floor(0.5+globals.dpi*
+         (globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units))
+      findEl("mod_px").innerHTML = 
+         "width: "+globals.width+" px"
+      draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,
+         globals.mesh.rx,globals.mesh.rz)
+      findEl("mod_s").value = globals.mesh.s.toFixed(3)
       }
    //
    // set up GL
@@ -238,9 +245,9 @@ function mod_mesh_draw(mesh) {
    //
    // draw path
    //
-   draw(document.mod.mesh.s,document.mod.mesh.dx,document.mod.mesh.dy,
-      document.mod.mesh.rx,document.mod.mesh.rz)
-   mod_ui_prompt("left: pan, scroll: zoom, right: rotate, c: connections")
+   draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,
+      globals.mesh.rx,globals.mesh.rz)
+   ui.ui_prompt("left: pan, scroll: zoom, right: rotate, c: connections")
    //
    // matrix routines
    //
@@ -340,6 +347,12 @@ function mod_mesh_draw(mesh) {
       //      
       gl.flush()
       }
-   document.mod.mesh.draw = draw
+   globals.mesh.draw = draw
    }
 
+   return {
+      mesh_draw: mod_mesh_draw
+   };
+
+
+});

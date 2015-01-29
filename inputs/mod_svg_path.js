@@ -11,200 +11,220 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
+define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mods/mod_file'], function(require) {
 
-var MAXWIDTH = 10000
+   var ui = require('mods/mod_ui');
+   var globals = require('mods/mod_globals');
+   var outputs = require('outputs/mod_outputs');
+   var fileUtils = require('mods/mod_file');
+   var findEl = globals.findEl;
 
-//
-// mod_load_handler
-//   file load handler
-//
-function mod_load_handler() {
-   var file = document.getElementById("mod_file_input")
-   file.setAttribute("onchange","mod_svg_path_read_handler()")
-   }
-//
-// mod_svg_path_read_handler
-//    SVG path read handler
-//
-function mod_svg_path_read_handler(event) {
+   var MAXWIDTH = 10000
+
    //
-   // get input file
+   // mod_load_handler
+   //   file load handler
    //
-   var file_input = document.getElementById("mod_file_input")
-   document.mod.input_file = file_input.files[0]
-   document.mod.input_name = file_input.files[0].name
-   document.mod.input_basename = mod_file_basename(document.mod.input_name)
-   //
-   // read as text
-   //
-   var file_reader = new FileReader()
-   file_reader.onload = mod_svg_path_text_load_handler
-   file_reader.readAsText(document.mod.input_file)
-   }
-//
-// mod_svg_path_text_load_handler
-//    SVG path text load handler
-//
-function mod_svg_path_text_load_handler(event) {
-   //
-   // set up UI
-   //
-   controls = document.getElementById("mod_input_controls")
-   controls.innerHTML = "<b>input</b><br>"
-   var file_input = document.getElementById("mod_file_input")
-   controls.innerHTML += "file: "+document.mod.input_name+"<br>"
-   controls.innerHTML += "size:<br>"
-   controls.innerHTML += "<div id='mod_size'></div>"
-   //
-   // parse path
-   //
-   str = event.target.result
-   result = mod_svg_path_parse(str)
-   if (result == false)
-      return
-   //
-   // display path
-   //
-   //
-   // call outputs
-   //
-   mod_ui_prompt("output format?")
-   mod_outputs()
-   }
-//
-// mod_svg_path_parse
-//    parse SVG path
-//
-function mod_svg_path_parse(str) {
-   //
-   // mm
-   //    return dimension in mm and set units if found
-   //
-   function mm(str,ptr) {
-      var start = 1+str.indexOf("\"",ptr)
-      var end = str.indexOf("\"",start+1)
-      var units = str.slice(end-2,end)
-      if (units == "px") {
-         return(25.4*parseFloat(str.slice(start,end-2)/90.0))  // Inkscape px default 90/inch
-         }
-      else if (units == "pt") {
-         return(25.4*parseFloat(str.slice(start,end-2)/72.0))
-         }
-      else if (units == "in") {
-         return(25.4*parseFloat(str.slice(start,end-2)))
-         }
-      else if (units == "mm") {
-         return(parseFloat(str.slice(start,end-2)))
-         }
-      else if (units == "cm") {
-         return(10.0*parseFloat(str.slice(start,end-2)))
-         }
-      else {
-         return(parseFloat(str.slice(start,end)))
-         }
+
+      function mod_load_handler() {
+         var file = findEl("mod_file_input")
+         // file.setAttribute("onchange", "mod_svg_path_read_handler()")
+         file.addEventListener("change", function(){
+            mod_svg_path_read_handler();
+         });
       }
-   //
-   // strchr
-   //    return first occurence of char in string, otherwise -1
-   //
-   function strchr(str,chr) {
-      for (var i = 0; i < str.length; ++i) {
-         if (str[i] == chr)
-            return i
-         }
-      return -1
+      //
+      // mod_svg_path_read_handler
+      //    SVG path read handler
+      //
+
+      function mod_svg_path_read_handler(event) {
+         //
+         // get input file
+         //
+         var file_input = findEl("mod_file_input")
+         globals.input_file = file_input.files[0]
+         globals.input_name = file_input.files[0].name
+         globals.input_basename = fileUtils.basename(globals.input_name)
+         //
+         // read as text
+         //
+         var file_reader = new FileReader()
+         file_reader.onload = mod_svg_path_text_load_handler
+         file_reader.readAsText(globals.input_file)
       }
-   //
-   // next_number
-   //    return next number after pointer
-   //
-   function next_number(str,ptr) {
-      var haystack = "0123456789.-+"
       //
-      // find start
+      // mod_svg_path_text_load_handler
+      //    SVG path text load handler
       //
-      var start = ptr
-      while (1) {
-         if (strchr(haystack,str[start]) != -1)
-            break
-         ++start
+
+      function mod_svg_path_text_load_handler(event) {
+         //
+         // set up UI
+         //
+         controls = findEl("mod_input_controls")
+         controls.innerHTML = "<b>input</b><br>"
+         var file_input = findEl("mod_file_input")
+         controls.innerHTML += "file: " + globals.input_name + "<br>"
+         controls.innerHTML += "size:<br>"
+         controls.innerHTML += "<div id='mod_size'></div>"
+         //
+         // parse path
+         //
+         str = event.target.result
+         result = mod_svg_path_parse(str)
+         if (result == false)
+            return
+            //
+            // display path
+            //
+            //
+            // call outputs
+            //
+         ui.ui_prompt("output format?")
+         outputs.init()
+      }
+      //
+      // mod_svg_path_parse
+      //    parse SVG path
+      //
+
+      function mod_svg_path_parse(str) {
+         //
+         // mm
+         //    return dimension in mm and set units if found
+         //
+         function mm(str, ptr) {
+            var start = 1 + str.indexOf("\"", ptr)
+            var end = str.indexOf("\"", start + 1)
+            var units = str.slice(end - 2, end)
+            if (units == "px") {
+               return (25.4 * parseFloat(str.slice(start, end - 2) / 90.0)) // Inkscape px default 90/inch
+            } else if (units == "pt") {
+               return (25.4 * parseFloat(str.slice(start, end - 2) / 72.0))
+            } else if (units == "in") {
+               return (25.4 * parseFloat(str.slice(start, end - 2)))
+            } else if (units == "mm") {
+               return (parseFloat(str.slice(start, end - 2)))
+            } else if (units == "cm") {
+               return (10.0 * parseFloat(str.slice(start, end - 2)))
+            } else {
+               return (parseFloat(str.slice(start, end)))
+            }
          }
-      //
-      // find end
-      //
-      var end = start
-      while (1) {
-         if (strchr(haystack,str[end]) == -1)
-            break;
-         ++end
+         //
+         // strchr
+         //    return first occurence of char in string, otherwise -1
+         //
+
+         function strchr(str, chr) {
+            for (var i = 0; i < str.length; ++i) {
+               if (str[i] == chr)
+                  return i
+            }
+            return -1
          }
+         //
+         // next_number
+         //    return next number after pointer
+         //
+
+         function next_number(str, ptr) {
+            var haystack = "0123456789.-+"
+            //
+            // find start
+            //
+            var start = ptr
+            while (1) {
+               if (strchr(haystack, str[start]) != -1)
+                  break
+               ++start
+            }
+            //
+            // find end
+            //
+            var end = start
+            while (1) {
+               if (strchr(haystack, str[end]) == -1)
+                  break;
+               ++end
+            }
+            return {
+               value: parseFloat(str.slice(start, end)),
+               index: end
+            }
+         }
+         /*
+         //
+         // move pointer to end and return number
+         //
+         *number = strtod(*ptr,&end);
+         *ptr = end;
+         }
+      */
+         //
+         // find SVG element
+         //
+         var ptr = str.indexOf("<svg")
+         if (ptr == -1) {
+            ui.ui_prompt("error: SVG element not found")
+            return false
+         }
+         var stop = str.indexOf(">", ptr)
+         //
+         // get width and height
+         //
+         globals.dpi = 90 // Inkscape default for px
+         var start = str.indexOf("width=", ptr)
+         if ((start == -1) || (start > stop)) {
+            ui.ui_prompt("error: no width")
+            return false
+         }
+         var width = mm(str, start)
+         var start = str.indexOf("height=", ptr)
+         if ((start == -1) || (start > stop)) {
+            ui.ui_prompt("error: no height")
+            return false
+         }
+         var height = mm(str, start)
+         var size = findEl('mod_size')
+         size.innerHTML = "&nbsp;&nbsp;&nbsp;" + width.toFixed(3) + ' x ' + height.toFixed(3) + ' mm<br>'
+         size.innerHTML += "&nbsp;&nbsp;&nbsp;" + (width / 25.4).toFixed(3) + ' x ' + (height / 25.4).toFixed(3) + ' in<br>'
+         //
+         // check for viewBox
+         //
+         var start = str.indexOf("viewBox=", ptr)
+         if ((start == -1) || (start > stop)) {
+            vxmin = 0
+            vymin = 0
+            vwidth = width
+            vheight = height
+         } else {
+            var result = next_number(str, start)
+            var vxmin = result.value
+            var result = next_number(str, result.index)
+            var vymin = result.value
+            var result = next_number(str, result.index)
+            var vwidth = result.value
+            var result = next_number(str, result.index)
+            var vheight = result.value
+         }
+         console.log(vxmin)
+         console.log(vymin)
+         console.log(vwidth)
+         console.log(vheight)
+      }
+
+
       return {
-         value:parseFloat(str.slice(start,end)),
-         index:end
-         }
+         mod_load_handler: mod_load_handler
       }
-   /*
-      //
-      // move pointer to end and return number
-      //
-      *number = strtod(*ptr,&end);
-      *ptr = end;
-      }
-   */
-   //
-   // find SVG element
-   //
-   var ptr = str.indexOf("<svg")
-   if (ptr == -1) {
-      mod_ui_prompt("error: SVG element not found")
-      return false
-      }
-   var stop = str.indexOf(">",ptr)
-   //
-   // get width and height
-   //
-   document.mod.dpi = 90 // Inkscape default for px
-   var start = str.indexOf("width=",ptr)
-   if ((start == -1) || (start > stop)) {
-      mod_ui_prompt("error: no width")
-      return false
-      }
-   var width = mm(str,start)
-   var start = str.indexOf("height=",ptr)
-   if ((start == -1) || (start > stop)) {
-      mod_ui_prompt("error: no height")
-      return false
-      }
-   var height = mm(str,start)
-   var size = document.getElementById('mod_size')
-   size.innerHTML = "&nbsp;&nbsp;&nbsp;"+width.toFixed(3)+' x '+height.toFixed(3)+' mm<br>'
-   size.innerHTML += "&nbsp;&nbsp;&nbsp;"+(width/25.4).toFixed(3)+' x '+(height/25.4).toFixed(3)+' in<br>'
-   //
-   // check for viewBox
-   //
-   var start = str.indexOf("viewBox=",ptr)
-   if ((start == -1) || (start > stop)) {
-      vxmin = 0
-      vymin = 0
-      vwidth = width
-      vheight = height
-      }
-   else {
-      var result = next_number(str,start)
-      var vxmin = result.value
-      var result = next_number(str,result.index)
-      var vymin = result.value
-      var result = next_number(str,result.index)
-      var vwidth = result.value
-      var result = next_number(str,result.index)
-      var vheight = result.value
-      }
-   console.log(vxmin)
-   console.log(vymin)
-   console.log(vwidth)
-   console.log(vheight)
-   }
-   /*
+      
+      
+});
+
+
+/*
       aspect = height/width;
       vaspect = vheight/vwidth;
       vxmid = vxmin + vwidth/2.0;
@@ -238,7 +258,7 @@ function mod_svg_path_parse(str) {
    str = event.target.result
    var i = str.indexOf("width")
    if (i == -1) {
-      mod_ui_prompt("error: SVG width not found")
+      ui.ui_prompt("error: SVG width not found")
       return
       }
    var i1 = str.indexOf("\"",i+1)
@@ -272,19 +292,19 @@ function mod_svg_path_parse(str) {
    else {
       var units = 90
       }
-   document.mod.dpi = 300
-   document.mod.svg = {}
-   document.mod.svg.units = units
-   document.mod.svg.width = parseFloat(width)
-   document.mod.svg.height = parseFloat(height)
-   document.mod.width = parseInt(document.mod.dpi*width/units)
-   document.mod.height = parseInt(document.mod.dpi*height/units)
+   globals.dpi = 300
+   globals.svg = {}
+   globals.svg.units = units
+   globals.svg.width = parseFloat(width)
+   globals.svg.height = parseFloat(height)
+   globals.width = parseInt(globals.dpi*width/units)
+   globals.height = parseInt(globals.dpi*height/units)
    //
    // read as URL for display
    //
    var file_reader = new FileReader()
    file_reader.onload = mod_svg_URL_load_handler
-   file_reader.readAsDataURL(document.mod.input_file)
+   file_reader.readAsDataURL(globals.input_file)
    }
 //
 // mod_svg_URL_load_handler
@@ -296,17 +316,17 @@ function mod_svg_URL_load_handler(event) {
    //
    var img = new Image()
    img.setAttribute("src",event.target.result)
-   document.mod.svg.svg = event.target.result
+   globals.svg.svg = event.target.result
    img.onload = function() {
-      img.width = document.mod.width
-      img.height = document.mod.height
-      var process_canvas = document.getElementById("mod_process_canvas")
+      img.width = globals.width
+      img.height = globals.height
+      var process_canvas = findEl("mod_process_canvas")
       process_canvas.width = img.width
       process_canvas.height = img.height
-      var output_canvas = document.getElementById("mod_output_canvas")
+      var output_canvas = findEl("mod_output_canvas")
       output_canvas.width = img.width
       output_canvas.height = img.height
-      var canvas = document.getElementById("mod_input_canvas")
+      var canvas = findEl("mod_input_canvas")
       canvas.width = img.width
       canvas.height = img.height
       canvas.style.display = "inline"
@@ -315,54 +335,54 @@ function mod_svg_URL_load_handler(event) {
       var input_img = ctx.getImageData(0,0,canvas.width,canvas.height)
       mod_image_flatten(input_img)
       ctx.putImageData(input_img,0,0)
-      controls = document.getElementById("mod_input_controls")
+      controls = findEl("mod_input_controls")
       controls.innerHTML = "<b>input</b><br>"
-      var file_input = document.getElementById("mod_file_input")
-      controls.innerHTML += "file: "+document.mod.input_name+"<br>"
+      var file_input = findEl("mod_file_input")
+      controls.innerHTML += "file: "+globals.input_name+"<br>"
       controls.innerHTML += "units/in: "
-      controls.innerHTML += "<input type='text' id='mod_units' size='3' value="+document.mod.svg.units.toFixed(3)+" onkeyup='{\
-         document.mod.svg.units = \
-            parseFloat(document.getElementById(\"mod_units\").value);\
-         document.mod.width = \
-            parseInt(document.mod.dpi*document.mod.svg.width/document.mod.svg.units);\
-         document.mod.height = \
-            parseInt(document.mod.dpi*document.mod.svg.height/document.mod.svg.units);\
-         document.getElementById(\"mod_px\").innerHTML = \
-            document.mod.width+\" x \"+document.mod.height+\" px\";\
-         document.getElementById(\"mod_mm\").innerHTML = \
-            (25.4*document.mod.width/document.mod.dpi).toFixed(3)+\" x \"+\
-            (25.4*document.mod.height/document.mod.dpi).toFixed(3)+\" mm\";\
-         document.getElementById(\"mod_in\").innerHTML = \
-            (document.mod.width/document.mod.dpi).toFixed(3)+\" x \"+\
-            (document.mod.height/document.mod.dpi).toFixed(3)+\" in\";\
+      controls.innerHTML += "<input type='text' id='mod_units' size='3' value="+globals.svg.units.toFixed(3)+" onkeyup='{\
+         globals.svg.units = \
+            parseFloat(findEl(\"mod_units\").value);\
+         globals.width = \
+            parseInt(globals.dpi*globals.svg.width/globals.svg.units);\
+         globals.height = \
+            parseInt(globals.dpi*globals.svg.height/globals.svg.units);\
+         findEl(\"mod_px\").innerHTML = \
+            globals.width+\" x \"+globals.height+\" px\";\
+         findEl(\"mod_mm\").innerHTML = \
+            (25.4*globals.width/globals.dpi).toFixed(3)+\" x \"+\
+            (25.4*globals.height/globals.dpi).toFixed(3)+\" mm\";\
+         findEl(\"mod_in\").innerHTML = \
+            (globals.width/globals.dpi).toFixed(3)+\" x \"+\
+            (globals.height/globals.dpi).toFixed(3)+\" in\";\
          mod_svg_reload();\
          }'><br>"
-      controls.innerHTML += "width: "+document.mod.svg.width.toFixed(3)+"<br>"
-      controls.innerHTML += "height: "+document.mod.svg.height.toFixed(3)+"<br>"
+      controls.innerHTML += "width: "+globals.svg.width.toFixed(3)+"<br>"
+      controls.innerHTML += "height: "+globals.svg.height.toFixed(3)+"<br>"
       controls.innerHTML += "dpi: "
-      controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value="+document.mod.dpi.toFixed(3)+" onkeyup='{\
-         document.mod.dpi = \
-            parseFloat(document.getElementById(\"mod_dpi\").value);\
-         document.mod.width = \
-            parseInt(document.mod.dpi*document.mod.svg.width/document.mod.svg.units);\
-         document.mod.height = \
-            parseInt(document.mod.dpi*document.mod.svg.height/document.mod.svg.units);\
-         document.getElementById(\"mod_px\").innerHTML = \
-            document.mod.width+\" x \"+document.mod.height+\" px\";\
+      controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value="+globals.dpi.toFixed(3)+" onkeyup='{\
+         globals.dpi = \
+            parseFloat(findEl(\"mod_dpi\").value);\
+         globals.width = \
+            parseInt(globals.dpi*globals.svg.width/globals.svg.units);\
+         globals.height = \
+            parseInt(globals.dpi*globals.svg.height/globals.svg.units);\
+         findEl(\"mod_px\").innerHTML = \
+            globals.width+\" x \"+globals.height+\" px\";\
          mod_svg_reload();\
          }'><br>"
       controls.innerHTML += "size:<br>"
       controls.innerHTML += "<span id='mod_px'>"+
-         document.mod.width+" x "+document.mod.height+" px</span><br>"
+         globals.width+" x "+globals.height+" px</span><br>"
       controls.innerHTML += "<span id='mod_mm'>"+
-         (25.4*document.mod.width/document.mod.dpi).toFixed(3)+" x "+
-         (25.4*document.mod.height/document.mod.dpi).toFixed(3)+" mm</span><br>"
+         (25.4*globals.width/globals.dpi).toFixed(3)+" x "+
+         (25.4*globals.height/globals.dpi).toFixed(3)+" mm</span><br>"
       controls.innerHTML += "<span id='mod_in'>"+
-         (document.mod.width/document.mod.dpi).toFixed(3)+" x "+
-         (document.mod.height/document.mod.dpi).toFixed(3)+" in</span><br>"
+         (globals.width/globals.dpi).toFixed(3)+" x "+
+         (globals.height/globals.dpi).toFixed(3)+" in</span><br>"
       controls.innerHTML += "<input type='button' value='invert image' onclick='{\
          mod_ui_clear();\
-         var canvas = document.getElementById(\"mod_input_canvas\");\
+         var canvas = findEl(\"mod_input_canvas\");\
          canvas.style.display = \"inline\";\
          var ctx = canvas.getContext(\"2d\");\
          var img = ctx.getImageData(0,0,canvas.width,canvas.height);\
@@ -374,7 +394,7 @@ function mod_svg_URL_load_handler(event) {
    //
    // call outputs
    //
-   mod_ui_prompt("output format?")
+   ui.ui_prompt("output format?")
    mod_outputs()
    }
 //
@@ -384,23 +404,23 @@ function mod_svg_URL_load_handler(event) {
 function mod_svg_reload() {
    mod_ui_clear()
    var img = new Image()
-   img.setAttribute("src",document.mod.svg.svg)
-   if (document.mod.width > MAXWIDTH) {
-      mod_ui_prompt("error: image too large (greater than mod_svg MAXWIDTH)")
+   img.setAttribute("src",globals.svg.svg)
+   if (globals.width > MAXWIDTH) {
+      ui.ui_prompt("error: image too large (greater than mod_svg MAXWIDTH)")
       return
       }
    else
-      mod_ui_prompt("")
+      ui.ui_prompt("")
    img.onload = function() {
-      img.width = document.mod.width
-      img.height = document.mod.height
-      var process_canvas = document.getElementById("mod_process_canvas")
+      img.width = globals.width
+      img.height = globals.height
+      var process_canvas = findEl("mod_process_canvas")
       process_canvas.width = img.width
       process_canvas.height = img.height
-      var output_canvas = document.getElementById("mod_output_canvas")
+      var output_canvas = findEl("mod_output_canvas")
       output_canvas.width = img.width
       output_canvas.height = img.height
-      var canvas = document.getElementById("mod_input_canvas")
+      var canvas = findEl("mod_input_canvas")
       canvas.width = img.width
       canvas.height = img.height
       canvas.style.display = "inline"

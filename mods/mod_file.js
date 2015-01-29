@@ -12,6 +12,8 @@
 // liability.
 //
 
+define(function(require) { 
+
 //
 // check for File support
 //
@@ -31,16 +33,22 @@ function mod_file_basename(name) {
 //    load file and call handler
 //
 function mod_file_call(script) {
-   if (document.getElementById("mod_file_call_script"))
-      document.head.removeChild(document.getElementById("mod_file_call_script"))
-   var head = document.getElementsByTagName('head')[0]
-   var s = document.createElement("script")
-   s.setAttribute("type","text/javascript")
-   s.setAttribute("src",script+"?"+(new Date()).getTime()) // add date query to prevent caching
-   s.setAttribute("id","mod_file_call_script")
-   s.setAttribute("onload","mod_load_handler()")
-   head.appendChild(s)
-   }
+   // if (document.getElementById("mod_file_call_script"))
+   //    document.head.removeChild(document.getElementById("mod_file_call_script"))
+   // var head = document.getElementsByTagName('head')[0]
+   // var s = document.createElement("script")
+   // s.setAttribute("type","text/javascript")
+   // s.setAttribute("src",script+"?"+(new Date()).getTime()) // add date query to prevent caching
+   // s.setAttribute("id","mod_file_call_script")
+   // s.setAttribute("onload","mod_load_handler()")
+   // head.appendChild(s)
+   var moduleName = script.replace('.js', ''); 
+   require([moduleName], function(mod){
+      //console.log(mod);
+      mod.mod_load_handler();   
+   });
+   
+}
 //
 // mod_file_save
 //    save file
@@ -78,4 +86,12 @@ function mod_file_send(name,file,command,server) {
       }
    }
    
+   
+   return {
+      basename: mod_file_basename,
+      call: mod_file_call,
+      save: mod_file_save,
+      send: mod_file_send
+   };
 
+});

@@ -15,15 +15,15 @@ wget -x http://mod.cba.mit.edu/inputs/mod_svg_path.js
 wget -x http://mod.cba.mit.edu/inputs/mod_vol.js
 wget -x http://mod.cba.mit.edu/inputs/mod_vol_view.js
 wget -x http://mod.cba.mit.edu/outputs/mod_Epilog.js
-wget -x http://mod.cba.mit.edu/outputs/mod_eps.js
 wget -x http://mod.cba.mit.edu/outputs/mod_G.js
-wget -x http://mod.cba.mit.edu/outputs/mod_outputs.js
 wget -x http://mod.cba.mit.edu/outputs/mod_Oxford.js
 wget -x http://mod.cba.mit.edu/outputs/mod_Roland_mill.js
 wget -x http://mod.cba.mit.edu/outputs/mod_Roland_vinyl.js
 wget -x http://mod.cba.mit.edu/outputs/mod_Shopbot.js
-wget -x http://mod.cba.mit.edu/outputs/mod_svg.js
 wget -x http://mod.cba.mit.edu/outputs/mod_Trotec.js
+wget -x http://mod.cba.mit.edu/outputs/mod_eps.js
+wget -x http://mod.cba.mit.edu/outputs/mod_outputs.js
+wget -x http://mod.cba.mit.edu/outputs/mod_svg.js
 wget -x http://mod.cba.mit.edu/processes/mod_image.js
 wget -x http://mod.cba.mit.edu/processes/mod_mesh.js
 wget -x http://mod.cba.mit.edu/processes/mod_mesh_view.js
@@ -33,5 +33,6 @@ wget -x http://mod.cba.mit.edu/processes/mod_path_worker.js
 wget -x http://mod.cba.mit.edu/processes/mod_processes.js
 wget -x http://mod.cba.mit.edu/mod_server/mod_server.js
 wget -x http://mod.cba.mit.edu/mod_server/mod_serial.py
+wget -x http://requirejs.org/docs/release/2.1.15/minified/require.js
 cd mod.cba.mit.edu/mod_server
 npm install ws
