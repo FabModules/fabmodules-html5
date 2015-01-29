@@ -11,10 +11,12 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view'], function(require) {
+define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mods/mod_file', 'processes/mod_mesh_view'], function(require) {
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
    var vol_view = require('inputs/mod_vol_view');
+   var mesh_view = require('processes/mod_mesh_view');
+   var fileUtils = require('mods/mod_file');
    var findEl = globals.findEl;
 
    //
@@ -50,7 +52,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view'], fu
       globals.input_file = file_input.files[0]
       globals.input_size = file_input.files[0].size
       globals.input_name = file_input.files[0].name
-      globals.input_basename = mod_file_basename(globals.input_name)
+      globals.input_basename = fileUtils.basename(globals.input_name)
       //
       // set up UI
       //
@@ -171,84 +173,88 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view'], fu
       controls.innerHTML += "max threshold: <input type='text' id='mod_max_threshold' size='3' value=''><br>"
       controls.innerHTML += "<input type='button' id='show_height' value='show height'>";
       findEl('show_height').addEventListener("click", function(){
-         ui.ui_clear();\
-         var canvas = findEl(\"mod_input_canvas\");\
-         canvas.width = globals.vol.nx;\
-         canvas.height = globals.vol.ny;\
-         canvas.style.display = \"inline\";\
-         if ((findEl(\"mod_min_threshold\").value == \"\")\
-          || (findEl(\"mod_max_threshold\").value == \"\")) {\
-            ui.ui_prompt(\"error: show histogram to find thresholds\");\
-            return;\
-            };\
-         globals.vol.layer_size = globals.vol.size/globals.vol.nz;\
-         var file_reader = new FileReader();\
-         file_reader.onload = mod_vol_height_handler;\
-         globals.vol.stop = false;\
-         window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};\
-         globals.vol.layer = 0;\
-         globals.vol.buf = new Uint16Array(globals.vol.nx*globals.vol.ny);\
-         var blob = globals.input_file.slice(0,globals.vol.layer_size);\
-         file_reader.readAsArrayBuffer(blob);\
+          ui.ui_clear();
+         var canvas = findEl("mod_input_canvas");
+         canvas.width = globals.vol.nx;
+         canvas.height = globals.vol.ny;
+         canvas.style.display = "inline";
+         if ((findEl("mod_min_threshold").value == "")
+          || (findEl("mod_max_threshold").value == "")) {
+            ui.ui_prompt("error: show histogram to find thresholds");
+            return;
+            };
+         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         var file_reader = new FileReader();
+         file_reader.onload = mod_vol_height_handler;
+         globals.vol.stop = false;
+         window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
+         globals.vol.layer = 0;
+         globals.vol.buf = new Uint16Array(globals.vol.nx*globals.vol.ny);
+         var blob = globals.input_file.slice(0,globals.vol.layer_size);
+         file_reader.readAsArrayBuffer(blob);
       });
       controls.innerHTML += "<br>"
-      controls.innerHTML += "<input type='button' value='show mesh' onclick='{\
-      ui.ui_clear();\
-      var canvas = findEl(\"mod_input_canvas\");\
-      canvas.width = globals.vol.nx;\
-      canvas.height = globals.vol.ny;\
-      canvas.style.display = \"inline\";\
-      if ((findEl(\"mod_min_threshold\").value == \"\")\
-       || (findEl(\"mod_max_threshold\").value == \"\")) {\
-         ui.ui_prompt(\"error: show histogram to find thresholds\");\
-         return;\
-         };\
-      globals.vol.layer_size = globals.vol.size/globals.vol.nz;\
-      var file_reader = new FileReader();\
-      file_reader.onload = mod_vol_mesh_handler;\
-      globals.vol.stop = false;\
-      window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};\
-      globals.vol.layer = 0;\
-      globals.vol.ptr = 0;\
-      globals.vol.buf = new Array(2);\
-      globals.vol.buf[0] = new Float32Array(globals.vol.nx*globals.vol.ny);\
-      globals.vol.buf[1] = new Float32Array(globals.vol.nx*globals.vol.ny);\
-      globals.mesh.rules = mod_mesh_march_rules();\
-      globals.mesh.triangles = 0;\
-      var blob = globals.input_file.slice(0,globals.vol.layer_size);\
-      file_reader.readAsArrayBuffer(blob);\
-      }'><br>"
+      controls.innerHTML += "<input type='button' id='show_mesh' value='show mesh'>";
+      findEl("show_mesh").addEventListener("click", function(){
+          ui.ui_clear();
+          var canvas = findEl("mod_input_canvas");
+          canvas.width = globals.vol.nx;
+          canvas.height = globals.vol.ny;
+          canvas.style.display = "inline";
+          if ((findEl("mod_min_threshold").value == "")
+           || (findEl("mod_max_threshold").value == "")) {
+             ui.ui_prompt("error: show histogram to find thresholds");
+             return;
+             };
+          globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+          var file_reader = new FileReader();
+          file_reader.onload = mod_vol_mesh_handler;
+          globals.vol.stop = false;
+          window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
+          globals.vol.layer = 0;
+          globals.vol.ptr = 0;
+          globals.vol.buf = new Array(2);
+          globals.vol.buf[0] = new Float32Array(globals.vol.nx*globals.vol.ny);
+          globals.vol.buf[1] = new Float32Array(globals.vol.nx*globals.vol.ny);
+          globals.mesh.rules = mod_mesh_march_rules();
+          globals.mesh.triangles = 0;
+          var blob = globals.input_file.slice(0,globals.vol.layer_size);
+          file_reader.readAsArrayBuffer(blob);
+      });
+      controls.innerHTML + = "<br>"
       controls.innerHTML += "triangles: <input type='text' id='mod_triangles' size='8' value=''><br>"
-      controls.innerHTML += "<input type='button' value='save .stl' onclick='{\
-      ui.ui_clear();\
-      var canvas = findEl(\"mod_input_canvas\");\
-      canvas.width = globals.vol.nx;\
-      canvas.height = globals.vol.ny;\
-      canvas.style.display = \"inline\";\
-      if (globals.input_size != globals.vol.size) {\
-         ui.ui_prompt(\"error: vol size does not match file size\");\
-         return;\
-         };\
-      if (findEl(\"mod_triangles\").value == \"\") {\
-         ui.ui_prompt(\"error: show mesh to calculate number of triangles\");\
-         return;\
-         };\
-      globals.vol.layer_size = globals.vol.size/globals.vol.nz;\
-      var file_reader = new FileReader();\
-      file_reader.onload = mod_vol_stl_handler;\
-      globals.vol.stop = false;\
-      window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};\
-      globals.vol.layer = 0;\
-      globals.vol.ptr = 0;\
-      globals.vol.buf = new Array(2);\
-      globals.vol.buf[0] = new Float32Array(globals.vol.nx*globals.vol.ny);\
-      globals.vol.buf[1] = new Float32Array(globals.vol.nx*globals.vol.ny);\
-      globals.mesh.rules = mod_mesh_march_rules();\
-      globals.mesh.buf = new ArrayBuffer(80+4+globals.mesh.triangles*(4*3*4+2));\
-      globals.mesh.triangles = 0;\
-      var blob = globals.input_file.slice(0,globals.vol.layer_size);\
-      file_reader.readAsArrayBuffer(blob);\
-      }'><br>"
+      controls.innerHTML += "<input type='button' id='save_stl' value='save .stl'>";
+          findEl('save_stl').addEventListener("click",function(){
+          ui.ui_clear();
+          var canvas = findEl("mod_input_canvas");
+          canvas.width = globals.vol.nx;
+          canvas.height = globals.vol.ny;
+          canvas.style.display = "inline";
+          if (globals.input_size != globals.vol.size) {
+             ui.ui_prompt("error: vol size does not match file size");
+             return;
+             };
+          if (findEl("mod_triangles").value == "") {
+             ui.ui_prompt("error: show mesh to calculate number of triangles");
+             return;
+             };
+          globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+          var file_reader = new FileReader();
+          file_reader.onload = mod_vol_stl_handler;
+          globals.vol.stop = false;
+          window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
+          globals.vol.layer = 0;
+          globals.vol.ptr = 0;
+          globals.vol.buf = new Array(2);
+          globals.vol.buf[0] = new Float32Array(globals.vol.nx*globals.vol.ny);
+          globals.vol.buf[1] = new Float32Array(globals.vol.nx*globals.vol.ny);
+          globals.mesh.rules = mod_mesh_march_rules();
+          globals.mesh.buf = new ArrayBuffer(80+4+globals.mesh.triangles*(4*3*4+2));
+          globals.mesh.triangles = 0;
+          var blob = globals.input_file.slice(0,globals.vol.layer_size);
+          file_reader.readAsArrayBuffer(blob);
+      });
+      controls.innerHTML += '<br>';
    }
    //
    // mod_vol_density_handler
@@ -447,7 +453,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view'], fu
             layer_buffer[index] += 1
          }
       }
-      mod_vol_hist_draw(layer_buffer, vmin, vmax)
+      vol_view.hist_draw(layer_buffer, vmin, vmax)
       //
       // increment layer
       //
@@ -473,7 +479,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view'], fu
          //
          ui.ui_prompt("")
          window.onkeydown = null
-         mod_vol_hist_draw(buffer, vmin, vmax)
+         vol_view.hist_draw(buffer, vmin, vmax)
       }
    }
    //
@@ -506,7 +512,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view'], fu
       var mesh = mod_mesh_march_triangulate(min_threshold, max_threshold, globals.vol.buf,
          globals.vol.ptr, globals.vol.nx, globals.vol.ny,
          globals.vol.nz, globals.vol.layer)
-      mod_mesh_draw(mesh)
+      mesh_view.mesh_draw(mesh)
       globals.mesh.triangles += mesh.length
       //
       // increment layer
