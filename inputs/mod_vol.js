@@ -11,8 +11,10 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mods/mod_file', 'processes/mod_mesh_view'], function(require) {
+define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html' 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mods/mod_file', 'processes/mod_mesh_view'], function(require) {
    var ui = require('mods/mod_ui');
+   var Handlebars = require('handlebars');
+   var mod_vol_input_controls_tps = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
    var globals = require('mods/mod_globals');
    var vol_view = require('inputs/mod_vol_view');
    var mesh_view = require('processes/mod_mesh_view');
@@ -61,13 +63,53 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
       globals.mesh.dy = 0
       globals.mesh.dx = 0
       globals.mesh.s = 1
+      globals.vol.bytes = 4
+      globals.vol.nx = 1
+      globals.vol.ny = 1
+      globals.vol.nz = 1
+      globals.vol.size = 4
+
       controls = findEl("mod_input_controls")
-      controls.innerHTML = "<b>input</b><br>"
+/*      controls.innerHTML = "<b>input</b><br>"
       controls.innerHTML += "file: " + globals.input_name + "<br>"
       controls.innerHTML += "file size: " + globals.input_size + "<br>"
       controls.innerHTML += "type: "
-      globals.vol.bytes = 4
       controls.innerHTML += "float 32 <input type='radio' name='mod_units' id='mod_float32' checked>";
+      controls.innerHTML += "int 16 <input type='radio' name='mod_units' id='mod_int16'">
+      controls.innerHTML += "nx: <input type='text' id='mod_nx' size='3' value='1'>";
+      controls.innerHTML += "<br>"
+      controls.innerHTML += "ny: <input type='text' id='mod_ny' size='3' value='1'>";
+      controls.innerHTML += "<br>"
+      controls.innerHTML += "nz: <input type='text' id='mod_nz' size='3' value='1'>";
+      controls.innerHTML += "<br>"
+      controls.innerHTML += "vol size: <span id='mod_size'>4</span><br>"
+      //controls.innerHTML += "voxel size (um): <input type='text' id='mod_size' size='3' value='1'><br>"
+      controls.innerHTML += "<input id='show_density' type='button' value='show density'>";
+      controls.innerHTML += "<br>"
+      controls.innerHTML += "min value: <input type='text' id='mod_vmin' size='3' value=''><br>"
+      controls.innerHTML += "max value: <input type='text' id='mod_vmax' size='3' value=''><br>"
+      controls.innerHTML += "<input type='button' value='show histogram' id='show_histogram'>" 
+      controls.innerHTML += "<br>"
+      controls.innerHTML += "min threshold: <input type='text' id='mod_min_threshold' size='3' value=''><br>"
+      controls.innerHTML += "max threshold: <input type='text' id='mod_max_threshold' size='3' value=''><br>"
+      controls.innerHTML += "<input type='button' id='show_height' value='show height'>";
+      controls.innerHTML += "<br>"
+      controls.innerHTML += "<input type='button' id='show_mesh' value='show mesh'>";
+      controls.innerHTML + = "<br>"
+      controls.innerHTML += "triangles: <input type='text' id='mod_triangles' size='8' value=''><br>"
+      controls.innerHTML += "<input type='button' id='save_stl' value='save .stl'>";
+      controls.innerHTML += '<br>'; **/
+      
+      ctx = {
+          input_name: globals.input_name,
+          input_size: globals.input_size
+      };
+      
+      controls.innerHTML = mod_vol_input_controls_tpl(ctx);
+      
+      
+      
+
       findEl("mod_units").addEventListener("change", function(){
          if (findEl("mod_float32").checked)
             globals.vol.bytes = 4;
@@ -80,7 +122,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
       });
       
       
-      controls.innerHTML += "int 16 <input type='radio' name='mod_units' id='mod_int16'">
       findEl("mod_units").addEventListener("change", function(){
          if (findEl("mod_float32").checked)
             globals.vol.bytes = 4;
@@ -90,35 +131,22 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
          globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      globals.vol.nx = 1
-      controls.innerHTML += "nx: <input type='text' id='mod_nx' size='3' value='1'>";
       findEl("mod_nx").addEventListener("keyup", function(){
          globals.vol.nx = parseInt(findEl("mod_nx").value);
          globals.vol.size = 
          globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       }); 
-      controls.innerHTML += "<br>"
-      globals.vol.ny = 1
-      controls.innerHTML += "ny: <input type='text' id='mod_ny' size='3' value='1'>";
       findEl("mod_ny").addEventListener("keyup", function(){
          globals.vol.ny = parseInt(findEl("mod_ny").value);
          globals.vol.size = globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      controls.innerHTML += "<br>"
-      globals.vol.nz = 1
-      controls.innerHTML += "nz: <input type='text' id='mod_nz' size='3' value='1'>";
       findEl("mod_nz").addEventListener("keyup", function(){
          globals.vol.nz = parseInt(findEl("mod_nz").value);
          globals.vol.size = globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      controls.innerHTML += "<br>"
-      globals.vol.size = 4
-      controls.innerHTML += "vol size: <span id='mod_size'>4</span><br>"
-      //controls.innerHTML += "voxel size (um): <input type='text' id='mod_size' size='3' value='1'><br>"
-      controls.innerHTML += "<input id='show_density' type='button' value='show density'>";
       findEl("show_density").addEventListener("click", function(){
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
@@ -141,10 +169,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
          var blob = globals.input_file.slice(0,globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      controls.innerHTML += "<br>"
-      controls.innerHTML += "min value: <input type='text' id='mod_vmin' size='3' value=''><br>"
-      controls.innerHTML += "max value: <input type='text' id='mod_vmax' size='3' value=''><br>"
-      controls.innerHTML += "<input type='button' value='show histogram' id='show_histogram'>" 
       findEl('show_histogram').addEventListener("click",function(){
          var nhist = 100;
          ui.ui_clear();
@@ -168,10 +192,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
             var blob = globals.input_file.slice(0,globals.vol.layer_size);
             file_reader.readAsArrayBuffer(blob);
       });
-      controls.innerHTML += "<br>"
-      controls.innerHTML += "min threshold: <input type='text' id='mod_min_threshold' size='3' value=''><br>"
-      controls.innerHTML += "max threshold: <input type='text' id='mod_max_threshold' size='3' value=''><br>"
-      controls.innerHTML += "<input type='button' id='show_height' value='show height'>";
       findEl('show_height').addEventListener("click", function(){
           ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
@@ -193,8 +213,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
          var blob = globals.input_file.slice(0,globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      controls.innerHTML += "<br>"
-      controls.innerHTML += "<input type='button' id='show_mesh' value='show mesh'>";
       findEl("show_mesh").addEventListener("click", function(){
           ui.ui_clear();
           var canvas = findEl("mod_input_canvas");
@@ -221,10 +239,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
           var blob = globals.input_file.slice(0,globals.vol.layer_size);
           file_reader.readAsArrayBuffer(blob);
       });
-      controls.innerHTML + = "<br>"
-      controls.innerHTML += "triangles: <input type='text' id='mod_triangles' size='8' value=''><br>"
-      controls.innerHTML += "<input type='button' id='save_stl' value='save .stl'>";
-          findEl('save_stl').addEventListener("click",function(){
+      findEl('save_stl').addEventListener("click",function(){
           ui.ui_clear();
           var canvas = findEl("mod_input_canvas");
           canvas.width = globals.vol.nx;
@@ -254,7 +269,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mod
           var blob = globals.input_file.slice(0,globals.vol.layer_size);
           file_reader.readAsArrayBuffer(blob);
       });
-      controls.innerHTML += '<br>';
    }
    //
    // mod_vol_density_handler

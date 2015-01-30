@@ -12,11 +12,12 @@
 // liability.
 //
 
-define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templates/mod_g_controls.html'], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
-
+   var Handlebars = require('handlebars')
+   var mod_g_controls_tpl = Handlebars.compile(require('text!templates/mod_g_controls.html'))
    var findEl = globals.findEl
 
    var label = findEl("mod_inputs_label")
@@ -102,20 +103,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       globals.output = "G"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = "<br><b>output</b>"
-      controls.innerHTML += "<br>cut speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_cut_speed' size='3' value='20'>"
-      controls.innerHTML += "<br>plunge speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_plunge_speed' size='3' value='20'>"
-      controls.innerHTML += "<br>jog speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_jog_speed' size='3' value='75'>"
-      controls.innerHTML += "<br>jog height (mm):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_jog_height' size='3' value='5'>"
-      controls.innerHTML += "<br>spindle speed (RPM):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_spindle_speed' size='3' value='10000'>"
-      controls.innerHTML += "<br>tool:"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_tool' size='3' value='1'>"
-      controls.innerHTML += "<br>coolant: on <input type='radio' name='mod_coolant' id='mod_coolant_on' checked> off <input type='radio' name='mod_coolant' id='mod_coolant_off'>"
+       controls.innerHTML = mod_g_controls_tpl();
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"

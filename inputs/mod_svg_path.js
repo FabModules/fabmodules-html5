@@ -63,6 +63,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
          // set up UI
          //
          controls = findEl("mod_input_controls")
+          
          controls.innerHTML = "<b>input</b><br>"
          var file_input = findEl("mod_file_input")
          controls.innerHTML += "file: " + globals.input_name + "<br>"

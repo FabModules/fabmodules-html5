@@ -12,12 +12,12 @@
 // liability.
 //
 
-define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require', 'handlebars', 'text!templates/mod_shopbot_controls', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
-
-
+   var Handlebars = require('handlebars')
+   var mod_shopbot_controls_tpl = Handlebars.compile(require('text!templates/mod_shopbot_controls'))
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
    if (input == "path (.svg)") {
@@ -102,18 +102,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       globals.output = "Shopbot"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = "<br><b>output</b>"
-      controls.innerHTML += "<br>cut speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_cut_speed' size='3' value='20'>"
-      controls.innerHTML += "<br>plunge speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_plunge_speed' size='3' value='20'>"
-      controls.innerHTML += "<br>jog speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_jog_speed' size='3' value='75'>"
-      controls.innerHTML += "<br>jog height (mm):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_jog_height' size='3' value='5'>"
-      controls.innerHTML += "<br>spindle speed (RPM):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_spindle_speed' size='3' value='10000'>"
-      controls.innerHTML += "<br>file units: in <input type='radio' name='mod_units' id='mod_inches' checked> mm <input type='radio' name='mod_units' id='mod_mm'>"
+      controls.innerHTML = mod_shopbot_controls_tpl()
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"

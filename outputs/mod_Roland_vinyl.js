@@ -13,13 +13,13 @@
 // liability.
 //
 
-define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require', 'handlebars', 'text!templates/mod_roland_vinyl_controls.html' 'mods/mod_ui', 'mods/mod_globals'], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
-
+   var Handlebars = require('handlebars');
    var findEl = globals.findEl
-
+   var mod_roland_vinyl_controls_tpl = Handlebars.compile(require('text!templates/mod_roland_vinyl_controls.html'))
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
    if (input == "path (.svg)") {
@@ -70,14 +70,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       globals.output = "Roland_vinyl"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = "<br><b>output</b>"
-      controls.innerHTML += "<br>force (g):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_force' size='3' value='45'>"
-      controls.innerHTML += "<br>velocity (cm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_velocity' size='3' value='2'>"
-      controls.innerHTML += "<br>origin:"
-      controls.innerHTML += "<br><input type='radio' name='origin' id='mod_top_left'> left top right <input type='radio' name='origin' id='mod_top_right'>"
-      controls.innerHTML += "<br><input type='radio' name='origin' id='mod_bottom_left' checked> left bot right <input type='radio' name='origin' id='mod_bottom_right'>"
+      controls.innerHTML = mod_roland_vinyl_controls_tpl()
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"

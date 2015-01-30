@@ -11,11 +11,12 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templates/mod_epilog_controls.html"], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
-
+   var Handlebars = require('handlebars');
+   var mod_epilog_controls_tpl = Handlebars.compile(require('text!templates/mod_epilog_controls.html'))
    var findEl = globals.findEl
 
    var label = findEl("mod_inputs_label")
@@ -114,6 +115,9 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       globals.output = "Epilog"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
+       controls.innerHTML = mod_epilog_controls_tpl()
+       
+       /*
       controls.innerHTML = "<br><b>output</b>"
       controls.innerHTML += "<br>autofocus: <input type='checkbox' id='mod_autofocus'>"
       controls.innerHTML += "<br>power (%):"
@@ -127,6 +131,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       controls.innerHTML += "y: <input type='text' id='mod_y_origin' size='3' value='50'>"
       controls.innerHTML += "<br><input type='radio' name='origin' id='mod_top_left' checked> left top right <input type='radio' name='origin' id='mod_top_right'>"
       controls.innerHTML += "<br><input type='radio' name='origin' id='mod_bottom_left'> left bot right <input type='radio' name='origin' id='mod_bottom_right'>"
+       */
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"

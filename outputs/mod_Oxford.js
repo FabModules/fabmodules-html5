@@ -12,11 +12,12 @@
 // liability.
 //
 
-define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require',  'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templates/mod_oxford_controls.html'], function(require) {
 
    var ui = require('mods/mod_ui');
+   var Handlebars = require('handlebars');
    var globals = require('mods/mod_globals');
-
+   var mod_oxford_controls_tpl = Handlebars(require('text!templates/mod_oxford_controls.html'))
    var findEl = globals.findEl
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
@@ -67,13 +68,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       globals.output = "Oxford"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = "<br><b>output</b>"
-      controls.innerHTML += "<br>power (%):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_power' size='3' value='50'>"
-      controls.innerHTML += "<br>feedrate (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_feed' size='3' value='3'>"
-      controls.innerHTML += "<br>jog speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_jog' size='3' value='10'>"
+      controls.innerHTML = mod_oxford_controls_tpl()
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"

@@ -13,12 +13,13 @@
 // liability.
 //
 
-define(['require', 'mods/mod_ui', 'mods/mod_globals', 'mods/mod_file'], function(require) {
+define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls', 'mods/mod_ui', 'mods/mod_globals', 'mods/mod_file'], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
+   var Handlebars = require('handlebars') 
    var fileUtils = require('mods/mod_file');
-
+   var mod_roland_mill_controls_tpl = Handlebars.compile(require('text!templates/mod_roland_mill_controls'))
    var findEl = globals.findEl
 
    var label = findEl("mod_inputs_label")
@@ -105,33 +106,46 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'mods/mod_file'], function
    function mod_load_handler() {
       globals.output = "Roland_mill"
       ui.ui_prompt("process?")
+       
+       
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = "<br><b>output</b>"
-      controls.innerHTML += "<br>speed (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_speed' size='3' value='4'>"
-      controls.innerHTML += "<br>jog height (mm):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_jog' size='3' value='1'>"
-      controls.innerHTML += "<br>xmin (mm):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_xmin' size='3' value='20' oninput=\
-      'globals.xmin=findEl(\"mod_xmin\").value'>"
-      if (globals.xmin != "")
-         findEl("mod_xmin").setAttribute("value", globals.xmin)
-      controls.innerHTML += "<br>ymin (mm):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_ymin' size='3' value='20' oninput=\
-      'globals.ymin=findEl(\"mod_ymin\").value'>"
-      if (globals.ymin != "")
+
+      var ctx = {
+          mod_xmin: globals.xmin,
+          show_move = false;   
+      }
+      
+      if (globals.ymin != "") {
+          ctx.show_move = true;
+      }
+      
+      controls.innerHTML = mod_roland_mill_controls(ctx);
+       
+       if (globals.xmin != "")
+          findEl("mod_xmin").setAttribute("value", globals.xmin)
+
+      if (globals.ymin != "") {
          findEl("mod_ymin").setAttribute("value", globals.ymin)
-         controls.innerHTML += "<br><input type='button' id='mod_move' value='move to xmin,ymin'>";
-         findEl('mod_move').addEventListener("click", function(){
-         var name = "move.rml";
-         var xmin = 40*parseFloat(findEl("mod_xmin").value);
-         var ymin = 40*parseFloat(findEl("mod_ymin").value);
-         var file = "PA;PA;!VZ10;!PZ0,100;PU "+xmin+" "+ymin+";PD "+xmin+" "+ymin+";!MC0;";
-         var command = findEl("mod_command").value;
-         var server = findEl("mod_server").value;
-         fileUtils.send(name,file,command,server);            
-         });
-      controls.innerHTML += "<br><input type='button' id='mod_home' value='move home and stop'>"; 
+      }
+
+      findEl("mod_ymin").addEventListener("click", function(){
+          globals.ymin=findEl("mod_ymin").value;
+      });
+
+      findEl("mod_xmin").addEventListener("click", function(){
+          globals.xmin=findEl("mod_xmin").value 
+      });
+
+      findEl('mod_move').addEventListener("click", function(){
+          var name = "move.rml";
+          var xmin = 40*parseFloat(findEl("mod_xmin").value);
+          var ymin = 40*parseFloat(findEl("mod_ymin").value);
+          var file = "PA;PA;!VZ10;!PZ0,100;PU "+xmin+" "+ymin+";PD "+xmin+" "+ymin+";!MC0;";
+          var command = findEl("mod_command").value;
+          var server = findEl("mod_server").value;
+          fileUtils.send(name,file,command,server);            
+      });
+
       findEl('mod_home').addEventListener("click", function(){
          var name = "home.rml";
          var xmin = 40*parseFloat(findEl("mod_xmin").value);

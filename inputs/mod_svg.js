@@ -12,15 +12,24 @@
 // liability.
 //
 
-define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mods/mod_file', 'processes/mod_image'], function(require) {
+define(['require', 
+        'handlebars' 
+        'mods/mod_ui', 
+        'mods/mod_globals', 
+        'outputs/mod_outputs', 
+        'mods/mod_file', 
+        'processes/mod_image',
+        'text!mod_svg_input_controls',
+        ], function(require) {
 
    var ui = require('mods/mod_ui');
+   var Handlebars = require('handlebars');
    var globals = require('mods/mod_globals');
    var outputs = require('outputs/mod_outputs');
    var fileUtils = require('mods/mod_file');
    var imageUtils = require('processes/mod_image')
    var findEl = globals.findEl;
-
+   var mod_svg_input_controls_tpl = Handlebars.compile(require('text!mod_svg_input_controls'));
    var MAXWIDTH = 10000
 
    //
@@ -141,33 +150,23 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
             var input_img = ctx.getImageData(0, 0, canvas.width, canvas.height)
             mod_image_flatten(input_img)
             ctx.putImageData(input_img, 0, 0)
-            controls = findEl("mod_input_controls")
-            controls.innerHTML = "<b>input</b><br>"
             var file_input = findEl("mod_file_input")
+             
+            controls = findEl("mod_input_controls")
+             
+             /** template => mod_svg_input_controls **/
+
+            /*
+            controls.innerHTML = "<b>input</b><br>"
             controls.innerHTML += "file: " + globals.input_name + "<br>"
             controls.innerHTML += "units/in: "
             controls.innerHTML += "<input type='text' id='mod_units' size='3' value=" + globals.svg.units.toFixed(3) + ">";
-            findEl("mod_units").addEventListener("keyup", function(){
-               globals.svg.units = parseFloat(findEl("mod_units").value);
-               globals.width = parseInt(globals.dpi*globals.svg.width/globals.svg.units);
-               globals.height = parseInt(globals.dpi*globals.svg.height/globals.svg.units);
-               findEl("mod_px").innerHTML = globals.width+" x "+globals.height+" px";
-               findEl("mod_mm").innerHTML = (25.4*globals.width/globals.dpi).toFixed(3)+" x "+(25.4*globals.height/globals.dpi).toFixed(3)+" mm";
-               findEl("mod_in").innerHTML = (globals.width/globals.dpi).toFixed(3)+" x "+(globals.height/globals.dpi).toFixed(3)+" in";
-               mod_svg_reload();
-            });
+
             controls.innerHTML += "<br>";
             controls.innerHTML += "width: " + globals.svg.width.toFixed(3) + "<br>"
             controls.innerHTML += "height: " + globals.svg.height.toFixed(3) + "<br>"
             controls.innerHTML += "dpi: "
             controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value=" + globals.dpi.toFixed(3) + ">";
-            findEl("mod_dpi").addEventListener("keyup", function(){
-               globals.dpi = parseFloat(findEl("mod_dpi").value);
-               globals.width = parseInt(globals.dpi*globals.svg.width/globals.svg.units);
-               globals.height = parseInt(globals.dpi*globals.svg.height/globals.svg.units);
-               findEl("mod_px").innerHTML = globals.width+" x "+globals.height+" px";
-               mod_svg_reload();
-            });
             controls.innerHTML += "<br>";
             controls.innerHTML += "size:<br>"
             controls.innerHTML += "<span id='mod_px'>" +
@@ -178,7 +177,43 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
             controls.innerHTML += "<span id='mod_in'>" +
                (globals.width / globals.dpi).toFixed(3) + " x " +
                (globals.height / globals.dpi).toFixed(3) + " in</span><br>"
-            controls.innerHTML += "<input type='button' id='invert_image' value='invert image'>";
+            controls.innerHTML += "<input type='button' id='invert_image' value='invert image'>";*/
+
+            ctx = {
+                input_name: globals.input_name,
+                units: globals.svg.units.toFixed(3),
+                width: globals.svg.width.toFixed(3),
+                height:  globals.svg.height.toFixed(3),
+                dpi: globals.dpi.toFixed(3),
+                px_w: globals.width,
+                px_h: globals.height,
+                mm_w: (25.4 * globals.width / globals.dpi).toFixed(3),
+                mm_h: (25.4 * globals.height / globals.dpi).toFixed(3),
+                in_w: (globals.width / globals.dpi).toFixed(3),
+                in_h:  (globals.height / globals.dpi).toFixed(3)
+            }
+            controls.innerHTML = mod_svg_input_controls_tpl(ctx);
+
+
+
+            findEl("mod_units").addEventListener("keyup", function(){
+               globals.svg.units = parseFloat(findEl("mod_units").value);
+               globals.width = parseInt(globals.dpi*globals.svg.width/globals.svg.units);
+               globals.height = parseInt(globals.dpi*globals.svg.height/globals.svg.units);
+               findEl("mod_px").innerHTML = globals.width+" x "+globals.height+" px";
+               findEl("mod_mm").innerHTML = (25.4*globals.width/globals.dpi).toFixed(3)+" x "+(25.4*globals.height/globals.dpi).toFixed(3)+" mm";
+               findEl("mod_in").innerHTML = (globals.width/globals.dpi).toFixed(3)+" x "+(globals.height/globals.dpi).toFixed(3)+" in";
+               mod_svg_reload();
+            });
+
+            findEl("mod_dpi").addEventListener("keyup", function(){
+               globals.dpi = parseFloat(findEl("mod_dpi").value);
+               globals.width = parseInt(globals.dpi*globals.svg.width/globals.svg.units);
+               globals.height = parseInt(globals.dpi*globals.svg.height/globals.svg.units);
+               findEl("mod_px").innerHTML = globals.width+" x "+globals.height+" px";
+               mod_svg_reload();
+            });
+
             findEl('invert_image').addEventListener("click", function(){
                ui.ui_clear();
                var canvas = findEl("mod_input_canvas");

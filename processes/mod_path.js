@@ -15,7 +15,9 @@
 define(['require','mods/mod_globals','mods/mod_ui',
    'mods/mod_file',
    'processes/mod_path_view',
-   'processes/mod_image'
+   'processes/mod_image',
+   'handlebars',
+   'text!templates/mod_path_file_controls.html'
 ], function(require) {
 
    var globals = require('mods/mod_globals');
@@ -23,7 +25,8 @@ define(['require','mods/mod_globals','mods/mod_ui',
    var mod_file = require('mods/mod_file');
    var path_view = require('processes/mod_path_view');
    var imageUtils = require('processes/mod_image');
-   
+   var handlebars = require('handlebars')
+   var mod_path_file_controls_tpl = handlebars.compile(require('text!templates/mod_path_file_controls.html')) 
    findEl = globals.findEl;
 
    //
@@ -40,13 +43,10 @@ define(['require','mods/mod_globals','mods/mod_ui',
 
       function mod_path_file_controls(routine) {
          controls = findEl("mod_process_controls")
-         controls.innerHTML += "&nbsp;<input type='button' id='mod_save' value='save'>";
-         controls.innerHTML += "&nbsp;<input type='button' id='mod_send' value='send'>";
-         controls.innerHTML += "<br>send command:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_command' value=''>"
-         controls.innerHTML += "<br>send server:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_server' value='" + globals.server + "'>"
-
+          ctx = {
+              server: globals.server
+          }
+         controls.innerHTML = mod_path_file_controls_tpl(ctx)
 
          save_btn = findEl("mod_save");
          save_btn.addEventListener("click", function() {

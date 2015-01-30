@@ -11,9 +11,19 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mods/mod_file', 'processes/mod_mesh', 'processes/mod_mesh_view'], function(require) {
+define(['require', 
+        'handlebars', 
+        'mods/mod_ui', 
+        'mods/mod_globals', 
+        'outputs/mod_outputs', 
+        'mods/mod_file', 
+        'processes/mod_mesh', 
+        'processes/mod_mesh_view',
+        'text!templates/mod_stl_input_controls.html'], function(require) {
 
    var ui = require('mods/mod_ui');
+   var Handlebars = require('handlebars');
+   var mod_stl_input_controls_tpl = Handlebars.compile('text!templates/mod_stl_input_controls.html');
    var globals = require('mods/mod_globals');
    var outputs = require('outputs/mod_outputs');
    var fileUtils = require('mods/mod_file');
@@ -67,11 +77,22 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
          ui.ui_prompt("must be binary STL")
          return
       }
+
+      // update globals
+
+      globals.mesh.units = 1
+      globals.dpi = 100
+      globals.width =(globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
+
       //
       //
       // set up UI
       //
       controls = findEl("mod_input_controls")
+      
+      /** template => mod_stl_input_controls **/
+
+      /*
       controls.innerHTML = "<b>input</b><br>"
       controls.innerHTML += "file: " + globals.input_name
       controls.innerHTML += "<br>triangles: " + globals.mesh.length
@@ -82,9 +103,58 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
       controls.innerHTML += "<br>zmin: " + globals.mesh.zmin.toFixed(3)
       controls.innerHTML += " zmax: " + globals.mesh.zmax.toFixed(3)
       controls.innerHTML += "<br>units/in: "
-      globals.mesh.units = 1
       controls.innerHTML += "<input type='text' id='mod_units' size='3' value=" + globals.mesh.units + ">";
+
+      controls.innerHTML += "<br><span id='mod_mm'>" +
+         (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
+         (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
+         (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " mm</span>"
       
+      controls.innerHTML += "<br><span id='mod_in'>" +
+         ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
+         ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
+         ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " in</span>"
+      
+      controls.innerHTML += "<br>view z angle: "
+      controls.innerHTML += "<input type='text' id='mod_rz' size='3' value='0'>";
+      controls.innerHTML += "<br>view x angle: "
+      controls.innerHTML += "<input type='text' id='mod_rx' size='3' value='0'>";
+      controls.innerHTML += "<br>view y offset: "
+      controls.innerHTML += "<input type='text' id='mod_dy' size='3' value='0'>";
+      controls.innerHTML += "<br>view x offset: "
+      controls.innerHTML += "<input type='text' id='mod_dx' size='3' value='0'>";
+      controls.innerHTML += "<br>view scale: "
+      controls.innerHTML += "<input type='text' id='mod_s' size='3' value='1'>";
+      controls.innerHTML += "<br><input id='show_mesh' type='button' value='show mesh'>";
+      controls.innerHTML += "<br>dpi: "
+      controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value=" + globals.dpi + ">";
+      controls.innerHTML += "<br><span id='mod_px'>" + "width: " + globals.width + " px</span>"
+      controls.innerHTML += "<br><input type='button' id='calculate_height_map' value='calculate height map'>";
+      */
+      
+      ctx = {
+          input_name: globals.input_name,
+          mesh_length:  globals.mesh.length,
+          x_min: globals.mesh.xmin.toFixed(3),
+          x_max: globals.mesh.xmax.toFixed(3),
+          y_min: globals.mesh.ymin.toFixed(3),
+          y_max: globals.mesh.ymax.toFixed(3),
+          z_min: globals.mesh.zmin.toFixed(3),
+          z_max: globals.mesh.zmin.toFixed(3),
+          mesh_units: globals.mesh.units,
+          mm_x:  (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
+          mm_y:  (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
+          mm_z:  (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
+          in_x: ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
+          in_y: ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
+          in_z: ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
+          dpi: globals.dpi,
+          width: globals.width          
+      }
+      controls.innerHTML = mod_stl_input_controls_tpl(ctx);
+      
+      // event handlers
+
       findEl("mod_units").addEventListener("keyup", function(){
          
          globals.mesh.units = parseFloat(findEl("mod_units").value);
@@ -104,60 +174,34 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
          findEl("mod_px").innerHTML = "width: "+globals.width+" px";
             
       });
-      
-         
-      controls.innerHTML += "<br><span id='mod_mm'>" +
-         (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
-         (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
-         (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " mm</span>"
-      
-      controls.innerHTML += "<br><span id='mod_in'>" +
-         ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
-         ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
-         ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " in</span>"
-      
-      controls.innerHTML += "<br>view z angle: "
-      
-      controls.innerHTML += "<input type='text' id='mod_rz' size='3' value='0'>";
-      
+
       findEl("mod_rz").addEventListener("keyup", function(){
          globals.mesh.rz = Math.PI*parseFloat(this.value)/180;
          globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
       });
-      
-      
-      controls.innerHTML += "<br>view x angle: "
-      controls.innerHTML += "<input type='text' id='mod_rx' size='3' value='0'>";
-      
       
       findEl("mod_rx").addEventListener("keyup", function(){
          globals.mesh.rx = Math.PI*parseFloat(this.value)/180;
          globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
       });
    
-      controls.innerHTML += "<br>view y offset: "
-      controls.innerHTML += "<input type='text' id='mod_dy' size='3' value='0'>";
       findEl("mod_dy").addEventListener("keyup", function(){
          globals.mesh.dy = parseFloat(this.value);
          globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
       });
 
-      controls.innerHTML += "<br>view x offset: "
-      controls.innerHTML += "<input type='text' id='mod_dx' size='3' value='0'>";
       findEl("mod_dx").addEventListener("keyup", function(){
          globals.mesh.dx = parseFloat(this.value);
          globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
       });
 
-      controls.innerHTML += "<br>view scale: "
-      controls.innerHTML += "<input type='text' id='mod_s' size='3' value='1'>";
       findEl("mod_s").addEventListener("keyup", function(){
          globals.mesh.s = parseFloat(this.value);
          globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
          findEl("mod_px").innerHTML = "width: "+globals.width+" px";
          globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
       });
-      controls.innerHTML += "<br><input id='show_mesh' type='button' value='show mesh'>";
+      
       findEl('show_mesh').addEventListener("click", function(){
          ui.ui_clear();
          var label = findEl("mod_processes_label");
@@ -169,9 +213,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
          meshUtils.draw(globals.mesh);
       });
       
-      controls.innerHTML += "<br>dpi: "
-      globals.dpi = 100
-      controls.innerHTML += "<input type='text' id='mod_dpi' size='3' value=" + globals.dpi + ">";
       
       findEl("mod_dpi").addEventListener("keyup", function(){
          globals.dpi = parseFloat(findEl("mod_dpi").value);
@@ -179,10 +220,6 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
          findEl("mod_px").innerHTML = "width: "+globals.width+" px";
       });
 
-      globals.width =(globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
-      controls.innerHTML += "<br><span id='mod_px'>" +
-         "width: " + globals.width + " px</span>"
-      controls.innerHTML += "<br><input type='button' id='calculate_height_map' value='calculate height map'>";
       
       findEl('calculate_height_map').addEventListener("click", function(){
          ui.ui_clear();

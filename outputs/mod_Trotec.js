@@ -11,11 +11,12 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals','text!templates/mod_trotec_controls.html'], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
-   
+   var Handlebars = require('handlebars')
+   var mod_trotec_controls_tpl = Handlebars.compile(require('text!templates/mod_trotec_controls.html'))
    var findEl = globals.findEl
 
    var label = findEl("mod_inputs_label")
@@ -117,25 +118,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
       globals.output = "Trotec"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = "<br><b>output</b>"
-      controls.innerHTML += "<br>caution: not yet tested"
-      controls.innerHTML += "<br>model: <select id='mod_model'>\
-      <option value='Speedy_100' selected>Speedy 100</option>\
-      <option value='Speedy_100_Flexx_CO2'>Speedy 100 Flexx CO2</option>\
-      <option value='Speedy_100_Flexx_fiber'>Speedy 100 Flexx fiber</option>\
-      <option value='Speedy_400'>Speedy 400</option>\
-      </select>"
-      controls.innerHTML += "<br>power (%):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_power' size='3' value='25'>"
-      controls.innerHTML += "<br>velocity (mm/s):"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_velocity' size='3' value='10'>"
-      controls.innerHTML += "<br>frequency: (Hz)"
-      controls.innerHTML += "&nbsp;<input type='text' id='mod_frequency' size='3' value='5000'>"
-      controls.innerHTML += "<br>origin (mm): <br>"
-      controls.innerHTML += "x: <input type='text' id='mod_x_origin' size='3' value='50'> "
-      controls.innerHTML += "y: <input type='text' id='mod_y_origin' size='3' value='50'>"
-      controls.innerHTML += "<br><input type='radio' name='origin' id='mod_top_left' checked> left top right <input type='radio' name='origin' id='mod_top_right'>"
-      controls.innerHTML += "<br><input type='radio' name='origin' id='mod_bottom_left'> left bot right <input type='radio' name='origin' id='mod_bottom_right'>"
+       controls.innerHTML = mod_trotec_controls_tpl()      
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"

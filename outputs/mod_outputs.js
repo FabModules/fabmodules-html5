@@ -11,8 +11,9 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['mods/mod_ui'],function(ui){
-   
+define(['require','mods/mod_ui'],function(require){
+   var ui = require('mods/mod_ui')
+    
 //
 // output types and handlers
 //
