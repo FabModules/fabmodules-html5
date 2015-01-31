@@ -12,16 +12,17 @@
 // liability.
 //
 
-define(['require', 
-        'handlebars',
-        'mods/mod_ui', 
-        'mods/mod_globals', 
-        'outputs/mod_outputs', 
-        'mods/mod_file', 
-        'processes/mod_image',
-        'text!templates/mod_png_input_controls.html'], function(require) {
+define(['require',
+   'handlebars',
+   'mods/mod_ui',
+   'mods/mod_globals',
+   'outputs/mod_outputs',
+   'mods/mod_file',
+   'processes/mod_image',
+   'text!templates/mod_png_input_controls.html'
+], function(require) {
 
-    var Handlebars = require('handlebars');
+   var Handlebars = require('handlebars');
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
    var outputs = require('outputs/mod_outputs');
@@ -141,18 +142,18 @@ define(['require',
          ctx.putImageData(input_img, 0, 0)
 
          controls = findEl("mod_input_controls")
-          
-         /** template => mod_png_input_controls **/ 
-          ctx = {
-              input_name: globals.input_name,
-              dpi: globals.dpi.toFixed(3),
-              img_width: img.width,
-              img_height: img.height,
-              mm_w: (25.4 * globals.width / globals.dpi).toFixed(3),
-              mm_h: (25.4 * globals.height / globals.dpi).toFixed(3),
-              in_w: (globals.width / globals.dpi).toFixed(3),
-              in_h: (globals.height / globals.dpi).toFixed(3)
-          }
+
+         /** template => mod_png_input_controls **/
+         ctx = {
+            input_name: globals.input_name,
+            dpi: globals.dpi.toFixed(3),
+            img_width: img.width,
+            img_height: img.height,
+            mm_w: (25.4 * globals.width / globals.dpi).toFixed(3),
+            mm_h: (25.4 * globals.height / globals.dpi).toFixed(3),
+            in_w: (globals.width / globals.dpi).toFixed(3),
+            in_h: (globals.height / globals.dpi).toFixed(3)
+         }
          // controls.innerHTML = "<b>input</b><br>"
          // controls.innerHTML += "file: " + globals.input_name + "<br>"
          // controls.innerHTML += "dpi: "
@@ -167,9 +168,9 @@ define(['require',
          //    (globals.width / globals.dpi).toFixed(3) + " x " +
          //    (globals.height / globals.dpi).toFixed(3) + " in</span><br>"
          // controls.innerHTML += "<input type='button' value='invert image' id='invert_image_btn'>";
-         
+
          console.log(input_controls_tpl(ctx))
-         
+
          controls.innerHTML = input_controls_tpl(ctx);
 
          var file_input = findEl("mod_file_input")

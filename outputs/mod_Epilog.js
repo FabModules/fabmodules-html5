@@ -115,9 +115,9 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
       globals.output = "Epilog"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-       controls.innerHTML = mod_epilog_controls_tpl()
-       
-       /*
+      controls.innerHTML = mod_epilog_controls_tpl()
+
+      /*
       controls.innerHTML = "<br><b>output</b>"
       controls.innerHTML += "<br>autofocus: <input type='checkbox' id='mod_autofocus'>"
       controls.innerHTML += "<br>power (%):"
@@ -222,7 +222,8 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_Epilog_path: mod_Epilog_path
    }
 
 });

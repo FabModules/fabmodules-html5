@@ -103,7 +103,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       globals.output = "G"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-       controls.innerHTML = mod_g_controls_tpl();
+      controls.innerHTML = mod_g_controls_tpl();
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"
@@ -199,7 +199,8 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_G_path: mod_G_path
    }
 
 });

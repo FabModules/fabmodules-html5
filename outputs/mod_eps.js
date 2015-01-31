@@ -112,7 +112,8 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_eps_path: mod_eps_path
    }
 
 });

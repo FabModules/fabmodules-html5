@@ -11,7 +11,12 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals','text!templates/mod_trotec_controls.html'], function(require) {
+define(['require',
+   'handlebars',
+   'mods/mod_ui',
+   'mods/mod_globals',
+   'text!templates/mod_trotec_controls.html'
+], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
@@ -118,7 +123,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals','text!templat
       globals.output = "Trotec"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-       controls.innerHTML = mod_trotec_controls_tpl()      
+      controls.innerHTML = mod_trotec_controls_tpl()
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"
@@ -219,7 +224,8 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals','text!templat
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_Trotec_path: mod_Trotec_path
 
    }
 

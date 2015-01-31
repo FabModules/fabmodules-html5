@@ -12,7 +12,7 @@
 // liability.
 //
 
-define(['require',  'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templates/mod_oxford_controls.html'], function(require) {
+define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templates/mod_oxford_controls.html'], function(require) {
 
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
@@ -149,7 +149,8 @@ define(['require',  'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templ
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_Oxford_path: mod_Oxford_path
    }
 
 });

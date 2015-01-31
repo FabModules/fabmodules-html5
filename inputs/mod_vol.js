@@ -11,7 +11,9 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html' 'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view','mods/mod_file', 'processes/mod_mesh_view'], function(require) {
+define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html'
+   'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view', 'mods/mod_file', 'processes/mod_mesh_view'
+], function(require) {
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
    var mod_vol_input_controls_tps = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
@@ -36,7 +38,7 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html' 'm
    function mod_load_handler() {
       var file = findEl("mod_file_input")
       // file.setAttribute("onchange", "mod_vol_read_handler()")
-      file.addEventListener("change", function(){
+      file.addEventListener("change", function() {
          mod_vol_read_handler;
       });
    }
@@ -70,7 +72,7 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html' 'm
       globals.vol.size = 4
 
       controls = findEl("mod_input_controls")
-/*      controls.innerHTML = "<b>input</b><br>"
+      /*      controls.innerHTML = "<b>input</b><br>"
       controls.innerHTML += "file: " + globals.input_name + "<br>"
       controls.innerHTML += "file size: " + globals.input_size + "<br>"
       controls.innerHTML += "type: "
@@ -99,55 +101,55 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html' 'm
       controls.innerHTML += "triangles: <input type='text' id='mod_triangles' size='8' value=''><br>"
       controls.innerHTML += "<input type='button' id='save_stl' value='save .stl'>";
       controls.innerHTML += '<br>'; **/
-      
-      ctx = {
-          input_name: globals.input_name,
-          input_size: globals.input_size
-      };
-      
-      controls.innerHTML = mod_vol_input_controls_tpl(ctx);
-      
-      
-      
 
-      findEl("mod_units").addEventListener("change", function(){
+      ctx = {
+         input_name: globals.input_name,
+         input_size: globals.input_size
+      };
+
+      controls.innerHTML = mod_vol_input_controls_tpl(ctx);
+
+
+
+
+      findEl("mod_units").addEventListener("change", function() {
          if (findEl("mod_float32").checked)
             globals.vol.bytes = 4;
          else if (findEl("mod_int16").checked)
             globals.vol.bytes = 2;
-         globals.vol.size = 
-         globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
+         globals.vol.size =
+            globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
-         
+
       });
-      
-      
-      findEl("mod_units").addEventListener("change", function(){
+
+
+      findEl("mod_units").addEventListener("change", function() {
          if (findEl("mod_float32").checked)
             globals.vol.bytes = 4;
          else if (findEl("mod_int16").checked)
             globals.vol.bytes = 2;
-         globals.vol.size = 
-         globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
+         globals.vol.size =
+            globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      findEl("mod_nx").addEventListener("keyup", function(){
+      findEl("mod_nx").addEventListener("keyup", function() {
          globals.vol.nx = parseInt(findEl("mod_nx").value);
-         globals.vol.size = 
-         globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
+         globals.vol.size =
+            globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
-      }); 
-      findEl("mod_ny").addEventListener("keyup", function(){
+      });
+      findEl("mod_ny").addEventListener("keyup", function() {
          globals.vol.ny = parseInt(findEl("mod_ny").value);
-         globals.vol.size = globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
+         globals.vol.size = globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      findEl("mod_nz").addEventListener("keyup", function(){
+      findEl("mod_nz").addEventListener("keyup", function() {
          globals.vol.nz = parseInt(findEl("mod_nz").value);
-         globals.vol.size = globals.vol.bytes*globals.vol.nx*globals.vol.ny*globals.vol.nz;
+         globals.vol.size = globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      findEl("show_density").addEventListener("click", function(){
+      findEl("show_density").addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
@@ -157,117 +159,124 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html' 'm
             ui.ui_prompt("error: vol size does not match file size");
             return;
          };
-         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
          var file_reader = new FileReader();
          file_reader.onload = mod_vol_density_handler;
          globals.vol.stop = false;
-         window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
+         window.onkeydown = function(evt) {
+            if (evt.keyCode == 83) globals.vol.stop = true;
+         };
          globals.vol.layer = 0;
          globals.vol.vmax = -1e10;
          globals.vol.vmin = 1e10;
-         globals.vol.buf = new Float32Array(globals.vol.nx*globals.vol.ny);
-         var blob = globals.input_file.slice(0,globals.vol.layer_size);
+         globals.vol.buf = new Float32Array(globals.vol.nx * globals.vol.ny);
+         var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      findEl('show_histogram').addEventListener("click",function(){
+      findEl('show_histogram').addEventListener("click", function() {
          var nhist = 100;
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
          canvas.height = globals.vol.ny;
          canvas.style.display = "inline";
-         if ((findEl("mod_vmin").value == "")
-          || (findEl("mod_vmax").value == "")) {
-             ui.ui_prompt("error: show density to find limits");
-             return;
-            };
-            globals.vol.layer_size = globals.vol.size/globals.vol.nz;
-            var file_reader = new FileReader();
-            file_reader.onload = mod_vol_histogram_handler;
-            globals.vol.stop = false;
-            window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
-            globals.vol.hmax = -1e10;
-            globals.vol.layer = 0;
-            globals.vol.buf = new Uint32Array(nhist);
-            var blob = globals.input_file.slice(0,globals.vol.layer_size);
-            file_reader.readAsArrayBuffer(blob);
+         if ((findEl("mod_vmin").value == "") || (findEl("mod_vmax").value == "")) {
+            ui.ui_prompt("error: show density to find limits");
+            return;
+         };
+         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
+         var file_reader = new FileReader();
+         file_reader.onload = mod_vol_histogram_handler;
+         globals.vol.stop = false;
+         window.onkeydown = function(evt) {
+            if (evt.keyCode == 83) globals.vol.stop = true;
+         };
+         globals.vol.hmax = -1e10;
+         globals.vol.layer = 0;
+         globals.vol.buf = new Uint32Array(nhist);
+         var blob = globals.input_file.slice(0, globals.vol.layer_size);
+         file_reader.readAsArrayBuffer(blob);
       });
-      findEl('show_height').addEventListener("click", function(){
-          ui.ui_clear();
+      findEl('show_height').addEventListener("click", function() {
+         ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
          canvas.height = globals.vol.ny;
          canvas.style.display = "inline";
-         if ((findEl("mod_min_threshold").value == "")
-          || (findEl("mod_max_threshold").value == "")) {
+         if ((findEl("mod_min_threshold").value == "") || (findEl("mod_max_threshold").value == "")) {
             ui.ui_prompt("error: show histogram to find thresholds");
             return;
-            };
-         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         };
+         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
          var file_reader = new FileReader();
          file_reader.onload = mod_vol_height_handler;
          globals.vol.stop = false;
-         window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
+         window.onkeydown = function(evt) {
+            if (evt.keyCode == 83) globals.vol.stop = true;
+         };
          globals.vol.layer = 0;
-         globals.vol.buf = new Uint16Array(globals.vol.nx*globals.vol.ny);
-         var blob = globals.input_file.slice(0,globals.vol.layer_size);
+         globals.vol.buf = new Uint16Array(globals.vol.nx * globals.vol.ny);
+         var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      findEl("show_mesh").addEventListener("click", function(){
-          ui.ui_clear();
-          var canvas = findEl("mod_input_canvas");
-          canvas.width = globals.vol.nx;
-          canvas.height = globals.vol.ny;
-          canvas.style.display = "inline";
-          if ((findEl("mod_min_threshold").value == "")
-           || (findEl("mod_max_threshold").value == "")) {
-             ui.ui_prompt("error: show histogram to find thresholds");
-             return;
-             };
-          globals.vol.layer_size = globals.vol.size/globals.vol.nz;
-          var file_reader = new FileReader();
-          file_reader.onload = mod_vol_mesh_handler;
-          globals.vol.stop = false;
-          window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
-          globals.vol.layer = 0;
-          globals.vol.ptr = 0;
-          globals.vol.buf = new Array(2);
-          globals.vol.buf[0] = new Float32Array(globals.vol.nx*globals.vol.ny);
-          globals.vol.buf[1] = new Float32Array(globals.vol.nx*globals.vol.ny);
-          globals.mesh.rules = mod_mesh_march_rules();
-          globals.mesh.triangles = 0;
-          var blob = globals.input_file.slice(0,globals.vol.layer_size);
-          file_reader.readAsArrayBuffer(blob);
+      findEl("show_mesh").addEventListener("click", function() {
+         ui.ui_clear();
+         var canvas = findEl("mod_input_canvas");
+         canvas.width = globals.vol.nx;
+         canvas.height = globals.vol.ny;
+         canvas.style.display = "inline";
+         if ((findEl("mod_min_threshold").value == "") || (findEl("mod_max_threshold").value == "")) {
+            ui.ui_prompt("error: show histogram to find thresholds");
+            return;
+         };
+         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
+         var file_reader = new FileReader();
+         file_reader.onload = mod_vol_mesh_handler;
+         globals.vol.stop = false;
+         window.onkeydown = function(evt) {
+            if (evt.keyCode == 83) globals.vol.stop = true;
+         };
+         globals.vol.layer = 0;
+         globals.vol.ptr = 0;
+         globals.vol.buf = new Array(2);
+         globals.vol.buf[0] = new Float32Array(globals.vol.nx * globals.vol.ny);
+         globals.vol.buf[1] = new Float32Array(globals.vol.nx * globals.vol.ny);
+         globals.mesh.rules = mod_mesh_march_rules();
+         globals.mesh.triangles = 0;
+         var blob = globals.input_file.slice(0, globals.vol.layer_size);
+         file_reader.readAsArrayBuffer(blob);
       });
-      findEl('save_stl').addEventListener("click",function(){
-          ui.ui_clear();
-          var canvas = findEl("mod_input_canvas");
-          canvas.width = globals.vol.nx;
-          canvas.height = globals.vol.ny;
-          canvas.style.display = "inline";
-          if (globals.input_size != globals.vol.size) {
-             ui.ui_prompt("error: vol size does not match file size");
-             return;
-             };
-          if (findEl("mod_triangles").value == "") {
-             ui.ui_prompt("error: show mesh to calculate number of triangles");
-             return;
-             };
-          globals.vol.layer_size = globals.vol.size/globals.vol.nz;
-          var file_reader = new FileReader();
-          file_reader.onload = mod_vol_stl_handler;
-          globals.vol.stop = false;
-          window.onkeydown = function(evt){if (evt.keyCode == 83) globals.vol.stop = true;};
-          globals.vol.layer = 0;
-          globals.vol.ptr = 0;
-          globals.vol.buf = new Array(2);
-          globals.vol.buf[0] = new Float32Array(globals.vol.nx*globals.vol.ny);
-          globals.vol.buf[1] = new Float32Array(globals.vol.nx*globals.vol.ny);
-          globals.mesh.rules = mod_mesh_march_rules();
-          globals.mesh.buf = new ArrayBuffer(80+4+globals.mesh.triangles*(4*3*4+2));
-          globals.mesh.triangles = 0;
-          var blob = globals.input_file.slice(0,globals.vol.layer_size);
-          file_reader.readAsArrayBuffer(blob);
+      findEl('save_stl').addEventListener("click", function() {
+         ui.ui_clear();
+         var canvas = findEl("mod_input_canvas");
+         canvas.width = globals.vol.nx;
+         canvas.height = globals.vol.ny;
+         canvas.style.display = "inline";
+         if (globals.input_size != globals.vol.size) {
+            ui.ui_prompt("error: vol size does not match file size");
+            return;
+         };
+         if (findEl("mod_triangles").value == "") {
+            ui.ui_prompt("error: show mesh to calculate number of triangles");
+            return;
+         };
+         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
+         var file_reader = new FileReader();
+         file_reader.onload = mod_vol_stl_handler;
+         globals.vol.stop = false;
+         window.onkeydown = function(evt) {
+            if (evt.keyCode == 83) globals.vol.stop = true;
+         };
+         globals.vol.layer = 0;
+         globals.vol.ptr = 0;
+         globals.vol.buf = new Array(2);
+         globals.vol.buf[0] = new Float32Array(globals.vol.nx * globals.vol.ny);
+         globals.vol.buf[1] = new Float32Array(globals.vol.nx * globals.vol.ny);
+         globals.mesh.rules = mod_mesh_march_rules();
+         globals.mesh.buf = new ArrayBuffer(80 + 4 + globals.mesh.triangles * (4 * 3 * 4 + 2));
+         globals.mesh.triangles = 0;
+         var blob = globals.input_file.slice(0, globals.vol.layer_size);
+         file_reader.readAsArrayBuffer(blob);
       });
    }
    //

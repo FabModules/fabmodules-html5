@@ -12,12 +12,19 @@
 // liability.
 //
 
-define(['require', 'handlebars', 'text!templates/mod_shopbot_controls', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require',
+   'handlebars',
+   'text!templates/mod_shopbot_controls.html',
+   'mods/mod_ui',
+   'mods/mod_globals'
+], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
    var Handlebars = require('handlebars')
-   var mod_shopbot_controls_tpl = Handlebars.compile(require('text!templates/mod_shopbot_controls'))
+   var mod_shopbot_controls_tpl = Handlebars.compile(require('text!templates/mod_shopbot_controls.html'))
+   var findEl = globals.findEl;
+
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
    if (input == "path (.svg)") {
@@ -181,7 +188,8 @@ define(['require', 'handlebars', 'text!templates/mod_shopbot_controls', 'mods/mo
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_Shopbot_path: mod_Shopbot_path
    }
 
 });

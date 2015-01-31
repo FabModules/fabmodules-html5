@@ -33,9 +33,9 @@
 //    file input type restriction
 //
 
-define(['mods/mod_globals','mods/mod_file'], function(globals, mod_file) {
+define(['mods/mod_globals', 'mods/mod_file'], function(globals, mod_file) {
 
-   var exports =  {};
+   var exports = {};
 
    //
    // defines
@@ -53,12 +53,12 @@ define(['mods/mod_globals','mods/mod_file'], function(globals, mod_file) {
 
 
    var findEl = globals.findEl;
-   
+
 
 
    exports.defaults = Defaults;
 
-   
+
 
 
    exports.initGUI = function() {
@@ -132,17 +132,23 @@ define(['mods/mod_globals','mods/mod_file'], function(globals, mod_file) {
       index = arr.map(function(el) {
          return el[0]
       }).indexOf("controls")
-      controls = arr[index][1]
+      var controls = arr[index][1]
       index = arr.map(function(el) {
          return el[0]
       }).indexOf("routine")
-      routine = arr[index][1]
+      var routine = arr[index][1]
+      index = arr.map(function(el){
+         return el[0]
+      }).indexOf("module")
+      var module = arr[index][1]
+       
       var fn_name = "mod_"
       for (var i = 0; i < modname.length; ++i)
          fn_name += modname.charCodeAt(i)
-      // var fn_str = controls + "(\"" + routine + "\");"
+         // var fn_str = controls + "(\"" + routine + "\");"
       var fn_str = " require(['processes/mod_path'], function(mod_path){"
-      fn_str += "mod_path.controls." + controls + "(\"" + routine + "\");"
+         
+      fn_str += "mod_path.controls." + controls + "(\"" + routine + "\",\"" + module + "\");"
       for (var i = 0; i < arr.length; ++i) {
          fn_str += "var element = findEl(\"mod_" + arr[i][0] + "\");"
          fn_str += "if (element != null) element.setAttribute(\"value\",\"" + arr[i][1] + "\");"
@@ -360,7 +366,7 @@ define(['mods/mod_globals','mods/mod_file'], function(globals, mod_file) {
             }
             label.innerHTML = item[0]
             exports.ui_prompt("")
-            eval(item[1])
+            globals.myeval(item[1])
          }, false)
       } else {
          span.setAttribute("style", "text-align:center;width:" + globals.mod_menu_width + ";height:" + globals.mod_menu_height + ";background:" + Defaults.background_color + ";color:" + Defaults.disable_text_color + ";display:block")
@@ -388,7 +394,7 @@ define(['mods/mod_globals','mods/mod_file'], function(globals, mod_file) {
       for (var i = 0; i < items.length; ++i) {
          ui_menu_eval_item(items[i], name)
       }
-      eval(globals.settings)
+      globals.myeval(globals.settings)
    }
 
 
@@ -471,10 +477,10 @@ define(['mods/mod_globals','mods/mod_file'], function(globals, mod_file) {
             }
             label.innerHTML = item[0]
             exports.ui_prompt("")
-            eval(item[1])
+            globals.myeval(item[1])
             var key = "edit_" + item[1].slice(0, -2) + globals.output
             if (globals.process_edits[key] != undefined)
-               eval(globals.process_edits[key].func + "()")
+               globals.myeval(globals.process_edits[key].func + "()")
          }, false)
       } else {
          span.setAttribute("style", "text-align:center;width:" + globals.mod_menu_width + ";height:" + globals.mod_menu_height + ";background:" + Defaults.background_color + ";color:" + Defaults.disable_text_color + ";display:block")

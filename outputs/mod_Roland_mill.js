@@ -13,13 +13,13 @@
 // liability.
 //
 
-define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls', 'mods/mod_ui', 'mods/mod_globals', 'mods/mod_file'], function(require) {
+define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html', 'mods/mod_ui', 'mods/mod_globals', 'mods/mod_file'], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
-   var Handlebars = require('handlebars') 
+   var Handlebars = require('handlebars')
    var fileUtils = require('mods/mod_file');
-   var mod_roland_mill_controls_tpl = Handlebars.compile(require('text!templates/mod_roland_mill_controls'))
+   var mod_roland_mill_controls_tpl = Handlebars.compile(require('text!templates/mod_roland_mill_controls.html'))
    var findEl = globals.findEl
 
    var label = findEl("mod_inputs_label")
@@ -106,56 +106,58 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls', 'mod
    function mod_load_handler() {
       globals.output = "Roland_mill"
       ui.ui_prompt("process?")
-       
-       
+
+
       var controls = findEl("mod_output_controls")
 
       var ctx = {
-          mod_xmin: globals.xmin,
-          show_move = false;   
+         mod_xmin: globals.xmin,
+         show_move : false
       }
-      
+
       if (globals.ymin != "") {
-          ctx.show_move = true;
+         ctx.show_move = true;
       }
-      
-      controls.innerHTML = mod_roland_mill_controls(ctx);
-       
-       if (globals.xmin != "")
-          findEl("mod_xmin").setAttribute("value", globals.xmin)
+
+      controls.innerHTML = mod_roland_mill_controls_tpl(ctx);
+
+      if (globals.xmin != "")
+         findEl("mod_xmin").setAttribute("value", globals.xmin)
 
       if (globals.ymin != "") {
          findEl("mod_ymin").setAttribute("value", globals.ymin)
       }
 
-      findEl("mod_ymin").addEventListener("click", function(){
-          globals.ymin=findEl("mod_ymin").value;
+      findEl("mod_ymin").addEventListener("click", function() {
+         globals.ymin = findEl("mod_ymin").value;
       });
 
-      findEl("mod_xmin").addEventListener("click", function(){
-          globals.xmin=findEl("mod_xmin").value 
+      findEl("mod_xmin").addEventListener("click", function() {
+         globals.xmin = findEl("mod_xmin").value
       });
 
-      findEl('mod_move').addEventListener("click", function(){
-          var name = "move.rml";
-          var xmin = 40*parseFloat(findEl("mod_xmin").value);
-          var ymin = 40*parseFloat(findEl("mod_ymin").value);
-          var file = "PA;PA;!VZ10;!PZ0,100;PU "+xmin+" "+ymin+";PD "+xmin+" "+ymin+";!MC0;";
-          var command = findEl("mod_command").value;
-          var server = findEl("mod_server").value;
-          fileUtils.send(name,file,command,server);            
-      });
-
-      findEl('mod_home').addEventListener("click", function(){
+      if (findEl('mod_move')) {
+         findEl('mod_move').addEventListener("click", function() {
+            var name = "move.rml";
+            var xmin = 40 * parseFloat(findEl("mod_xmin").value);
+            var ymin = 40 * parseFloat(findEl("mod_ymin").value);
+            var file = "PA;PA;!VZ10;!PZ0,100;PU " + xmin + " " + ymin + ";PD " + xmin + " " + ymin + ";!MC0;";
+            var command = findEl("mod_command").value;
+            var server = findEl("mod_server").value;
+            fileUtils.send(name, file, command, server);
+         });
+      }
+      
+      findEl('mod_home').addEventListener("click", function() {
          var name = "home.rml";
-         var xmin = 40*parseFloat(findEl("mod_xmin").value);
-         var ymin = 40*parseFloat(findEl("mod_ymin").value);
+         var xmin = 40 * parseFloat(findEl("mod_xmin").value);
+         var ymin = 40 * parseFloat(findEl("mod_ymin").value);
          var file = "PA;PA;PU;H;";
          var command = findEl("mod_command").value;
          var server = findEl("mod_server").value;
-         fileUtils.send(name,file,command,server);
+         fileUtils.send(name, file, command, server);
       });
-      
+
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"
@@ -239,7 +241,8 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls', 'mod
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_Roland_MDX_20_path: mod_Roland_MDX_20_path
    }
 
 });

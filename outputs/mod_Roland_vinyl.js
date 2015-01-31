@@ -13,7 +13,12 @@
 // liability.
 //
 
-define(['require', 'handlebars', 'text!templates/mod_roland_vinyl_controls.html' 'mods/mod_ui', 'mods/mod_globals'], function(require) {
+define(['require',
+   'handlebars',
+   'text!templates/mod_roland_vinyl_controls.html'
+   'mods/mod_ui',
+   'mods/mod_globals'
+], function(require) {
 
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
@@ -144,7 +149,8 @@ define(['require', 'handlebars', 'text!templates/mod_roland_vinyl_controls.html'
    }
 
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      mod_Roland_GX_24_path: mod_Roland_GX_24_path
    }
 
 });

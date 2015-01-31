@@ -12,14 +12,15 @@
 // liability.
 //
 
-define(['mods/mod_globals', 'mods/mod_ui', 'mods/mod_file'], function(globals, ui, fileUtils){
-   
+define(['mods/mod_globals', 'mods/mod_ui', 'mods/mod_file'], function(globals, ui, fileUtils) {
+
    var findEl = globals.findEl;
-   
+
    //
    // mod_load_handler
    //   file load handler
    //
+
    function mod_load_handler() {
       var file = findEl("mod_file_input")
       file.addEventListener("change", mod_settings_read_handler);
@@ -29,6 +30,7 @@ define(['mods/mod_globals', 'mods/mod_ui', 'mods/mod_file'], function(globals, u
    // mod_settings_read_handler
    //    settings read handler
    //
+
    function mod_settings_read_handler(event) {
       //
       // get input file
@@ -43,11 +45,12 @@ define(['mods/mod_globals', 'mods/mod_ui', 'mods/mod_file'], function(globals, u
       var file_reader = new FileReader()
       file_reader.onload = mod_settings_load_handler
       file_reader.readAsText(globals.input_file)
-      }
+   }
    //
    // mod_settings_load_handler
    //    settings load handler
    //
+
    function mod_settings_load_handler(event) {
       //
       // get size
@@ -55,17 +58,17 @@ define(['mods/mod_globals', 'mods/mod_ui', 'mods/mod_file'], function(globals, u
       str = event.target.result
       globals.settings = str
       try {
-         eval(str)
-         } catch (e) {
-         ui.ui_prompt(globals.input_name+" error: "+e.message)
+         globals.myeval(str)
+      } catch (e) {
+         ui.ui_prompt(globals.input_name + " error: " + e.message)
          return
-         }      
-      ui.ui_prompt("read "+globals.input_name)
       }
+      ui.ui_prompt("read " + globals.input_name)
+   }
 
 
-      return {
-         mod_load_handler: mod_load_handler
-      };
+   return {
+      mod_load_handler: mod_load_handler
+   };
 
 });

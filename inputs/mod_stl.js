@@ -11,15 +11,16 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 
-        'handlebars', 
-        'mods/mod_ui', 
-        'mods/mod_globals', 
-        'outputs/mod_outputs', 
-        'mods/mod_file', 
-        'processes/mod_mesh', 
-        'processes/mod_mesh_view',
-        'text!templates/mod_stl_input_controls.html'], function(require) {
+define(['require',
+   'handlebars',
+   'mods/mod_ui',
+   'mods/mod_globals',
+   'outputs/mod_outputs',
+   'mods/mod_file',
+   'processes/mod_mesh',
+   'processes/mod_mesh_view',
+   'text!templates/mod_stl_input_controls.html'
+], function(require) {
 
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
@@ -38,7 +39,7 @@ define(['require',
    function mod_load_handler() {
       var file = findEl("mod_file_input")
       // file.setAttribute("onchange", "mod_stl_read_handler()")
-      file.addEventListener('change', function(){
+      file.addEventListener('change', function() {
          mod_stl_read_handler();
       });
    }
@@ -82,14 +83,14 @@ define(['require',
 
       globals.mesh.units = 1
       globals.dpi = 100
-      globals.width =(globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
+      globals.width = (globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
 
       //
       //
       // set up UI
       //
       controls = findEl("mod_input_controls")
-      
+
       /** template => mod_stl_input_controls **/
 
       /*
@@ -131,78 +132,78 @@ define(['require',
       controls.innerHTML += "<br><span id='mod_px'>" + "width: " + globals.width + " px</span>"
       controls.innerHTML += "<br><input type='button' id='calculate_height_map' value='calculate height map'>";
       */
-      
+
       ctx = {
-          input_name: globals.input_name,
-          mesh_length:  globals.mesh.length,
-          x_min: globals.mesh.xmin.toFixed(3),
-          x_max: globals.mesh.xmax.toFixed(3),
-          y_min: globals.mesh.ymin.toFixed(3),
-          y_max: globals.mesh.ymax.toFixed(3),
-          z_min: globals.mesh.zmin.toFixed(3),
-          z_max: globals.mesh.zmin.toFixed(3),
-          mesh_units: globals.mesh.units,
-          mm_x:  (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
-          mm_y:  (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
-          mm_z:  (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
-          in_x: ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
-          in_y: ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
-          in_z: ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
-          dpi: globals.dpi,
-          width: globals.width          
+         input_name: globals.input_name,
+         mesh_length: globals.mesh.length,
+         x_min: globals.mesh.xmin.toFixed(3),
+         x_max: globals.mesh.xmax.toFixed(3),
+         y_min: globals.mesh.ymin.toFixed(3),
+         y_max: globals.mesh.ymax.toFixed(3),
+         z_min: globals.mesh.zmin.toFixed(3),
+         z_max: globals.mesh.zmin.toFixed(3),
+         mesh_units: globals.mesh.units,
+         mm_x: (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
+         mm_y: (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
+         mm_z: (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
+         in_x: ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
+         in_y: ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
+         in_z: ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
+         dpi: globals.dpi,
+         width: globals.width
       }
       controls.innerHTML = mod_stl_input_controls_tpl(ctx);
-      
+
       // event handlers
 
-      findEl("mod_units").addEventListener("keyup", function(){
-         
+      findEl("mod_units").addEventListener("keyup", function() {
+
          globals.mesh.units = parseFloat(findEl("mod_units").value);
-         
-         findEl("mod_mm").innerHTML = 
-            (25.4*(globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3)+" x "+
-            (25.4*(globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3)+" x "+
-            (25.4*(globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3)+" mm";
 
-         findEl("mod_in").innerHTML = 
-            ((globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3)+" x "+
-            ((globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3)+" x "+
-            ((globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3)+" in";
-            
-         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
-         
-         findEl("mod_px").innerHTML = "width: "+globals.width+" px";
-            
+         findEl("mod_mm").innerHTML =
+            (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
+            (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
+            (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " mm";
+
+         findEl("mod_in").innerHTML =
+            ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
+            ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
+            ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " in";
+
+         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
+
+         findEl("mod_px").innerHTML = "width: " + globals.width + " px";
+
       });
 
-      findEl("mod_rz").addEventListener("keyup", function(){
-         globals.mesh.rz = Math.PI*parseFloat(this.value)/180;
-         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+      findEl("mod_rz").addEventListener("keyup", function() {
+         globals.mesh.rz = Math.PI * parseFloat(this.value) / 180;
+         globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
-      
-      findEl("mod_rx").addEventListener("keyup", function(){
-         globals.mesh.rx = Math.PI*parseFloat(this.value)/180;
-         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+
+      findEl("mod_rx").addEventListener("keyup", function() {
+         globals.mesh.rx = Math.PI * parseFloat(this.value) / 180;
+         globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
-   
-      findEl("mod_dy").addEventListener("keyup", function(){
+
+      findEl("mod_dy").addEventListener("keyup", function() {
          globals.mesh.dy = parseFloat(this.value);
-         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+         globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl("mod_dx").addEventListener("keyup", function(){
+      findEl("mod_dx").addEventListener("keyup", function() {
          globals.mesh.dx = parseFloat(this.value);
-         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+         globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl("mod_s").addEventListener("keyup", function(){
+      findEl("mod_s").addEventListener("keyup", function() {
          globals.mesh.s = parseFloat(this.value);
-         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
-         findEl("mod_px").innerHTML = "width: "+globals.width+" px";
-         globals.mesh.draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx,globals.mesh.rz);
+         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
+         findEl("mod_px").innerHTML = "width: " + globals.width + " px";
+         globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
-      
-      findEl('show_mesh').addEventListener("click", function(){
+
+      findEl('show_mesh').addEventListener("click", function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
          label.style.display = "none";
@@ -212,16 +213,16 @@ define(['require',
          div.innerHTML = "";
          meshUtils.draw(globals.mesh);
       });
-      
-      
-      findEl("mod_dpi").addEventListener("keyup", function(){
+
+
+      findEl("mod_dpi").addEventListener("keyup", function() {
          globals.dpi = parseFloat(findEl("mod_dpi").value);
-         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
-         findEl("mod_px").innerHTML = "width: "+globals.width+" px";
+         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
+         findEl("mod_px").innerHTML = "width: " + globals.width + " px";
       });
 
-      
-      findEl('calculate_height_map').addEventListener("click", function(){
+
+      findEl('calculate_height_map').addEventListener("click", function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
          label.style.display = "none";
@@ -230,7 +231,7 @@ define(['require',
          var div = findEl("mod_process_controls");
          div.innerHTML = "";
          var canvas = findEl("mod_input_canvas");
-         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
+         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          globals.height = globals.width;
          canvas.width = globals.width;
          canvas.height = globals.width;
@@ -242,12 +243,12 @@ define(['require',
          var output_canvas = findEl("mod_output_canvas");
          output_canvas.width = globals.width;
          output_canvas.height = globals.width;
-         var img = ctx.getImageData(0,0,canvas.width,canvas.height);
-         meshUtils.height_map(globals.mesh,img);
-         ctx.putImageData(img,0,0);
+         var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+         meshUtils.height_map(globals.mesh, img);
+         ctx.putImageData(img, 0, 0);
          ui.ui_prompt("");
       });
-      
+
       //
       // draw mesh
       //

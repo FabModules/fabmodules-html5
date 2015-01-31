@@ -12,12 +12,20 @@
 // liability.
 //
 
-define(['require','mods/mod_globals','mods/mod_ui',
+define(['require',
+   'mods/mod_globals',
+   'mods/mod_ui',
    'mods/mod_file',
    'processes/mod_path_view',
    'processes/mod_image',
    'handlebars',
-   'text!templates/mod_path_file_controls.html'
+   'text!templates/mod_path_file_controls.html',
+   'text!templates/mod_path_image_2D_controls.html',
+   'text!templates/mod_path_image_21D_controls.html',
+   'text!templates/mod_path_image_22D_controls.html',
+   'text!templates/mod_path_image_25D_controls.html',
+   'text!templates/mod_path_image_3D_controls.html',
+   'text!templates/mod_path_image_halftone_controls.html'
 ], function(require) {
 
    var globals = require('mods/mod_globals');
@@ -26,7 +34,13 @@ define(['require','mods/mod_globals','mods/mod_ui',
    var path_view = require('processes/mod_path_view');
    var imageUtils = require('processes/mod_image');
    var handlebars = require('handlebars')
-   var mod_path_file_controls_tpl = handlebars.compile(require('text!templates/mod_path_file_controls.html')) 
+   var mod_path_file_controls_tpl = handlebars.compile(require('text!templates/mod_path_file_controls.html'))
+   var mod_path_image_2D_controls_tpl = handlebars.compile(require('text!templates/mod_path_image_2D_controls.html'))
+   var mod_path_image_21D_controls_tpl = handlebars.compile(require('text!templates/mod_path_image_21D_controls.html'))
+   var mod_path_image_22D_controls_tpl = handlebars.compile(require('text!templates/mod_path_image_22D_controls.html'))
+   var mod_path_image_25D_controls_tpl = handlebars.compile(require('text!templates/mod_path_image_25D_controls.html'))
+   var mod_path_image_3D_controls_tpl = handlebars.compile(require('text!templates/mod_path_image_3D_controls.html'))
+   var mod_path_image_halftone_controls_tpl = handlebars.compile(require('text!templates/mod_path_image_halftone_controls.html'))
    findEl = globals.findEl;
 
    //
@@ -43,17 +57,27 @@ define(['require','mods/mod_globals','mods/mod_ui',
 
       function mod_path_file_controls(routine) {
          controls = findEl("mod_process_controls")
-          ctx = {
-              server: globals.server
-          }
-         controls.innerHTML = mod_path_file_controls_tpl(ctx)
+         ctx = {
+            server: globals.server
+         }
+         controls.innerHTML += mod_path_file_controls_tpl(ctx)
 
+      }
+      
+      // moving events out of the template building routine
+      function mod_path_file_controls_events(routine,routineModName){
+         
+         
+         require(['outputs/mod_' + routineModName], function(routineMod){
+            
+            var routineFun = routineMod[routine];
+         
          save_btn = findEl("mod_save");
          save_btn.addEventListener("click", function() {
             if (globals.path == undefined) {
                ui.ui_prompt("path not calculated");
             } else {
-               var file = routine + (globals.path);
+               var file = routineFun(globals.path);
                var name = globals.input_basename + globals.type;
                mod_file.save(name, file);
             }
@@ -64,15 +88,15 @@ define(['require','mods/mod_globals','mods/mod_ui',
             if (globals.path == undefined) {
                ui.ui_prompt("path not calculated");
             } else {
-               var file = routine + (globals.path);
+               var file = routineFun(globals.path);
                var name = globals.input_basename + globals.type;
                var command = findEl("mod_command").value;
                var server = findEl("mod_server").value;
                mod_file.send(name, file, command, server);
             }
          });
-
-
+         
+         });
       }
       //
       // mod_path_image_2D
@@ -177,14 +201,18 @@ define(['require','mods/mod_globals','mods/mod_ui',
       //    path from image 2D controls (intensity)
       //
 
-      function mod_path_image_2D_controls(routine) {
+      function mod_path_image_2D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
          // controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-   //    onclick='mod_path_image_2D()'>"
+         //    onclick='mod_path_image_2D()'>"
 
-         controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>";   
+         controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>";
+
+
          mod_path_file_controls(routine)
+
+         /*
          controls.innerHTML += "<br>tool diameter (mm):"
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_diameter' size=3 value='1'>"
          controls.innerHTML += "<br>number of offsets (-1 to fill):"
@@ -208,11 +236,15 @@ define(['require','mods/mod_globals','mods/mod_ui',
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;= 0: min distance"
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;> 0: exterior first"
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_sequence' size=3 value='-1'>"
+         */
+         controls.innerHTML += mod_path_image_2D_controls_tpl();
+
+         mod_path_file_controls_events(routine,modname);
          
-         findEl('mod_path').addEventListener("click", function(ev){
+         findEl('mod_path').addEventListener("click", function(ev) {
             mod_path_image_2D();
          });
-         
+
       }
       //
       // mod_path_image_21D
@@ -329,42 +361,18 @@ define(['require','mods/mod_globals','mods/mod_ui',
       //    path from image 2.1D controls (intensity, depth)
       //
 
-      function mod_path_image_21D_controls(routine) {
+      function mod_path_image_21D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
-      //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-      // onclick='mod_path_image_21D()'>"
+         //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
+         // onclick='mod_path_image_21D()'>"
+
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>";
          mod_path_file_controls(routine)
-         controls.innerHTML += "<br>direction:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;conventional <input type='radio' name='origin' id='mod_conventional'> climb <input type='radio' name='origin' id='mod_climb' checked>"
-         controls.innerHTML += "<br>cut depth (mm):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_depth' size='3' value='3.175'>"
-         controls.innerHTML += "<br>tool diameter (mm): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_diameter' size=3 value='1'>"
-         controls.innerHTML += "<br>number of offsets (-1 to fill): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_offsets' size=3 value='1'>"
-         controls.innerHTML += "<br>offset overlap (%): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_overlap' size=3 value='50'>"
-         controls.innerHTML += "<br>path error (pixels): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_error' size=3 value='1.5'>"
-         controls.innerHTML += "<br>image threshold (0-1): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_threshold' size=3 value='.5'>"
-         controls.innerHTML += "<br>sort path: <input type='checkbox' id='mod_sort' checked>"
-         controls.innerHTML += "<br>sort merge diameter multiple: "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_merge' size=3 value='1.1'>"
-         controls.innerHTML += "<br>sort order weight:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;< 0: boundaries last"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;= 0: min distance"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;> 0: boundaries first"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_order' size=3 value='-1'>"
-         controls.innerHTML += "<br>sort sequence weight:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;< 0: exterior last"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;= 0: min distance"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;> 0: exterior first"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_sequence' size=3 value='-1'>"
-         
-         findEl('mod_path').addEventListener("click", function(){
+         controls.innerHTML += mod_path_image_21D_controls_tpl();
+         mod_path_file_controls_events(routine,modname)
+
+         findEl('mod_path').addEventListener("click", function() {
             mod_path_image_21D();
          });
       }
@@ -518,46 +526,20 @@ define(['require','mods/mod_globals','mods/mod_ui',
       //    path from image 2.2D controls (intensity, depth, thickness)
       //
 
-      function mod_path_image_22D_controls(routine) {
+      function mod_path_image_22D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
-      //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-      // onclick='mod_path_image_22D()'>"
+         //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
+         // onclick='mod_path_image_22D()'>"
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>"
          mod_path_file_controls(routine)
-         controls.innerHTML += "<br>direction:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;conventional <input type='radio' name='origin' id='mod_conventional'> climb <input type='radio' name='origin' id='mod_climb' checked>"
-         controls.innerHTML += "<br>cut depth (mm):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_depth' size='3' value='3.175'>"
-         controls.innerHTML += "<br>stock thickness (mm):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_thickness' size='3' value='11.11'>"
-         controls.innerHTML += "<br>tool diameter (mm): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_diameter' size=3 value='1'>"
-         controls.innerHTML += "<br>number of offsets (-1 to fill): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_offsets' size=3 value='1'>"
-         controls.innerHTML += "<br>offset overlap (%): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_overlap' size=3 value='50'>"
-         controls.innerHTML += "<br>path error (pixels): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_error' size=3 value='1.5'>"
-         controls.innerHTML += "<br>image threshold (0-1): "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_threshold' size=3 value='.5'>"
-         controls.innerHTML += "<br>sort path: <input type='checkbox' id='mod_sort' checked>"
-         controls.innerHTML += "<br>sort merge diameter multiple: "
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_merge' size=3 value='1.5'>"
-         controls.innerHTML += "<br>sort order weight:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;< 0: boundaries last"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;= 0: min distance"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;> 0: boundaries first"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_order' size=3 value='-1'>"
-         controls.innerHTML += "<br>sort sequence weight:"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;< 0: exterior last"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;= 0: min distance"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;> 0: exterior first"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_sequence' size=3 value='-1'>"
-         
-         findEl("mod_path").addEventListener("click", function(){
-            mod_path_image_22D(); 
-         } );
+
+         controls.innerHTML += mod_path_image_22D_controls_tpl();
+         mod_path_file_controls_events(routine,modname)
+
+         findEl("mod_path").addEventListener("click", function() {
+            mod_path_image_22D();
+         });
       }
       //
       // mod_path_image_25D
@@ -700,8 +682,8 @@ define(['require','mods/mod_globals','mods/mod_ui',
       function mod_path_image_25D_controls(routine) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
-      //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-      // onclick='mod_path_image_25D()'>"
+         //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
+         // onclick='mod_path_image_25D()'>"
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>"
          mod_path_file_controls(routine)
          controls.innerHTML += "<br>bottom z (mm):"
@@ -709,6 +691,8 @@ define(['require','mods/mod_globals','mods/mod_ui',
             controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_bottom_z' size='3' value='-10'>"
          else
             controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_bottom_z' size='3' value='" + globals.zmin.toFixed(3) + "'>"
+
+         /*
          controls.innerHTML += "<br>bottom intensity (0-1):"
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_bottom_i' size='3' value='0'>"
          controls.innerHTML += "<br>top z (mm):"
@@ -739,11 +723,14 @@ define(['require','mods/mod_globals','mods/mod_ui',
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;< 0: exterior last"
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;= 0: min distance"
          controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;> 0: exterior first"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_sequence' size=3 value='-1'>"
-            
-             findEl("mod_path").addEventListener("click", function(){
-                mod_path_image_25D();  
-             });
+         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_sequence' size=3 value='-1'>" */
+
+         controls.innerHTML += mod_path_image_25D_controls_tpl();
+         mod_path_file_controls_events(routine,modname);
+         
+         findEl("mod_path").addEventListener("click", function() {
+            mod_path_image_25D();
+         });
       }
       //
       // mod_path_image_3D
@@ -853,8 +840,8 @@ define(['require','mods/mod_globals','mods/mod_ui',
       function mod_path_image_3D_controls(routine) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
-      //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-      // onclick='mod_path_image_3D()'>"
+         //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
+         // onclick='mod_path_image_3D()'>"
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>"
          mod_path_file_controls(routine)
          controls.innerHTML += "<br>bottom z (mm):"
@@ -862,26 +849,11 @@ define(['require','mods/mod_globals','mods/mod_ui',
             controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_bottom_z' size='3' value='-10'>"
          else
             controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_bottom_z' size='3' value='" + globals.zmin.toFixed(3) + "'>"
-         controls.innerHTML += "<br>bottom intensity (0-1):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_bottom_i' size='3' value='0'>"
-         controls.innerHTML += "<br>top z (mm):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_top_z' size='3' value='0'>"
-         controls.innerHTML += "<br>top intensity (0-1):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_top_i' size='3' value='1'>"
-         controls.innerHTML += "<br>tool diameter (mm):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_diameter' size=3 value='3.175'>"
-         //controls.innerHTML += "<br>clearance length (mm):"
-         //controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_clear_len' size=3 value='25.4'>" 
-         //controls.innerHTML += "<br>clearance diameter (mm):"
-         //controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_clear_dia' size=3 value='6.35'>" 
-         controls.innerHTML += "<br>tool overlap (%):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_overlap' size=3 value='0'>"
-         controls.innerHTML += "<br>direction: <input type='checkbox' id='mod_xz' checked> xz <input type='checkbox' id='mod_yz' checked> yz"
-         controls.innerHTML += "<br>type: <input type='radio' name='mod_type' id='mod_flat' checked> flat end <input type='radio' name='mod_type' id='mod_ball'> ball end"
-         controls.innerHTML += "<br>path error (pixels):"
-         controls.innerHTML += "<br>&nbsp;&nbsp;&nbsp;<input type='text' id='mod_error' size=3 value='1.5'>"
-            
-         findEl("mod_path").addEventListener("click", function(){
+
+            controls.innerHTML += mod_path_image_3D_controls_tpl();
+
+         mod_path_file_controls_events(routine,modname);
+         findEl("mod_path").addEventListener("click", function() {
             mod_path_image_3D()
          });
       }
@@ -936,43 +908,33 @@ define(['require','mods/mod_globals','mods/mod_ui',
       //    path from image halftone controls
       //
 
-      function mod_path_image_halftone_controls(type, routine) {
+      function mod_path_image_halftone_controls(type, routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
          // controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-//       onclick='mod_path_image_halftone_calculate()'>"
+         //       onclick='mod_path_image_halftone_calculate()'>"
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>"
          mod_path_file_controls(type, routine)
-         controls.innerHTML += "<br>tool diameter (mm): "
-         controls.innerHTML += "<input type='text' id='mod_diameter' size=3 value='0'>"
-         controls.innerHTML += "<br>spot size (mm): "
-         controls.innerHTML += "<br><input type='text' id='mod_spot_size' size=3 value='2'>"
-         controls.innerHTML += "<br>minimum spot size (%): "
-         controls.innerHTML += "<br><input type='text' id='mod_spot_min' size=3 value='25'>"
-         controls.innerHTML += "<br>horizontal spot spacing (%): "
-         controls.innerHTML += "<br><input type='text' id='mod_spot_spacing_h' size=3 value='25'>"
-         controls.innerHTML += "<br>vertical spot spacing (%): "
-         controls.innerHTML += "<br><input type='text' id='mod_spot_spacing_v' size=3 value='25'>"
-         controls.innerHTML += "<br>points per spot: "
-         controls.innerHTML += "<br><input type='text' id='mod_spot_points' size=3 value='4'>"
-         controls.innerHTML += "<br>fill spot: <input type='checkbox' id='mod_spot_fill'>"
-         controls.innerHTML += "<br>sort path: <input type='checkbox' id='mod_spot_sort'>"
+
+         controls.innerHTML += mod_path_image_halftone_controls_tpl();
+         mod_path_file_controls_events(routine,modname);
          
-         findEl("mod_path").addEventListener("click", function(){
+         
+         findEl("mod_path").addEventListener("click", function() {
             mod_path_image_halftone_calculate()
          });
-         
+
       }
 
-      var controls = {
-         mod_path_file_controls: mod_path_file_controls,
-         mod_path_image_2D_controls: mod_path_image_2D_controls,
-         mod_path_image_3D_controls: mod_path_image_3D_controls,
-         mod_path_image_21D_controls: mod_path_image_21D_controls,
-         mod_path_image_22D_controls: mod_path_image_22D_controls,
-         mod_path_image_25D_controls: mod_path_image_25D_controls,
-         mod_path_image_halftone_controls: mod_path_image_halftone_controls
-      };
+   var controls = {
+      mod_path_file_controls: mod_path_file_controls,
+      mod_path_image_2D_controls: mod_path_image_2D_controls,
+      mod_path_image_3D_controls: mod_path_image_3D_controls,
+      mod_path_image_21D_controls: mod_path_image_21D_controls,
+      mod_path_image_22D_controls: mod_path_image_22D_controls,
+      mod_path_image_25D_controls: mod_path_image_25D_controls,
+      mod_path_image_halftone_controls: mod_path_image_halftone_controls
+   };
 
 
    return {

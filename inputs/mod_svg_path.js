@@ -29,7 +29,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
       function mod_load_handler() {
          var file = findEl("mod_file_input")
          // file.setAttribute("onchange", "mod_svg_path_read_handler()")
-         file.addEventListener("change", function(){
+         file.addEventListener("change", function() {
             mod_svg_path_read_handler();
          });
       }
@@ -63,7 +63,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
          // set up UI
          //
          controls = findEl("mod_input_controls")
-          
+
          controls.innerHTML = "<b>input</b><br>"
          var file_input = findEl("mod_file_input")
          controls.innerHTML += "file: " + globals.input_name + "<br>"
@@ -217,11 +217,11 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
       }
 
 
-      return {
-         mod_load_handler: mod_load_handler
-      }
-      
-      
+   return {
+      mod_load_handler: mod_load_handler
+   }
+
+
 });
 
 
