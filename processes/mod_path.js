@@ -679,7 +679,7 @@ define(['require',
       //    path from image 2.5D controls (rough cut)
       //
 
-      function mod_path_image_25D_controls(routine) {
+      function mod_path_image_25D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
          //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
@@ -837,7 +837,7 @@ define(['require',
       //    path from image 3D controls (rough cut)
       //
 
-      function mod_path_image_3D_controls(routine) {
+      function mod_path_image_3D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
          //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\

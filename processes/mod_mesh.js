@@ -11,16 +11,16 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['mods/mod_globals'],
+define(['mods/mod_globals','processes/mod_image'],
    function(globals) {
-
+      var imageUtils = require('processes/mod_image')
       //
       // mod_mesh_height_map
       //    calculate height map from mesh
       //
       function mod_mesh_height_map(mesh, img) {
-         img.get = mod_image_get
-         img.set = mod_image_set
+         img.get = imageUtils.get
+         img.set = imageUtils.set
          //
          // clear array
          //

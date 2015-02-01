@@ -15,7 +15,7 @@
 
 define(['require',
    'handlebars',
-   'text!templates/mod_roland_vinyl_controls.html'
+   'text!templates/mod_roland_vinyl_controls.html',
    'mods/mod_ui',
    'mods/mod_globals'
 ], function(require) {

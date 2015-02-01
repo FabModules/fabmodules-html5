@@ -11,12 +11,19 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html'
-   'mods/mod_ui', 'mods/mod_globals', 'inputs/mod_vol_view', 'mods/mod_file', 'processes/mod_mesh_view'
+define(['require',
+   'handlebars',
+   'text!templates/mod_vol_input_controls.html',
+   'mods/mod_ui',
+   'mods/mod_globals',
+   'inputs/mod_vol_view',
+   'mods/mod_file',
+   'processes/mod_mesh_view'
 ], function(require) {
+   
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
-   var mod_vol_input_controls_tps = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
+   var mod_vol_input_controls_tpl = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
    var globals = require('mods/mod_globals');
    var vol_view = require('inputs/mod_vol_view');
    var mesh_view = require('processes/mod_mesh_view');
@@ -39,7 +46,7 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html'
       var file = findEl("mod_file_input")
       // file.setAttribute("onchange", "mod_vol_read_handler()")
       file.addEventListener("change", function() {
-         mod_vol_read_handler;
+         mod_vol_read_handler();
       });
    }
    //
@@ -110,9 +117,7 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html'
       controls.innerHTML = mod_vol_input_controls_tpl(ctx);
 
 
-
-
-      findEl("mod_units").addEventListener("change", function() {
+      var changeUnits = function() {
          if (findEl("mod_float32").checked)
             globals.vol.bytes = 4;
          else if (findEl("mod_int16").checked)
@@ -121,18 +126,13 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html'
             globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
 
-      });
+      };
+
+      findEl('mod_float32').addEventListener("change", changeUnits );
+      findEl('mod_int16').addEventListener("change", changeUnits );
 
 
-      findEl("mod_units").addEventListener("change", function() {
-         if (findEl("mod_float32").checked)
-            globals.vol.bytes = 4;
-         else if (findEl("mod_int16").checked)
-            globals.vol.bytes = 2;
-         globals.vol.size =
-            globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
-         findEl("mod_size").innerHTML = globals.vol.size;
-      });
+     
       findEl("mod_nx").addEventListener("keyup", function() {
          globals.vol.nx = parseInt(findEl("mod_nx").value);
          globals.vol.size =
@@ -682,6 +682,8 @@ define(['require', 'handlebars', 'text!templates/mod_vol_input_controls.html'
       }
    }
 
-
+   return {
+      mod_load_handler: mod_load_handler
+   }
 
 });

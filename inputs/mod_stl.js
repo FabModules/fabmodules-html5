@@ -24,13 +24,14 @@ define(['require',
 
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
-   var mod_stl_input_controls_tpl = Handlebars.compile('text!templates/mod_stl_input_controls.html');
    var globals = require('mods/mod_globals');
    var outputs = require('outputs/mod_outputs');
    var fileUtils = require('mods/mod_file');
    var meshUtils = require('processes/mod_mesh');
    var meshView = require('processes/mod_mesh_view');
    var findEl = globals.findEl;
+   var mod_stl_input_controls_tpl = Handlebars.compile(require('text!templates/mod_stl_input_controls.html'));
+
    //
    // mod_load_handler
    //   file load handler
@@ -152,6 +153,7 @@ define(['require',
          dpi: globals.dpi,
          width: globals.width
       }
+      
       controls.innerHTML = mod_stl_input_controls_tpl(ctx);
 
       // event handlers
@@ -211,7 +213,7 @@ define(['require',
          div.innerHTML = "";
          var div = findEl("mod_process_controls");
          div.innerHTML = "";
-         meshUtils.draw(globals.mesh);
+         meshView.mesh_draw(globals.mesh);
       });
 
 

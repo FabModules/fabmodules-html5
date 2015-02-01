@@ -17,7 +17,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
    var globals = require('mods/mod_globals');
-   var mod_oxford_controls_tpl = Handlebars(require('text!templates/mod_oxford_controls.html'))
+   var mod_oxford_controls_tpl = Handlebars.compile(require('text!templates/mod_oxford_controls.html'))
    var findEl = globals.findEl
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML

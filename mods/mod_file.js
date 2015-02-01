@@ -79,7 +79,7 @@ define(['require'], function(require) {
       }
       var socket = new WebSocket("ws://" + server)
       socket.onerror = function(event) {
-         var ui = require('mods/mod_ui', function(ui){
+         var ui = require(['mods/mod_ui'], function(ui){
             
             ui.ui_prompt("can't connect to " + server)
             
@@ -87,7 +87,7 @@ define(['require'], function(require) {
          
       }
       socket.onopen = function(event) {
-         var ui = require('mods/mod_ui', function(ui){
+         var ui = require(['mods/mod_ui'], function(ui){
             
             ui.ui_prompt("sending " + name)
             socket.send(JSON.stringify(msg))
@@ -97,7 +97,7 @@ define(['require'], function(require) {
          
       }
       socket.onmessage = function(event) {
-         var ui = require('mods/mod_ui', function(ui){
+         var ui = require(['mods/mod_ui'], function(ui){
             ui.ui_prompt(event.data)
             socket.close()
          });
