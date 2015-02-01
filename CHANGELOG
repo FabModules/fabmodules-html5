@@ -1,0 +1,39 @@
+
+Feb 1st 2015
+------------
+
+These are the things done till now (starting from the mod.cba.mit.edu version)
+
+- Integrated require.js dependency tracking, now all files declare their dependencies at the beginning and use them via requires
+- Integrated handlebars for managing html templates (also loaded via the dependency tracking mechanism)
+
+As a consequence to the two modules, I also refactored a bit the code:
+
+- Removed (most-of) global namespace pollution, all modules now work inside closures. The vars before declared inside document.mod var are now shared using the
+  mod_globals module.
+  
+- Removed all inline (i.e. "onevent") event handlers, this is better for the templating system
+
+- Adjusted the mod_add_process and mod_edit_process to work with the dynamic module loading, synthax is unchanged
+
+This is a list of possible next steps in random order:
+
+- Add support for the SRM-20 (we should figure out the right scale for it)
+
+- Add a build process allowed by require.js optimizer, this could compile all the modules / templates in a single gzipped minified javascript. Also the optimizer could bring some performance improvement. 
+
+- Move to external CSS most of the styling, it would be great to have a prettier and responsive GUI
+
+- Add the possibility to stop the worker process when processing takes to long
+
+- Block the gui during the worker process operation
+
+- Add inline help system
+
+- Handle non-binary STL
+
+- Check uploaded file extensions
+
+- Handle upload progress
+
+
