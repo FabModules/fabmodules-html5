@@ -169,7 +169,7 @@ define(['require',
          //    (globals.height / globals.dpi).toFixed(3) + " in</span><br>"
          // controls.innerHTML += "<input type='button' value='invert image' id='invert_image_btn'>";
 
-         console.log(input_controls_tpl(ctx))
+         //console.log(input_controls_tpl(ctx))
 
          controls.innerHTML = input_controls_tpl(ctx);
 

@@ -112,12 +112,12 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
 
       var ctx = {
          mod_xmin: globals.xmin,
-         show_move : false
+         show_move : true
       }
 
-      if (globals.ymin != "") {
-         ctx.show_move = true;
-      }
+      // if (globals.ymin != "") {
+      //    ctx.show_move = true;
+      // }
 
       controls.innerHTML = mod_roland_mill_controls_tpl(ctx);
 
@@ -128,11 +128,12 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          findEl("mod_ymin").setAttribute("value", globals.ymin)
       }
 
-      findEl("mod_ymin").addEventListener("click", function() {
+
+      findEl("mod_ymin").addEventListener("input", function() {
          globals.ymin = findEl("mod_ymin").value;
       });
 
-      findEl("mod_xmin").addEventListener("click", function() {
+      findEl("mod_xmin").addEventListener("input", function() {
          globals.xmin = findEl("mod_xmin").value
       });
 

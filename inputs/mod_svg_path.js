@@ -210,10 +210,10 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals', 'outputs/mod_outputs', 'mo
             var result = next_number(str, result.index)
             var vheight = result.value
          }
-         console.log(vxmin)
-         console.log(vymin)
-         console.log(vwidth)
-         console.log(vheight)
+         // console.log(vxmin)
+//          console.log(vymin)
+//          console.log(vwidth)
+//          console.log(vheight)
       }
 
 

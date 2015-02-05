@@ -32,7 +32,7 @@ define(function() {
    };
    
    exports.myeval = function(str){
-      console.log(str);
+      //console.log(str);
       eval(str);
    };
 

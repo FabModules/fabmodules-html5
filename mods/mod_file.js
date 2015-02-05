@@ -47,7 +47,7 @@ define(['require'], function(require) {
       // head.appendChild(s)
       var moduleName = script.replace('.js', '');
       require([moduleName], function(mod) {
-         console.log(mod);
+         //console.log(mod);
          mod.mod_load_handler();
       });
 
