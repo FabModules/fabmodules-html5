@@ -25,10 +25,15 @@ define(function() {
    exports.vol = {} // volume data
 
 
+   var domCache = {};
 
    // global utility functions
-   exports.findEl = function(id) {
-      return document.getElementById(id)
+   exports.findEl = function(id,ignoreCache) {
+      if (domCache[id] != undefined && (ignoreCache == undefined || ignoreCache)){
+         return domCache[id];
+      }
+      domCache[id] = document.getElementById(id);
+      return domCache[id];
    };
    
    exports.myeval = function(str){

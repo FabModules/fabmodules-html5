@@ -129,15 +129,15 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
       }
 
 
-      findEl("mod_ymin").addEventListener("input", function() {
+      findEl("mod_ymin",false).addEventListener("input", function() {
          globals.ymin = findEl("mod_ymin").value;
       });
 
-      findEl("mod_xmin").addEventListener("input", function() {
+      findEl("mod_xmin",false).addEventListener("input", function() {
          globals.xmin = findEl("mod_xmin").value
       });
 
-      if (findEl('mod_move')) {
+      if (findEl('mod_move',false)) {
          findEl('mod_move').addEventListener("click", function() {
             var name = "move.rml";
             var xmin = 40 * parseFloat(findEl("mod_xmin").value);
@@ -149,7 +149,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          });
       }
       
-      findEl('mod_home').addEventListener("click", function() {
+      findEl('mod_home',false).addEventListener("click", function() {
          var name = "home.rml";
          var xmin = 40 * parseFloat(findEl("mod_xmin").value);
          var ymin = 40 * parseFloat(findEl("mod_ymin").value);
