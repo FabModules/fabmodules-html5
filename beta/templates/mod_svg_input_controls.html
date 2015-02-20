@@ -1,0 +1,15 @@
+<b>input</b><br>
+file: {{ input_name }} <br>
+units/in: 
+<input type="text" id="mod_units" size="3" value="{{ units }}">
+<br>
+width: {{ width }}<br>
+height: {{ height}}<br>
+dpi:
+<input type="text" id="mod_dpi" size="3" value="{{ dpi }}">
+<br>
+size:<br>
+<span id="mod_px"> {{ px_w }} x {{ px_h }} px</span><br>
+<span id="mod_mm"> {{ mm_w }} x {{ mm_h }} mm</span><br>
+<span id="mod_in"> {{ in_w }} x {{ in_h }} in</span><br>
+<input type="button" id="invert_image" value="invert image">
