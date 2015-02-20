@@ -19,9 +19,12 @@ echo '<head>' >> mods.html
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' >> mods.html
 echo '</head>' >> mods.html
 echo '<body>' >> mods.html
-echo '<a href=http://cba.mit.edu>CBA</a> ' >> mods.html
-echo '<a href=http://kokompe.cba.mit.edu>fab modules</a> ' >> mods.html
-echo '<a href=http://fabfoundation.org>fab labs</a><br><br>' >> mods.html
+echo '<a href=http://cba.mit.edu>CBA</a> |' >> mods.html
+echo '<a href=http://kokompe.cba.mit.edu>fab modules</a> |' >> mods.html
+echo '<a href=http://fabfoundation.org>fab labs</a> |' >> mods.html
+echo '<a href=http://github.com/fabmodules/fabmodules-html5>github project</a> |' >> mods.html
+echo '<a href=https://github.com/FabModules/fabmodules-html5/wiki>documentation</a> |' >> mods.html
+echo '<a href=https://github.com/FabModules/fabmodules-html5/issues>report issue</a><br><br>' >> mods.html
 echo 'version: '`date`'<br><br>' >> mods.html
 ls index.html > mods.tmp
 ls mod_settings >> mods.tmp
