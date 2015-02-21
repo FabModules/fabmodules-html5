@@ -25,6 +25,7 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["Oxford ulaser (.pgm)", "outputs/mod_Oxford.js"],
       ["Roland GX-24 (.camm)", "outputs/mod_Roland_vinyl.js"],
       ["Roland MDX-20 (.rml)", "outputs/mod_Roland_mill.js"],
+      ["Roland iModela (.rml)", "outputs/mod_Roland_iModela_mill.js"],
       ["ShopBot (.sbp)", "outputs/mod_Shopbot.js"],
       ["G-codes (.nc)", "outputs/mod_G.js"],
       ["GCC laser (.gcc)", ""],
