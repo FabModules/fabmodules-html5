@@ -128,28 +128,28 @@ define(['require',
 
       };
 
-      findEl('mod_float32').addEventListener("change", changeUnits );
-      findEl('mod_int16').addEventListener("change", changeUnits );
+      findEl('mod_float32',false).addEventListener("change", changeUnits );
+      findEl('mod_int16',false).addEventListener("change", changeUnits );
 
 
      
-      findEl("mod_nx").addEventListener("keyup", function() {
+      findEl("mod_nx",false).addEventListener("keyup", function() {
          globals.vol.nx = parseInt(findEl("mod_nx").value);
          globals.vol.size =
             globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      findEl("mod_ny").addEventListener("keyup", function() {
+      findEl("mod_ny",false).addEventListener("keyup", function() {
          globals.vol.ny = parseInt(findEl("mod_ny").value);
          globals.vol.size = globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      findEl("mod_nz").addEventListener("keyup", function() {
+      findEl("mod_nz",false).addEventListener("keyup", function() {
          globals.vol.nz = parseInt(findEl("mod_nz").value);
          globals.vol.size = globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
       });
-      findEl("show_density").addEventListener("click", function() {
+      findEl("show_density",false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
@@ -173,7 +173,7 @@ define(['require',
          var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      findEl('show_histogram').addEventListener("click", function() {
+      findEl('show_histogram',false).addEventListener("click", function() {
          var nhist = 100;
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
@@ -197,7 +197,7 @@ define(['require',
          var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      findEl('show_height').addEventListener("click", function() {
+      findEl('show_height',false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
@@ -219,7 +219,7 @@ define(['require',
          var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      findEl("show_mesh").addEventListener("click", function() {
+      findEl("show_mesh",false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
@@ -246,7 +246,7 @@ define(['require',
          var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
       });
-      findEl('save_stl').addEventListener("click", function() {
+      findEl('save_stl',false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;

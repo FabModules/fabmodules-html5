@@ -158,7 +158,7 @@ define(['require',
 
       // event handlers
 
-      findEl("mod_units").addEventListener("keyup", function() {
+      findEl("mod_units",false).addEventListener("keyup", function() {
 
          globals.mesh.units = parseFloat(findEl("mod_units").value);
 
@@ -178,34 +178,34 @@ define(['require',
 
       });
 
-      findEl("mod_rz").addEventListener("keyup", function() {
+      findEl("mod_rz",false).addEventListener("keyup", function() {
          globals.mesh.rz = Math.PI * parseFloat(this.value) / 180;
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl("mod_rx").addEventListener("keyup", function() {
+      findEl("mod_rx",false).addEventListener("keyup", function() {
          globals.mesh.rx = Math.PI * parseFloat(this.value) / 180;
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl("mod_dy").addEventListener("keyup", function() {
+      findEl("mod_dy",false).addEventListener("keyup", function() {
          globals.mesh.dy = parseFloat(this.value);
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl("mod_dx").addEventListener("keyup", function() {
+      findEl("mod_dx",false).addEventListener("keyup", function() {
          globals.mesh.dx = parseFloat(this.value);
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl("mod_s").addEventListener("keyup", function() {
+      findEl("mod_s",false).addEventListener("keyup", function() {
          globals.mesh.s = parseFloat(this.value);
          globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
       });
 
-      findEl('show_mesh').addEventListener("click", function() {
+      findEl('show_mesh',false).addEventListener("click", function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
          label.style.display = "none";
@@ -217,14 +217,14 @@ define(['require',
       });
 
 
-      findEl("mod_dpi").addEventListener("keyup", function() {
+      findEl("mod_dpi",false).addEventListener("keyup", function() {
          globals.dpi = parseFloat(findEl("mod_dpi").value);
          globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
       });
 
 
-      findEl('calculate_height_map').addEventListener("click", function() {
+      findEl('calculate_height_map',false).addEventListener("click", function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
          label.style.display = "none";

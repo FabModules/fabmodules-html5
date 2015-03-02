@@ -196,7 +196,7 @@ define(['require',
 
 
 
-            findEl("mod_units").addEventListener("keyup", function() {
+            findEl("mod_units",false).addEventListener("keyup", function() {
                globals.svg.units = parseFloat(findEl("mod_units").value);
                globals.width = parseInt(globals.dpi * globals.svg.width / globals.svg.units);
                globals.height = parseInt(globals.dpi * globals.svg.height / globals.svg.units);
@@ -206,7 +206,7 @@ define(['require',
                mod_svg_reload();
             });
 
-            findEl("mod_dpi").addEventListener("keyup", function() {
+            findEl("mod_dpi",false).addEventListener("keyup", function() {
                globals.dpi = parseFloat(findEl("mod_dpi").value);
                globals.width = parseInt(globals.dpi * globals.svg.width / globals.svg.units);
                globals.height = parseInt(globals.dpi * globals.svg.height / globals.svg.units);
@@ -214,7 +214,7 @@ define(['require',
                mod_svg_reload();
             });
 
-            findEl('invert_image').addEventListener("click", function() {
+            findEl('invert_image',false).addEventListener("click", function() {
                ui.ui_clear();
                var canvas = findEl("mod_input_canvas");
                canvas.style.display = "inline";

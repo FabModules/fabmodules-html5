@@ -241,7 +241,7 @@ define(['require',
 
          mod_path_file_controls_events(routine,modname);
          
-         findEl('mod_path').addEventListener("click", function(ev) {
+         findEl('mod_path',false).addEventListener("click", function(ev) {
             mod_path_image_2D();
          });
 
@@ -372,7 +372,7 @@ define(['require',
          controls.innerHTML += mod_path_image_21D_controls_tpl();
          mod_path_file_controls_events(routine,modname)
 
-         findEl('mod_path').addEventListener("click", function() {
+         findEl('mod_path',false).addEventListener("click", function() {
             mod_path_image_21D();
          });
       }
@@ -537,7 +537,7 @@ define(['require',
          controls.innerHTML += mod_path_image_22D_controls_tpl();
          mod_path_file_controls_events(routine,modname)
 
-         findEl("mod_path").addEventListener("click", function() {
+         findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_22D();
          });
       }
@@ -728,7 +728,7 @@ define(['require',
          controls.innerHTML += mod_path_image_25D_controls_tpl();
          mod_path_file_controls_events(routine,modname);
          
-         findEl("mod_path").addEventListener("click", function() {
+         findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_25D();
          });
       }
@@ -853,7 +853,7 @@ define(['require',
             controls.innerHTML += mod_path_image_3D_controls_tpl();
 
          mod_path_file_controls_events(routine,modname);
-         findEl("mod_path").addEventListener("click", function() {
+         findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_3D()
          });
       }
@@ -920,7 +920,7 @@ define(['require',
          mod_path_file_controls_events(routine,modname);
          
          
-         findEl("mod_path").addEventListener("click", function() {
+         findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_halftone_calculate()
          });
 

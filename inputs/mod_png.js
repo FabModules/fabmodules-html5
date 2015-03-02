@@ -174,13 +174,13 @@ define(['require',
          controls.innerHTML = input_controls_tpl(ctx);
 
          var file_input = findEl("mod_file_input")
-         findEl("mod_dpi").addEventListener("keyup", function() {
+         findEl("mod_dpi",false).addEventListener("keyup", function() {
             globals.dpi = parseFloat(findEl("mod_dpi").value);
             findEl("mod_mm").innerHTML = (25.4 * globals.width / globals.dpi).toFixed(3) + " x " + (25.4 * globals.height / globals.dpi).toFixed(3) + " mm";
             findEl("mod_in").innerHTML = (globals.width / globals.dpi).toFixed(3) + " x " + (globals.height / globals.dpi).toFixed(3) + " in";
          });
 
-         findEl('invert_image_btn').addEventListener("click", function() {
+         findEl('invert_image_btn',false).addEventListener("click", function() {
             ui.ui_clear();
             var canvas = findEl("mod_input_canvas");
             canvas.style.display = "inline";
