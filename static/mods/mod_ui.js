@@ -154,6 +154,7 @@ define(['mods/mod_globals', 'mods/mod_file'], function(globals, mod_file) {
          fn_str += "if (element != null) element.setAttribute(\"value\",\"" + arr[i][1] + "\");"
       }
       fn_str += "});"
+      console.log(fn_str);
       window[fn_name] = Function(fn_str)
       index = arr.map(function(el) {
          return el[0]

@@ -35,6 +35,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["controls", "mod_path_image_22D_controls"],
          ["routine", "mod_Oxford_path"],
          ["command", "gedit"],
+         ["target", "text_editor"],
          ["diameter", "0"],
          ["error", "1"],
          ["multiple", "1.5"],

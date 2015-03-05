@@ -49,6 +49,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["controls", "mod_path_image_21D_controls"],
          ["routine", "mod_Roland_Mill_path"],
          ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
+         ["target", "roland_mill"],
          ["depth", "0.1"],
          ["diameter", "0.4"],
          ["offsets", "4"],
@@ -62,6 +63,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["controls", "mod_path_image_22D_controls"],
          ["routine", "mod_Roland_Mill_path"],
          ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
+         ["target", "roland_mill"],
          ["depth", "0.6"],
          ["thickness", "1.7"],
          ["diameter", "0.79"],
@@ -75,6 +77,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["controls", "mod_path_image_21D_controls"],
          ["routine", "mod_Roland_Mill_path"],
          ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
+         ["target", "roland_mill"],
          ["depth", "0.1"],
          ["diameter", "0.254"],
          ["offsets", "1"],
@@ -88,6 +91,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["controls", "mod_path_image_25D_controls"],
          ["routine", "mod_Roland_Mill_path"],
          ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
+         ["target", "roland_mill"],
          ["speed", "20"],
          ["depth", "1"],
          ["diameter", "3.175"],
@@ -102,6 +106,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["controls", "mod_path_image_3D_controls"],
          ["routine", "mod_Roland_Mill_path"],
          ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
+         ["target", "roland_mill"],
          ["speed", "20"],
          ["diameter", "3.175"],
          ["length", "25.4"],
@@ -146,13 +151,13 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
       
       findEl("mod_roland_machine", false).addEventListener("change", function(ev){
          rml_unit = rml_units[this.value];
-	 model = this.value;
+	      model = this.value;
          if (model == 'mdx_20') {
             cmd="mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
          } else {
             cmd="mod_lp.py /dev/usb/lp1";
          }
-         findEl("mod_command").value = cmd; 
+         findEl("mod_command",false).value = cmd; 
       },false);
 
 

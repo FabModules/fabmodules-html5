@@ -34,6 +34,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_eps_path"],
          ["command", "gv"],
+         ["target", "eps_viewer"],
          ["diameter", "0"],
          ["error", "1"],
       ])
@@ -43,6 +44,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_eps_path"],
          ["command", "gv"],
+         ["target", "eps_viewer"],
          ["diameter", "0.4"],
          ["error", "1.1"],
       ])
@@ -51,6 +53,7 @@ define(['require', 'mods/mod_ui', 'mods/mod_globals'], function(require) {
          ["module", "eps"],
          ["controls", "mod_path_image_halftone_controls"],
          ["routine", "mod_eps_path"],
+         ["target", "eps_viewer"],
          ["command", "gv"],
       ])
    }

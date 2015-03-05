@@ -11,12 +11,14 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['require', 'mods/mod_ui'], function(require) {
+define(['require', 'mods/mod_ui', 'mods/mod_config'], function(require) {
    var ui = require('mods/mod_ui')
-
+   var config = require('mods/mod_config')
    //
    // output types and handlers
    //
+   // Now we read this from mod_config
+   /*
    var output_array = [
       ["SVG (.svg)", "outputs/mod_svg.js"],
       ["PostScript (.eps)", "outputs/mod_eps.js"],
@@ -38,7 +40,9 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["mesh (.stl)", ""],
       ["Roland SRM-20 mill (.rml)", ""],
       ["MTM (VM)", ""]
-   ]
+   ]*/
+   var output_array = config.read().outputs;
+   
    //
    // mod_outputs
    //    set up outputs menu

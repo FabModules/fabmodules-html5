@@ -1,0 +1,10 @@
+{
+  "name": "fabmodules_mod_server",
+  "version": "0.0.2",
+  "description": "Node server for fab-modules",
+  "dependencies": {
+     "ws" : "*",
+     "serve-static" : "*", 
+     "finalhandler" : "*"
+  }
+}

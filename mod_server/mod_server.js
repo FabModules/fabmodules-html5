@@ -20,9 +20,30 @@
 //
 
 var server_port = '12345'
+var http_port = '8080'
 var client_address = '127.0.0.1'
 
-console.log("listening for connections from " + client_address + " on " + server_port)
+
+var finalhandler = require('finalhandler')
+var http = require('http')
+var serveStatic = require('serve-static')
+
+// Serve up public/ftp folder
+var serve = serveStatic('../static', {'index': ['index.html', 'index.htm']})
+
+// Create server
+var server = http.createServer(function(req, res){
+  var done = finalhandler(req, res)
+  serve(req, res, done)
+})
+
+
+console.log("listening for http connections from " + client_address + " on " + http_port);
+// Listen
+server.listen(http_port,client_address)
+
+
+console.log("listening for websocket connections from " + client_address + " on " + server_port)
 
 var WebSocketServer = require('ws').Server
 wss = new WebSocketServer({

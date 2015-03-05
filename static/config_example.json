@@ -1,0 +1,102 @@
+{
+      "inputs" : [
+         ["image (.png)", "inputs/mod_png.js"],
+         ["drawing (.svg)", "inputs/mod_svg.js"],
+         ["path (.svg)", ""],
+         ["mesh (.stl)", "inputs/mod_stl.js"],
+         ["volume (.vol)", "inputs/mod_vol.js"],
+         ["volume (.gif)", ""],
+         ["ficuzza (.ficuz)", ""],
+         ["frep (.f)", ""],
+         ["load settings", "inputs/mod_settings.js"],
+         ["load configuration", "inputs/mod_read_configuration.js"],
+         ["reset to defaults", "inputs/mod_reset_defaults.js"]
+      ],
+      "outputs" : [
+         ["SVG (.svg)", "outputs/mod_svg.js"],
+         ["PostScript (.eps)", "outputs/mod_eps.js"],
+         ["Epilog laser (.epi)", "outputs/mod_Epilog.js"],
+         ["Trotec laser (.tro)", "outputs/mod_Trotec.js"],
+         ["Oxford ulaser (.pgm)", "outputs/mod_Oxford.js"],
+         ["Roland GX-24 (.camm)", "outputs/mod_Roland_vinyl.js"],
+         ["Roland Mill (.rml)", "outputs/mod_Roland_mill.js"],
+         ["ShopBot (.sbp)", "outputs/mod_Shopbot.js"],
+         ["G-codes (.nc)", "outputs/mod_G.js"],
+         ["Rolando (.ol)", "outputs/mod_Roland_mill.js"],
+         ["GCC laser (.gcc)", ""],
+         ["Universal laser (.uni)", ""],
+         ["image (.png)", ""],
+         ["DXF (.dxf)", ""],
+         ["Gerber (.grb)", ""],
+         ["Excellon (.drl)", ""],
+         ["Resonetics excimer (.oms)", ""],
+         ["Omax waterjet (.ord)", ""],
+         ["mesh (.stl)", ""],
+         ["Roland SRM-20 mill (.rml)", ""],
+         ["MTM (VM)", ""]
+      ],
+      "targets": [
+         { 
+            "target": "text_editor",
+            "label": "Text Editor",
+            "type": "system_command",
+            "server": "127.0.0.1:12345",
+            "command": "/usr/bin/gedit"
+         },
+         {
+            "target": "svg_editor",
+            "label": "Vector Editor",
+            "type": "system_command",
+            "server": "127.0.0.1:12345",
+            "command": "/usr/bin/inkscape"
+         },
+         {
+            "target": "eps_viewer",
+            "label": "EPS Viewer",
+            "type": "system_command",
+            "server": "127.0.0.1:12345",
+            "command": "/usr/bin/gv"
+         },
+         {
+            "target": "epilog",
+            "label": "Epilog Laser",
+            "server": "127.0.0.1:12345",
+            "type": "system_command",
+            "command": "lpr -Plaser"
+         },
+         {
+            "target": "roland_mill",
+            "label": "MDX-20",
+            "server": "127.0.0.1:12345",
+            "type": "serial_machine",
+            "baud": 9600,
+            "flow": "dsrdtr",
+            "port": "/dev/ttyUSB0"
+         },
+         {
+            "target": "roland_mill",
+            "label": "MDX-40",
+            "server": "127.0.0.1:12345",
+            "type": "serial",
+            "baud": 9600,
+            "flow": "dsrdtr",
+            "port": "/dev/ttyUSB0"            
+         },
+         {
+            "target": "roland_mill",
+            "label": "SRM-20",
+            "server": "127.0.0.1:12345",
+            "type": "parallel",
+            "port": "/dev/ttyACM0"
+         },
+         {
+            "target": "trotec",
+            "label": "Trotec Laser",
+            "server": "127.0.0.1:12345",
+            "type": "serial",
+            "baud": 19200,
+            "port": "/dev/ttyUSB0"
+         }
+
+      ]
+}

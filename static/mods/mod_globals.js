@@ -29,11 +29,12 @@ define(function() {
 
    // global utility functions
    exports.findEl = function(id,ignoreCache) {
-      if (domCache[id] != undefined && (ignoreCache == undefined || ignoreCache)){
-         return domCache[id];
-      }
-      domCache[id] = document.getElementById(id);
-      return domCache[id];
+      // if (domCache[id] != undefined && (ignoreCache == undefined || ignoreCache)){
+ //         return domCache[id];
+ //      }
+ //      domCache[id] = document.getElementById(id);
+ //      return domCache[id];
+    return document.getElementById(id);
    };
    
    exports.myeval = function(str){

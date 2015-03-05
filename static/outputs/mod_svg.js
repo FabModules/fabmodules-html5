@@ -37,6 +37,7 @@ define(['require',
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_svg_path"],
          ["command", "inkscape"],
+         ["target", "svg_editor"],
          ["diameter", "0"],
          ["error", "1"],
       ])
@@ -48,6 +49,7 @@ define(['require',
          ["controls", 'mod_path.image_2D_controls'],
          ["routine", 'mod_svg.path'],
          ["command", "inkscape"],
+         ["target", "svg_editor"],
          ["diameter", "0.4"],
          ["error", "1.1"],
       ])
@@ -59,6 +61,7 @@ define(['require',
          ["controls", 'mod_path.image_halftone_controls'],
          ["routine", 'mod_svg.path'],
          ["command", "inkscape"],
+         ["target", "svg_editor"],
       ])
    }
    //

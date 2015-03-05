@@ -12,12 +12,13 @@
 // liability.
 //
 
-define(['mods/mod_ui'], function(ui) {
+define(['mods/mod_ui','mods/mod_config'], function(ui,config) {
 
 
    //
    // define input types and handlers
    //
+   /** Now read it from mod_config 
    var input_array = [
       ["image (.png)", "inputs/mod_png.js"],
       ["drawing (.svg)", "inputs/mod_svg.js"],
@@ -27,7 +28,10 @@ define(['mods/mod_ui'], function(ui) {
       ["volume (.gif)", ""],
       ["frep (.f)", ""],
       ["load settings", "inputs/mod_settings.js"]
-   ]
+   ]**/
+   
+   var input_array = config.read().inputs;
+   
    //
    // call mod_inputs
    //

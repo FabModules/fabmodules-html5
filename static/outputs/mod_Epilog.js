@@ -34,6 +34,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["module", "Epilog"],
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_Epilog_path"],
+         ["target", "epilog"],
          ["command", "lpr -Plaser"],
          ["diameter", "0.25"],
          ["power", "25"],
@@ -45,6 +46,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["diameter", "0.25"],
          ["power", "75"],
          ["speed", "75"],
@@ -55,6 +57,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["diameter", "0.25"],
          ["power", "50"],
          ["speed", "75"],
@@ -65,6 +68,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_2D_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["diameter", "0.25"],
          ["power", "10"],
          ["speed", "75"],
@@ -75,6 +79,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_halftone_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["power", "15"],
          ["speed", "75"],
       ])
@@ -84,6 +89,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_halftone_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["power", "20"],
          ["speed", "75"],
       ])
@@ -93,6 +99,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_haltfone_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["power", "25"],
          ["speed", "75"],
       ])
@@ -102,6 +109,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', "text!templa
          ["controls", "mod_path_image_haltfone_controls"],
          ["routine", "mod_Epilog_path"],
          ["command", "lpr -Plaser"],
+         ["target", "epilog"],
          ["power", "10"],
          ["speed", "75"],
       ])

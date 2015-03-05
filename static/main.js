@@ -1,14 +1,15 @@
 require.config({
-	paths: {
-	  'text': 'text',
+   paths: {
+      'text': 'text',
       'handlebars' : 'handlebars-v2.0.0'
-	}
+   }
 
 });
 
 
-require(["mods/mod_ui","inputs/mod_inputs"], function(mod_ui, mod_inputs){
+require(["mods/mod_ui","inputs/mod_inputs","mods/mod_config"], function(mod_ui, mod_inputs,mod_config){
    
+   mod_config.init();
    mod_ui.initGUI();
    mod_inputs.initInputs();
    
