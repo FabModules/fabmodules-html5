@@ -1,9 +1,11 @@
 Fab Modules Project
 
 
-
 > Neil Gershenfeld
 > (c) Massachusetts Institute of Technology 2014
+>
+> Fiore Basile <fiore.basile@gmail.com>
+> Fab Lab Cascina 2015
 >
 > This work may be reproduced, modified, distributed,
 > performed, and displayed for any purpose, but must
