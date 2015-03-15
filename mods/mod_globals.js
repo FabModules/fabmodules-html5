@@ -33,7 +33,6 @@ define(function() {
       //   return domCache[id];
       //}
       return document.getElementById(id);
-      //return domCache[id];
    };
    
    exports.myeval = function(str){
