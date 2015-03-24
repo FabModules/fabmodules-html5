@@ -27,6 +27,7 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["Roland Mill (.rml)", "outputs/mod_Roland_mill.js"],
       ["ShopBot (.sbp)", "outputs/mod_Shopbot.js"],
       ["G-codes (.nc)", "outputs/mod_G.js"],
+      ["Smoothie_G-codes (.nc)", "outputs/mod_Smoothie_G.js"],
       ["GCC laser (.gcc)", ""],
       ["Universal laser (.uni)", ""],
       ["image (.png)", ""],
