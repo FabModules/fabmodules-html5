@@ -1,6 +1,9 @@
 //
-// mod_G.js
-//   fab modules G-code output
+//   mod_Smoothie_G.js
+//   fab modules G-code output for smoothieboard
+//
+//
+// Cédric Doutriaux
 //
 // Neil Gershenfeld 
 // (c) Massachusetts Institute of Technology 2014
