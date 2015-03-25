@@ -38,24 +38,24 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "12mm plywood"],
          ["module", "Smoothie_G"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_SmG_path"],
          ["command", "gedit"],
-         ["diameter", "3.175"],
-         ["cut_speed", "50"],
+         ["diameter", "3"],
+         ["cut_speed", "8"],
          ["plunge_speed", "25"],
          ["spindle_speed", "24000"],
          ["offsets", "1"],
          ["overlap", "0"],
          ["error", "1.5"],
          ["merge", "1.5"],
-         ["depth", "3.175"],
-         ["thickness", "11.11"],
+         ["depth", "6.2"],
+         ["thickness", "12"],
       ])
       mod_add_process([
          ["name", "1/2 HDPE (1/8 mill)"],
          ["module", "Smoothie_G"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_SmG_path"],
          ["command", "gedit"],
          ["diameter", "3.175"],
          ["cut_speed", "10"],
@@ -72,7 +72,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "foam rough cut (1/8)"],
          ["module", "Smoothie_G"],
          ["controls", "mod_path_image_25D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_SmG_path"],
          ["command", "gedit"],
          ["cut_speed", "50"],
          ["plunge_speed", "25"],
@@ -88,7 +88,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "foam finish cut (1/8)"],
          ["module", "Smoothie_G"],
          ["controls", "mod_path_image_3D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_SmG_path"],
          ["command", "gedit"],
          ["cut_speed", "50"],
          ["plunge_speed", "25"],
@@ -129,14 +129,14 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
    //    convert path to G code
    //
 
-   function mod_G_path(path) {
-      globals.type = ".nc"
+   function mod_SmG_path(path) {
+      globals.type = ".gcode"
       var dx = globals.width / globals.dpi
       var nx = globals.width
-      var cut_speed = 60 * parseFloat(findEl("mod_cut_speed").value) / 25.4
-      var plunge_speed = 60 * parseFloat(findEl("mod_plunge_speed").value) / 25.4
-      var jog_height = parseFloat(findEl("mod_jog_height").value) / 25.4
-      var spindle_speed = parseFloat(findEl("mod_spindle_speed").value)
+      var cut_speed = 60 * parseFloat(findEl("mod_cut_speed").value) 
+      var plunge_speed = 60 * parseFloat(findEl("mod_plunge_speed").value) 
+      var jog_height = parseFloat(findEl("mod_jog_height").value) 
+      var spindle_speed = parseFloat(findEl("mod_spindle_speed").value)*255/24000
       var tool = findEl("mod_tool").value
       var scale = (dx / (nx - 1))*25.400 //metric
       var xoffset = 0
@@ -154,7 +154,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       if (findEl("mod_coolant_on").checked)
          str += "M08\n" // coolant on
       str += "G00Z" + jog_height.toFixed(4) + "\n" // move up before starting spindle
-      str += "M03 F" + cut_speed.toFixed(4) + "\n"  // spindle on clockwise// feed rate
+      str += "M03 F" + spindle_speed + "\n"  // spindle on clockwise// feed rate
       str += "G04 S5\n" // give spindle 5 second to spin up
       //
       // follow segments
@@ -191,7 +191,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       if (findEl("mod_coolant_on").checked)
          str += "M09\n" // coolant off
       str += "M30\n" // program end and reset
-      str += "%\n" // tape end
+
       //
       // return string
       //
@@ -200,7 +200,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
 
    return {
       mod_load_handler: mod_load_handler,
-      mod_G_path: mod_G_path
+      mod_SmG_path: mod_SmG_path
    }
 
 });
