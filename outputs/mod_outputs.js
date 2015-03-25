@@ -27,6 +27,7 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["Roland Mill (.rml)", "outputs/mod_Roland_mill.js"],
       ["ShopBot (.sbp)", "outputs/mod_Shopbot.js"],
       ["G-codes (.nc)", "outputs/mod_G.js"],
+      ["Smoothie (.gcode)", "outputs/mod_Smoothie_G.js"],
       ["GCC laser (.gcc)", ""],
       ["Universal laser (.uni)", ""],
       ["image (.png)", ""],
@@ -36,7 +37,6 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["Resonetics excimer (.oms)", ""],
       ["Omax waterjet (.ord)", ""],
       ["mesh (.stl)", ""],
-      ["Roland SRM-20 mill (.rml)", ""],
       ["MTM (VM)", ""]
    ]
    //
