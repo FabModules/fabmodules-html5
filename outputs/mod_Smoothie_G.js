@@ -169,7 +169,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          //
          // move up to starting point
          //
-         str += "Z" + jog_height.toFixed(4) + "\n"
+         str += "G00Z" + jog_height.toFixed(4) + "\n"
          str += "G00X" + x.toFixed(4) + "Y" + y.toFixed(4) + "Z" + jog_height.toFixed(4) + "\n"
          //
          // move down
