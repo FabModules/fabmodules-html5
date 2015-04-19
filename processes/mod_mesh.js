@@ -51,7 +51,7 @@ define(['mods/mod_globals','processes/mod_image'],
             for (var col = 0; col < img.width; ++col) {
                var z = view.getFloat32((img.height - 1 - row) * 4 * img.width + col * 4)
                if (z == zclear)
-                  view.setFloat32((img.height - 1 - row) * 4 * img.width + col * 4, zlim.zmin)
+                  view.setFloat32((img.height - 1 - row) * 4 * img.width + col * 4, zlim.zmax)
                }
          //
          // map height to intensity
