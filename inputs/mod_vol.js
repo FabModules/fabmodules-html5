@@ -265,14 +265,10 @@ define(['require',
       for (var row = 0; row < ny; ++row) {
          for (var col = 0; col < nx; ++col) {
             value = buf[(ny - 1 - row) * nx + col]
-            if (value > vmax)
-               vmax = value
-            if (value < vmin)
-               vmin = value
-            if (value > globals.vol.vmax)
-               globals.vol.vmax = value
-            if (value < globals.vol.vmin)
-               globals.vol.vmin = value
+            vmax = Math.max(value,vmax)
+            vmin = Math.min(value,vmin)
+            globals.vol.vmax = Math.max(value,globals.vol.vmax)
+            globals.vol.vmin = Math.min(value,globals.vol.vmin)
             buffer[(ny - 1 - row) * nx + col] += value
             }
          }
@@ -324,10 +320,8 @@ define(['require',
          for (var row = 0; row < ny; ++row) {
             for (var col = 0; col < nx; ++col) {
                var value = buffer[(ny - 1 - row) * nx + col]
-               if (value > vmax)
-                  vmax = value
-               if (value < vmin)
-                  vmin = value
+               vmax = Math.max(value,vmax)
+               vmin = Math.min(value,vmin)
                }
             }
          for (var row = 0; row < ny; ++row) {
@@ -559,7 +553,6 @@ define(['require',
       var mesh = meshUtils.march_triangulate(min_threshold, max_threshold, globals.vol.buf,
          globals.vol.ptr, globals.vol.nx, globals.vol.ny,
          globals.vol.nz, globals.vol.layer)
-      //mod_mesh_draw(mesh)
       for (var t = 0; t < mesh.length; ++t) {
          var index = 80 + 4 + globals.mesh.triangles * (4 * 3 * 4 + 2)
          view.setFloat32(index + 12, mesh[t][0][0], endian)
@@ -581,7 +574,6 @@ define(['require',
       if (globals.vol.ptr == globals.vol.buf.length)
          globals.vol.ptr = 0
       ui.ui_prompt("stl layer: " + globals.vol.layer + " (s to stop)")
-      //   +', left: pan, right: rotate, scroll: zoom')
       findEl("mod_triangles").value = globals.mesh.triangles
       if (globals.vol.stop == true) {
          ui.ui_prompt("")
@@ -610,37 +602,6 @@ define(['require',
          download_link.download = globals.input_name + ".stl"
          download_link.href = window.URL.createObjectURL(blob)
          download_link.click()
-         /*
-      var maxbuf = 4e8
-      var len = globals.mesh.buf.byteLength
-      if (len <= maxbuf) {
-         var blob = new Blob([globals.mesh.buf], {type: "application/octet-stream"});
-         var download_link = findEl("mod_download")
-         download_link.download = globals.input_name+".stl"
-         download_link.href = window.URL.createObjectURL(blob)
-         download_link.click()
-         }
-      else {
-         var start = 0
-         var end = maxbuf
-         var count = 0
-         var blobs = []
-         while (1) {
-            blobs[count] = new Blob([globals.mesh.buf.slice(start,end)], {type: "application/octet-stream"});
-            var download_link = findEl("mod_download")
-            download_link.download = globals.input_name+"."+count+".stl"
-            download_link.href = window.URL.createObjectURL(blobs[count])
-            download_link.click()
-            if (end == len)
-               break
-            start += maxbuf
-            end += maxbuf
-            if (end > len)
-               end = len
-            count += 1
-            }
-         }    
-      */
          }
       }
    return {
