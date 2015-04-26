@@ -660,10 +660,6 @@ define(['mods/mod_globals','processes/mod_image'],
             var bot = 0
             var top = 1
             }
-         if (z == 0)
-            buf[bot] = new Float32Array(nx * ny)
-         else if (z == nz)
-            buf[top] = new Float32Array(nx * ny)
          //
          // loop over layer
          //
