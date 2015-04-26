@@ -17,7 +17,6 @@ define(['require',
    'text!templates/mod_vol_input_controls.html',
    'mods/mod_ui',
    'mods/mod_globals',
-   'inputs/mod_vol_view',
    'mods/mod_file',
    'processes/mod_mesh',
    'processes/mod_mesh_view'
@@ -27,7 +26,6 @@ define(['require',
    var Handlebars = require('handlebars');
    var mod_vol_input_controls_tpl = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
    var globals = require('mods/mod_globals');
-   var vol_view = require('inputs/mod_vol_view');
    var mesh_view = require('processes/mod_mesh_view');
    var fileUtils = require('mods/mod_file');
    var meshUtils = require('processes/mod_mesh');
@@ -229,6 +227,61 @@ define(['require',
       findEl("mod_tmax",false).addEventListener("keyup", function() {
          mod_vol_draw_layer(globals.vol.layer)
          })
+      findEl("show_section",false).addEventListener("click", function() {
+         ui.ui_clear();
+         if (globals.input_size != globals.vol.size) {
+            ui.ui_prompt("error: vol size does not match file size");
+            return;
+            };
+         ui.ui_prompt("scroll or enter to select layer; left/right click or enter to select thresholds")
+         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         globals.vol.layer = parseInt(findEl("mod_layer").value)
+         globals.vol.drawing = false
+         globals.vol.mode = "section"
+         var canvas = findEl("mod_input_canvas");
+         canvas.width = globals.vol.nx;
+         canvas.height = globals.vol.ny;
+         canvas.style.display = "inline";
+         canvas.onwheel = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            if (evt.deltaY < 0) {
+               globals.vol.layer += 1
+               findEl("mod_layer").value = globals.vol.layer
+               mod_vol_draw_layer(globals.vol.layer)
+               }
+            else {
+               globals.vol.layer -= 1
+               findEl("mod_layer").value = globals.vol.layer
+               mod_vol_draw_layer(globals.vol.layer)
+               }
+            }
+         canvas.onmousemove = function(evt) {
+            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
+            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
+            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
+            ui.ui_prompt('row: ' + row+' col: ' + col+' value: '+value.toFixed(3))
+            }
+         canvas.onmouseup = function(evt) {
+            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
+            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
+            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
+            if (evt.button == 0) {
+               findEl("mod_tmin").value = value
+               mod_vol_draw_layer(globals.vol.layer)
+               }
+            else if (evt.button == 2) {
+               findEl("mod_tmax").value = value
+               mod_vol_draw_layer(globals.vol.layer)
+               }
+            }
+         canvas.oncontextmenu = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            }
+         mod_vol_draw_layer(globals.vol.layer)
+         })
+      /*
       findEl("show_mesh",false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
@@ -289,6 +342,7 @@ define(['require',
          file_reader.readAsArrayBuffer(blob);
          });
       }
+   */
    //
    // mod_vol_draw_layer
    //
@@ -320,21 +374,18 @@ define(['require',
       var img = ctx.getImageData(0,0,canvas.width,canvas.height)
       var data = img.data
       //
-      // find layer limits
-      //
-      var vmin = 1e10
-      var vmax = -1e10
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            value = buf[(ny-1-row)*nx+col]
-            vmax = Math.max(value,vmax)
-            vmin = Math.min(value,vmin)
-            }
-         }
-      //
-      // normalize and show layer
+      // show layer
       //
       if (globals.vol.mode == "density") {
+         var vmin = 1e10
+         var vmax = -1e10
+         for (var row = 0; row < ny; ++row) {
+            for (var col = 0; col < nx; ++col) {
+               value = buf[(ny-1-row)*nx+col]
+               vmax = Math.max(value,vmax)
+               vmin = Math.min(value,vmin)
+               }
+            }
          for (var row = 0; row < ny; ++row) {
             for (var col = 0; col < nx; ++col) {
                var value = buf[(ny-1-row)*nx+col]
