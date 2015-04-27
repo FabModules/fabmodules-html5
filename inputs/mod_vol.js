@@ -17,10 +17,9 @@ define(['require',
    'text!templates/mod_vol_input_controls.html',
    'mods/mod_ui',
    'mods/mod_globals',
-   'inputs/mod_vol_view',
    'mods/mod_file',
    'processes/mod_mesh',
-   'processes/mod_mesh_view'
+   'inputs/mod_vol_view'
    ], function(require) {
    
    var ui = require('mods/mod_ui');
@@ -28,18 +27,10 @@ define(['require',
    var mod_vol_input_controls_tpl = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
    var globals = require('mods/mod_globals');
    var vol_view = require('inputs/mod_vol_view');
-   var mesh_view = require('processes/mod_mesh_view');
    var fileUtils = require('mods/mod_file');
    var meshUtils = require('processes/mod_mesh');
    var findEl = globals.findEl;
 
-   //
-   // load viewer routines
-   //
-   // var script = document.createElement("script")
-   // script.type = "text/javascript"
-   // script.src = "inputs/mod_vol_view.js"
-   // document.body.appendChild(script)
    //
    // mod_load_handler
    //   file load handler
@@ -81,7 +72,7 @@ define(['require',
       ctx = {
          input_name: globals.input_name,
          input_size: globals.input_size
-      };
+         };
       controls.innerHTML = mod_vol_input_controls_tpl(ctx);
       var changeUnits = function() {
          if (findEl("mod_float32").checked)
@@ -94,13 +85,12 @@ define(['require',
          };
       findEl('mod_float32',false).addEventListener("change", changeUnits );
       findEl('mod_int16',false).addEventListener("change", changeUnits );
-
       findEl("mod_nx",false).addEventListener("keyup", function() {
          globals.vol.nx = parseInt(findEl("mod_nx").value);
          globals.vol.size =
             globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
          findEl("mod_size").innerHTML = globals.vol.size;
-      });
+         });
       findEl("mod_ny",false).addEventListener("keyup", function() {
          globals.vol.ny = parseInt(findEl("mod_ny").value);
          globals.vol.size = globals.vol.bytes * globals.vol.nx * globals.vol.ny * globals.vol.nz;
@@ -113,101 +103,147 @@ define(['require',
          });
       findEl("show_density",false).addEventListener("click", function() {
          ui.ui_clear();
-         var canvas = findEl("mod_input_canvas");
-         canvas.width = globals.vol.nx;
-         canvas.height = globals.vol.ny;
-         canvas.style.display = "inline";
          if (globals.input_size != globals.vol.size) {
             ui.ui_prompt("error: vol size does not match file size");
             return;
             };
-         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_density_handler;
-         globals.vol.stop = false;
-         window.onkeydown = function(evt) {
-            if (evt.keyCode == 83) globals.vol.stop = true;
-            };
-         globals.vol.layer = 0;
-         globals.vol.vmax = -1e10;
-         globals.vol.vmin = 1e10;
-         globals.vol.buf = new Float32Array(globals.vol.nx * globals.vol.ny);
-         var blob = globals.input_file.slice(0, globals.vol.layer_size);
-         file_reader.readAsArrayBuffer(blob);
-         });
-      findEl('show_histogram',false).addEventListener("click", function() {
-         var nhist = 100;
-         ui.ui_clear();
+         ui.ui_prompt("scroll or enter to select layer; left/right click or enter to select thresholds")
+         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         globals.vol.layer = parseInt(findEl("mod_layer").value)
+         globals.vol.drawing = false
+         globals.vol.mode = "density"
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
          canvas.height = globals.vol.ny;
          canvas.style.display = "inline";
-         if ((findEl("mod_vmin").value == "") || (findEl("mod_vmax").value == "")) {
-            ui.ui_prompt("error: show density to find limits");
+         canvas.onwheel = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            if (evt.deltaY < 0) {
+               globals.vol.layer += 1
+               findEl("mod_layer").value = globals.vol.layer
+               mod_vol_draw_layer()
+               }
+            else {
+               globals.vol.layer -= 1
+               findEl("mod_layer").value = globals.vol.layer
+               mod_vol_draw_layer()
+               }
+            }
+         canvas.onmousemove = function(evt) {
+            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
+            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
+            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
+            ui.ui_prompt('row: ' + row+' col: ' + col+' value: '+value.toFixed(3))
+            }
+         canvas.onmouseup = function(evt) {
+            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
+            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
+            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
+            if (evt.button == 0) {
+               findEl("mod_tmin").value = value
+               mod_vol_draw_layer()
+               }
+            else if (evt.button == 2) {
+               findEl("mod_tmax").value = value
+               mod_vol_draw_layer()
+               }
+            }
+         canvas.oncontextmenu = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            }
+         mod_vol_draw_layer()
+         })
+      findEl("mod_layer",false).addEventListener("keyup", function() {
+         globals.vol.layer = parseInt(findEl("mod_layer").value)
+         mod_vol_draw_layer()
+         })
+      findEl("show_section",false).addEventListener("click", function() {
+         ui.ui_clear();
+         if (globals.input_size != globals.vol.size) {
+            ui.ui_prompt("error: vol size does not match file size");
             return;
             };
-         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_histogram_handler;
-         globals.vol.stop = false;
-         window.onkeydown = function(evt) {
-            if (evt.keyCode == 83) globals.vol.stop = true;
-            };
-         globals.vol.hmax = -1e10;
-         globals.vol.layer = 0;
-         globals.vol.buf = new Uint32Array(nhist);
-         var blob = globals.input_file.slice(0, globals.vol.layer_size);
-         file_reader.readAsArrayBuffer(blob);
-         });
-      findEl('show_height',false).addEventListener("click", function() {
-         ui.ui_clear();
+         ui.ui_prompt("scroll or enter to select layer; left/right click or enter to select thresholds")
+         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         globals.vol.layer = parseInt(findEl("mod_layer").value)
+         globals.vol.drawing = false
+         globals.vol.mode = "section"
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
          canvas.height = globals.vol.ny;
          canvas.style.display = "inline";
-         if ((findEl("mod_min_threshold").value == "") || (findEl("mod_max_threshold").value == "")) {
-            ui.ui_prompt("error: show histogram to find thresholds");
-            return;
-            };
-         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_height_handler;
-         globals.vol.stop = false;
-         window.onkeydown = function(evt) {
-            if (evt.keyCode == 83) globals.vol.stop = true;
-            };
-         globals.vol.layer = 0;
-         globals.vol.buf = new Uint16Array(globals.vol.nx * globals.vol.ny);
-         var blob = globals.input_file.slice(0, globals.vol.layer_size);
-         file_reader.readAsArrayBuffer(blob);
-         });
+         canvas.onwheel = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            if (evt.deltaY < 0) {
+               globals.vol.layer += 1
+               findEl("mod_layer").value = globals.vol.layer
+               mod_vol_draw_layer()
+               }
+            else {
+               globals.vol.layer -= 1
+               findEl("mod_layer").value = globals.vol.layer
+               mod_vol_draw_layer()
+               }
+            }
+         canvas.onmousemove = function(evt) {
+            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
+            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
+            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
+            ui.ui_prompt('row: ' + row+' col: ' + col+' value: '+value.toFixed(3))
+            }
+         canvas.onmouseup = function(evt) {
+            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
+            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
+            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
+            if (evt.button == 0) {
+               findEl("mod_tmin").value = value
+               mod_vol_draw_layer()
+               }
+            else if (evt.button == 2) {
+               findEl("mod_tmax").value = value
+               mod_vol_draw_layer()
+               }
+            }
+         canvas.oncontextmenu = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            }
+         mod_vol_draw_layer()
+         })
+      findEl("mod_tmin",false).addEventListener("keyup", function() {
+         mod_vol_draw_layer()
+         })
+      findEl("mod_tmax",false).addEventListener("keyup", function() {
+         mod_vol_draw_layer()
+         })
       findEl("show_mesh",false).addEventListener("click", function() {
          ui.ui_clear();
+         if (globals.input_size != globals.vol.size) {
+            ui.ui_prompt("error: vol size does not match file size");
+            return;
+            };
+         ui.ui_prompt("scroll or enter to select layer; left/right click or enter to select thresholds")
+         globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+         globals.vol.layer = parseInt(findEl("mod_layer").value)
+         globals.vol.drawing = false
+         globals.vol.mode = "mesh"
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
          canvas.height = globals.vol.ny;
          canvas.style.display = "inline";
-         if ((findEl("mod_min_threshold").value == "") || (findEl("mod_max_threshold").value == "")) {
-            ui.ui_prompt("error: show histogram to find thresholds");
-            return;
-            };
-         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_mesh_handler;
-         globals.vol.stop = false;
-         window.onkeydown = function(evt) {
-            if (evt.keyCode == 83) globals.vol.stop = true;
-            };
-         globals.vol.layer = 0;
-         globals.vol.ptr = 0;
-         globals.vol.buf = new Array(2);
-         globals.vol.buf[0] = new Float32Array(globals.vol.nx * globals.vol.ny);
-         globals.vol.buf[1] = new Float32Array(globals.vol.nx * globals.vol.ny);
+         canvas.onmousemove = null
+         canvas.onmouseup = null
+         canvas.oncontextmenu = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            }
          globals.mesh.rules = meshUtils.march_rules()
-         globals.mesh.triangles = 0;
-         var blob = globals.input_file.slice(0, globals.vol.layer_size);
-         file_reader.readAsArrayBuffer(blob);
-         });
+         mod_vol_draw_layer()
+         })
+/*
       findEl('save_stl',false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
@@ -240,249 +276,141 @@ define(['require',
          var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
          });
+*/
       }
    //
-   // mod_vol_density_handler
+   // mod_vol_draw_layer
    //
-   function mod_vol_density_handler(event) {
+   function mod_vol_draw_layer() {
+      if (!((globals.vol.layer >= 0) && (globals.vol.layer < globals.vol.nz) && (globals.vol.drawing == false)))
+         return
+      globals.vol.drawing == true
+      var file_reader = new FileReader()
+      file_reader.onload = mod_vol_draw_layer_handler
+      start = globals.vol.layer*globals.vol.layer_size
+      end = (globals.vol.layer+1)*globals.vol.layer_size
+      var blob = globals.input_file.slice(start,end)
+      file_reader.readAsArrayBuffer(blob)
+      }
+   //
+   // mod_vol_draw_layer_handler
+   //
+   function mod_vol_draw_layer_handler(event) {
       if (findEl("mod_float32").checked)
          var buf = new Float32Array(event.target.result)
       else if (findEl("mod_int16").checked)
          var buf = new Uint16Array(event.target.result)
-      var buffer = globals.vol.buf
+      globals.vol.buf = buf
+      if (globals.vol.mode == "mesh") {
+         var file_reader = new FileReader()
+         file_reader.onload = mod_vol_draw_layer_mesh_handler
+         start = (globals.vol.layer+1)*globals.vol.layer_size
+         end = (globals.vol.layer+2)*globals.vol.layer_size
+         var blob = globals.input_file.slice(start,end)
+         file_reader.readAsArrayBuffer(blob)
+         return
+         }
       var nx = globals.vol.nx
       var ny = globals.vol.ny
       var nz = globals.vol.nz
       var canvas = findEl("mod_input_canvas")
       var ctx = canvas.getContext("2d")
-      var img = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      var img = ctx.getImageData(0,0,canvas.width,canvas.height)
       var data = img.data
       //
-      // find limits and accumulate
+      // show layer
       //
-      var vmin = 1e10
-      var vmax = -1e10
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            value = buf[(ny - 1 - row) * nx + col]
-            vmax = Math.max(value,vmax)
-            vmin = Math.min(value,vmin)
-            globals.vol.vmax = Math.max(value,globals.vol.vmax)
-            globals.vol.vmin = Math.min(value,globals.vol.vmin)
-            buffer[(ny - 1 - row) * nx + col] += value
-            }
-         }
-      //
-      // normalize and show layer
-      //
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            var value = buf[(ny - 1 - row) * nx + col]
-            value = Math.floor(0.5 + 255 * (value - vmin) / (vmax - vmin))
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 0] = value
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 1] = value
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 2] = value
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 3] = 255
-            }
-         }
-      ctx.putImageData(img, 0, 0)
-      //
-      // increment layer
-      //
-      globals.vol.layer += 1
-      ui.ui_prompt("layer: " + globals.vol.layer + " (s to stop)")
-      findEl("mod_vmin").value = globals.vol.vmin
-      findEl("mod_vmax").value = globals.vol.vmax
-      if (globals.vol.stop == true) {
-         ui.ui_prompt("")
-         window.onkeydown = null
-         return
-         }
-      if ((globals.vol.layer < nz)) {
-         //
-         // read next layer
-         //
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_density_handler;
-         start = globals.vol.layer * globals.vol.layer_size
-         end = (globals.vol.layer + 1) * globals.vol.layer_size
-         var blob = globals.input_file.slice(start, end)
-         file_reader.readAsArrayBuffer(blob)
-         }
-      else {
-         //
-         // normalize and show density map
-         //
-         ui.ui_prompt("")
-         window.onkeydown = null
+      if (globals.vol.mode == "density") {
          var vmin = 1e10
          var vmax = -1e10
          for (var row = 0; row < ny; ++row) {
             for (var col = 0; col < nx; ++col) {
-               var value = buffer[(ny - 1 - row) * nx + col]
+               value = buf[(ny-1-row)*nx+col]
                vmax = Math.max(value,vmax)
                vmin = Math.min(value,vmin)
                }
             }
          for (var row = 0; row < ny; ++row) {
             for (var col = 0; col < nx; ++col) {
-               var value = buffer[(ny - 1 - row) * nx + col]
-               value = Math.floor(0.5 + 255 * (value - vmin) / (vmax - vmin))
-               data[(ny - 1 - row) * nx * 4 + col * 4 + 0] = value
-               data[(ny - 1 - row) * nx * 4 + col * 4 + 1] = value
-               data[(ny - 1 - row) * nx * 4 + col * 4 + 2] = value
-               data[(ny - 1 - row) * nx * 4 + col * 4 + 3] = 255
+               var value = buf[(ny-1-row)*nx+col]
+               value = Math.floor(0.5+255*(value-vmin)/(vmax-vmin))
+               data[(ny-1-row)*nx*4+col*4+0] = value
+               data[(ny-1-row)*nx*4+col*4+1] = value
+               data[(ny-1-row)*nx*4+col*4+2] = value
+               data[(ny-1-row)*nx*4+col*4+3] = 255
                }
             }
-         ctx.putImageData(img, 0, 0)
          }
-      }
-   //
-   // mod_vol_height_handler
-   //
-   function mod_vol_height_handler(event) {
-      if (findEl("mod_float32").checked)
-         var buf = new Float32Array(event.target.result)
-      else if (findEl("mod_int16").checked)
-         var buf = new Uint16Array(event.target.result)
-      var buffer = globals.vol.buf
-      var nx = globals.vol.nx
-      var ny = globals.vol.ny
-      var nz = globals.vol.nz
-      var canvas = findEl("mod_input_canvas")
-      var ctx = canvas.getContext("2d")
-      var img = ctx.getImageData(0, 0, canvas.width, canvas.height)
-      var data = img.data
-      var min_threshold = parseFloat(findEl("mod_min_threshold").value)
-      var max_threshold = parseFloat(findEl("mod_max_threshold").value)
-      //
-      // accumulate
-      //
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            value = buf[(ny - 1 - row) * nx + col]
-            if ((value > min_threshold) && (value < max_threshold))
-               buffer[(ny - 1 - row) * nx + col] = globals.vol.layer
-            }
-         }
-      //
-      // normalize and show layer
-      //
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            var value = Math.floor(0.5 + 255 * buffer[(ny - 1 - row) * nx + col] / globals.vol.layer)
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 0] = value
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 1] = value
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 2] = value
-            data[(ny - 1 - row) * nx * 4 + col * 4 + 3] = 255
+      else if (globals.vol.mode == "section") {
+         var tmin = parseFloat(findEl("mod_tmin").value)
+         var tmax = parseFloat(findEl("mod_tmax").value)
+         for (var row = 0; row < ny; ++row) {
+            for (var col = 0; col < nx; ++col) {
+               var value = buf[(ny-1-row)*nx+col]
+               if ((value >= tmin) && (value <= tmax))
+                  value = 255
+               else
+                  value = 0
+               data[(ny-1-row)*nx*4+col*4+0] = value
+               data[(ny-1-row)*nx*4+col*4+1] = value
+               data[(ny-1-row)*nx*4+col*4+2] = value
+               data[(ny-1-row)*nx*4+col*4+3] = 255
+               }
             }
          }
       ctx.putImageData(img, 0, 0)
-      //
-      // increment layer
-      //
-      globals.vol.layer += 1
-      ui.ui_prompt("layer: " + globals.vol.layer + " (s to stop)")
-      if (globals.vol.stop == true) {
-         ui.ui_prompt("")
-         window.onkeydown = null
-         return
-         }
-      if (globals.vol.layer < nz) {
-         //
-         // read next layer
-         //
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_height_handler;
-         start = globals.vol.layer * globals.vol.layer_size
-         end = (globals.vol.layer + 1) * globals.vol.layer_size
-         var blob = globals.input_file.slice(start, end)
-         file_reader.readAsArrayBuffer(blob)
-         }
-      else {
-         ui.ui_prompt("")
-         window.onkeydown = null
-         }
-      }
+      globals.vol.drawing == false
+      }               
    //
-   // mod_vol_histogram_handler
+   // mod_vol_draw_layer_mesh_handler
    //
-   function mod_vol_histogram_handler(event) {
+   function mod_vol_draw_layer_mesh_handler(event) {
       if (findEl("mod_float32").checked)
          var buf = new Float32Array(event.target.result)
       else if (findEl("mod_int16").checked)
          var buf = new Uint16Array(event.target.result)
-      var buffer = globals.vol.buf
-      var nx = globals.vol.nx
-      var ny = globals.vol.ny
-      var nz = globals.vol.nz
-      var vmin = parseFloat(findEl("mod_vmin").value)
-      var vmax = parseFloat(findEl("mod_vmax").value)
-      var len = buffer.length
-      var layer_buffer = new Uint32Array(len)
       //
-      // add layer to histogram and draw
+      // triangulate layer
       //
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            var value = buf[(ny - 1 - row) * nx + col]
-            var index = Math.floor(0.5 + (len - 1) * (value - vmin) / (vmax - vmin))
-            buffer[index] += 1
-            layer_buffer[index] += 1
-            }
-         }
-      vol_view.hist_draw(layer_buffer, vmin, vmax)
-      //
-      // increment layer
-      //
-      globals.vol.layer += 1
-      ui.ui_prompt("layer: " + globals.vol.layer + " (s to stop)")
-      if (globals.vol.stop == true) {
-         window.onkeydown = null
-         return
-         }
-      if (globals.vol.layer < nz) {
-         //
-         // read next layer
-         //
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_histogram_handler;
-         start = globals.vol.layer * globals.vol.layer_size
-         end = (globals.vol.layer + 1) * globals.vol.layer_size
-         var blob = globals.input_file.slice(start, end)
-         file_reader.readAsArrayBuffer(blob)
-         }
-      else {
-         //
-         // return 
-         //
-         ui.ui_prompt("")
-         window.onkeydown = null
-         vol_view.hist_draw(buffer, vmin, vmax)
-         }
+      var tmin = parseFloat(findEl("mod_tmin").value)
+      var tmax = parseFloat(findEl("mod_tmax").value)
+      var mesh = meshUtils.march_triangulate(tmin,tmax,globals.vol.buf,buf,
+         globals.vol.nx,globals.vol.ny,globals.vol.nz,globals.vol.layer)
+      vol_view.mesh_draw(mesh)
       }
    //
    // mod_vol_mesh_handler
    //
    function mod_vol_mesh_handler(event) {
-      if (findEl("mod_float32").checked)
-         var buf = new Float32Array(event.target.result)
-      else if (findEl("mod_int16").checked)
-         var buf = new Uint16Array(event.target.result)
       var nx = globals.vol.nx
       var ny = globals.vol.ny
       var nz = globals.vol.nz
-      var buffer = globals.vol.buf[globals.vol.ptr]
       var min_threshold = parseFloat(findEl("mod_min_threshold").value)
       var max_threshold = parseFloat(findEl("mod_max_threshold").value)
       //
-      // update limits and push layer into buffer
+      // push layer into buffer
       //
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            value = buf[(ny - 1 - row) * nx + col]
-            buffer[(ny - 1 - row) * nx + col] = value
-            }
+      if (globals.vol.layer == 0) {
+         var buffer = globals.vol.buf[1]
+         for (var row = 0; row < ny; ++row)
+            for (var col = 0; col < nx; ++col)
+               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
+         }
+      if (globals.vol.layer < (nz+1)) {
+         if (findEl("mod_float32").checked)
+            var buf = new Float32Array(event.target.result)
+         else if (findEl("mod_int16").checked)
+            var buf = new Uint16Array(event.target.result)
+         var buffer = globals.vol.buf[globals.vol.ptr]
+         for (var row = 0; row < ny; ++row)
+            for (var col = 0; col < nx; ++col)
+               buffer[(ny-1-row)*nx+col] = buf[(ny-1-row)*nx+col]
+         }
+      else {
+         var buffer = globals.vol.buf[globals.vol.ptr]
+         for (var row = 0; row < ny; ++row)
+            for (var col = 0; col < nx; ++col)
+               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
          }
       //
       // triangulate layer
@@ -517,7 +445,16 @@ define(['require',
          var blob = globals.input_file.slice(start, end)
          file_reader.readAsArrayBuffer(blob)
          }
+      else if (globals.vol.layer == (nz+1)) {
+         //
+         // top
+         //
+         mod_vol_mesh_handler()
+         }
       else {
+         //
+         // done
+         //
          ui.ui_prompt("")
          window.onkeydown = null
          }
@@ -526,26 +463,37 @@ define(['require',
    // mod_vol_stl_handler
    //
    function mod_vol_stl_handler(event) {
-      if (findEl("mod_float32").checked)
-         var buf = new Float32Array(event.target.result)
-      else if (findEl("mod_int16").checked)
-         var buf = new Uint16Array(event.target.result)
       var nx = globals.vol.nx
       var ny = globals.vol.ny
       var nz = globals.vol.nz
-      var buffer = globals.vol.buf[globals.vol.ptr]
       var min_threshold = parseFloat(findEl("mod_min_threshold").value)
       var max_threshold = parseFloat(findEl("mod_max_threshold").value)
       var view = new DataView(globals.mesh.buf)
       var endian = true
       //
-      // update limits and push layer into buffer
+      // push layer into buffer
       //
-      for (var row = 0; row < ny; ++row) {
-         for (var col = 0; col < nx; ++col) {
-            value = buf[(ny - 1 - row) * nx + col]
-            buffer[(ny - 1 - row) * nx + col] = value
-            }
+      if (globals.vol.layer == 0) {
+         var buffer = globals.vol.buf[1]
+         for (var row = 0; row < ny; ++row)
+            for (var col = 0; col < nx; ++col)
+               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
+         }
+      if (globals.vol.layer < (nz+1)) {
+         if (findEl("mod_float32").checked)
+            var buf = new Float32Array(event.target.result)
+         else if (findEl("mod_int16").checked)
+            var buf = new Uint16Array(event.target.result)
+         var buffer = globals.vol.buf[globals.vol.ptr]
+         for (var row = 0; row < ny; ++row)
+            for (var col = 0; col < nx; ++col)
+               buffer[(ny-1-row)*nx+col] = buf[(ny-1-row)*nx+col]
+         }
+      else {
+         var buffer = globals.vol.buf[globals.vol.ptr]
+         for (var row = 0; row < ny; ++row)
+            for (var col = 0; col < nx; ++col)
+               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
          }
       //
       // triangulate layer
@@ -591,7 +539,16 @@ define(['require',
          var blob = globals.input_file.slice(start, end)
          file_reader.readAsArrayBuffer(blob)
          }
+      else if (globals.vol.layer == (nz+1)) {
+         //
+         // top
+         //
+         mod_vol_stl_handler()
+         }
       else {
+         //
+         // done
+         //
          ui.ui_prompt("")
          window.onkeydown = null
          view.setUint32(80, globals.mesh.triangles, endian)
@@ -605,6 +562,8 @@ define(['require',
          }
       }
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      draw_layer: mod_vol_draw_layer
       }
    });
+
