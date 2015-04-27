@@ -250,7 +250,7 @@ define(['mods/mod_globals','processes/mod_image'],
          // add_rule
          //    add a rule and its variants to the table
          //
-         function add_rule(rules, index, edges) {
+         function add_rule(rules,index,edges) {
             rules[index] = edges
             for (var i = 0; i < 4; ++i) {
                for (var j = 0; j < 4; ++j) {
@@ -480,7 +480,7 @@ define(['mods/mod_globals','processes/mod_image'],
       // mod_mesh_march_triangulate
       //    triangulate layer
       //
-      function mod_mesh_march_triangulate(min_threshold, max_threshold, buf, ptr, nx, ny, nz, z) {
+      function mod_mesh_march_triangulate(min_threshold,max_threshold,buf0,buf1,nx,ny,nz,z) {
          //
          // vertex
          //    interpolate a triangle vertex
@@ -650,106 +650,24 @@ define(['mods/mod_globals','processes/mod_image'],
          mesh.zmin = 0
          mesh.zmax = nz
          //
-         // set layer buffers
-         //
-         if (ptr == 0) {
-            var bot = 1
-            var top = 0
-            }
-         else {
-            var bot = 0
-            var top = 1
-            }
-         //
          // loop over layer
          //
          var w = new Array(8)
          for (var y = 0; y < (ny - 1); ++y) {
             for (var x = 0; x < (nx - 1); ++x) {
-               w[0] = buf[bot][(ny - 1 - y) * nx + x]
-               w[1] = buf[bot][(ny - 1 - y) * nx + (x + 1)]
-               w[2] = buf[bot][(ny - 1 - (y + 1)) * nx + x]
-               w[3] = buf[bot][(ny - 1 - (y + 1)) * nx + (x + 1)]
-               w[4] = buf[top][(ny - 1 - y) * nx + x]
-               w[5] = buf[top][(ny - 1 - y) * nx + (x + 1)]
-               w[6] = buf[top][(ny - 1 - (y + 1)) * nx + x]
-               w[7] = buf[top][(ny - 1 - (y + 1)) * nx + (x + 1)]
+               w[0] = buf0[(ny - 1 - y) * nx + x]
+               w[1] = buf0[(ny - 1 - y) * nx + (x + 1)]
+               w[2] = buf0[(ny - 1 - (y + 1)) * nx + x]
+               w[3] = buf0[(ny - 1 - (y + 1)) * nx + (x + 1)]
+               w[4] = buf1[(ny - 1 - y) * nx + x]
+               w[5] = buf1[(ny - 1 - y) * nx + (x + 1)]
+               w[6] = buf1[(ny - 1 - (y + 1)) * nx + x]
+               w[7] = buf1[(ny - 1 - (y + 1)) * nx + (x + 1)]
                var threshold = min_threshold
                triangulate_min()
                var threshold = max_threshold
                triangulate_max()
                }
-            }
-         //
-         // loop over boundary
-         //
-         for (var y = 0; y < (ny - 1); ++y) {
-            //
-            // left
-            //
-            x = 0
-            w[0] = 0
-            w[1] = buf[bot][(ny - 1 - y) * nx + 0]
-            w[2] = 0
-            w[3] = buf[bot][(ny - 1 - (y + 1)) * nx + 0]
-            w[4] = 0
-            w[5] = buf[top][(ny - 1 - y) * nx + 0]
-            w[6] = 0
-            w[7] = buf[top][(ny - 1 - (y + 1)) * nx + 0]
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-            //
-            // right
-            //
-            x = nx - 1
-            w[0] = buf[bot][(ny - 1 - y) * nx + (nx - 1)]
-            w[1] = 0
-            w[2] = buf[bot][(ny - 1 - (y + 1)) * nx + (nx - 1)]
-            w[3] = 0
-            w[4] = buf[top][(ny - 1 - y) * nx + (nx - 1)]
-            w[5] = 0
-            w[6] = buf[top][(ny - 1 - (y + 1)) * nx + (nx - 1)]
-            w[7] = 0
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-            }
-         for (var x = 0; x < (nx - 1); ++x) {
-            //
-            // bottom
-            //
-            y = 0
-            w[0] = 0
-            w[1] = 0
-            w[2] = buf[bot][(ny - 1 - (0)) * nx + x]
-            w[3] = buf[bot][(ny - 1 - (0)) * nx + (x + 1)]
-            w[4] = 0
-            w[5] = 0
-            w[6] = buf[top][(ny - 1 - (0)) * nx + x]
-            w[7] = buf[top][(ny - 1 - (0)) * nx + (x + 1)]
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-            //
-            // top
-            //
-            y = ny - 1
-            w[0] = buf[bot][(ny - 1 - (ny - 1)) * nx + x]
-            w[1] = buf[bot][(ny - 1 - (ny - 1)) * nx + (x + 1)]
-            w[2] = 0
-            w[3] = 0
-            w[4] = buf[top][(ny - 1 - (ny - 1)) * nx + x]
-            w[5] = buf[top][(ny - 1 - (ny - 1)) * nx + (x + 1)]
-            w[6] = 0
-            w[7] = 0
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
             }
          return mesh
          }

@@ -19,25 +19,18 @@ define(['require',
    'mods/mod_globals',
    'mods/mod_file',
    'processes/mod_mesh',
-   'processes/mod_mesh_view'
+   'inputs/mod_vol_view'
    ], function(require) {
    
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
    var mod_vol_input_controls_tpl = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
    var globals = require('mods/mod_globals');
-   var mesh_view = require('processes/mod_mesh_view');
+   var vol_view = require('inputs/mod_vol_view');
    var fileUtils = require('mods/mod_file');
    var meshUtils = require('processes/mod_mesh');
    var findEl = globals.findEl;
 
-   //
-   // load viewer routines
-   //
-   // var script = document.createElement("script")
-   // script.type = "text/javascript"
-   // script.src = "inputs/mod_vol_view.js"
-   // document.body.appendChild(script)
    //
    // mod_load_handler
    //   file load handler
@@ -92,7 +85,6 @@ define(['require',
          };
       findEl('mod_float32',false).addEventListener("change", changeUnits );
       findEl('mod_int16',false).addEventListener("change", changeUnits );
-
       findEl("mod_nx",false).addEventListener("keyup", function() {
          globals.vol.nx = parseInt(findEl("mod_nx").value);
          globals.vol.size =
@@ -130,12 +122,12 @@ define(['require',
             if (evt.deltaY < 0) {
                globals.vol.layer += 1
                findEl("mod_layer").value = globals.vol.layer
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             else {
                globals.vol.layer -= 1
                findEl("mod_layer").value = globals.vol.layer
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             }
          canvas.onmousemove = function(evt) {
@@ -150,22 +142,22 @@ define(['require',
             var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
             if (evt.button == 0) {
                findEl("mod_tmin").value = value
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             else if (evt.button == 2) {
                findEl("mod_tmax").value = value
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             }
          canvas.oncontextmenu = function(evt) {
             evt.preventDefault()
             evt.stopPropagation()
             }
-         mod_vol_draw_layer(globals.vol.layer)
+         mod_vol_draw_layer()
          })
       findEl("mod_layer",false).addEventListener("keyup", function() {
          globals.vol.layer = parseInt(findEl("mod_layer").value)
-         mod_vol_draw_layer(globals.vol.layer)
+         mod_vol_draw_layer()
          })
       findEl("show_section",false).addEventListener("click", function() {
          ui.ui_clear();
@@ -188,12 +180,12 @@ define(['require',
             if (evt.deltaY < 0) {
                globals.vol.layer += 1
                findEl("mod_layer").value = globals.vol.layer
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             else {
                globals.vol.layer -= 1
                findEl("mod_layer").value = globals.vol.layer
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             }
          canvas.onmousemove = function(evt) {
@@ -208,26 +200,26 @@ define(['require',
             var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
             if (evt.button == 0) {
                findEl("mod_tmin").value = value
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             else if (evt.button == 2) {
                findEl("mod_tmax").value = value
-               mod_vol_draw_layer(globals.vol.layer)
+               mod_vol_draw_layer()
                }
             }
          canvas.oncontextmenu = function(evt) {
             evt.preventDefault()
             evt.stopPropagation()
             }
-         mod_vol_draw_layer(globals.vol.layer)
+         mod_vol_draw_layer()
          })
       findEl("mod_tmin",false).addEventListener("keyup", function() {
-         mod_vol_draw_layer(globals.vol.layer)
+         mod_vol_draw_layer()
          })
       findEl("mod_tmax",false).addEventListener("keyup", function() {
-         mod_vol_draw_layer(globals.vol.layer)
+         mod_vol_draw_layer()
          })
-      findEl("show_section",false).addEventListener("click", function() {
+      findEl("show_mesh",false).addEventListener("click", function() {
          ui.ui_clear();
          if (globals.input_size != globals.vol.size) {
             ui.ui_prompt("error: vol size does not match file size");
@@ -237,78 +229,21 @@ define(['require',
          globals.vol.layer_size = globals.vol.size/globals.vol.nz;
          globals.vol.layer = parseInt(findEl("mod_layer").value)
          globals.vol.drawing = false
-         globals.vol.mode = "section"
+         globals.vol.mode = "mesh"
          var canvas = findEl("mod_input_canvas");
          canvas.width = globals.vol.nx;
          canvas.height = globals.vol.ny;
          canvas.style.display = "inline";
-         canvas.onwheel = function(evt) {
-            evt.preventDefault()
-            evt.stopPropagation()
-            if (evt.deltaY < 0) {
-               globals.vol.layer += 1
-               findEl("mod_layer").value = globals.vol.layer
-               mod_vol_draw_layer(globals.vol.layer)
-               }
-            else {
-               globals.vol.layer -= 1
-               findEl("mod_layer").value = globals.vol.layer
-               mod_vol_draw_layer(globals.vol.layer)
-               }
-            }
-         canvas.onmousemove = function(evt) {
-            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
-            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
-            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
-            ui.ui_prompt('row: ' + row+' col: ' + col+' value: '+value.toFixed(3))
-            }
-         canvas.onmouseup = function(evt) {
-            var col = Math.floor(globals.vol.nx*(evt.clientX-evt.target.offsetParent.offsetLeft)/canvas.offsetWidth)
-            var row = Math.floor(globals.vol.ny*(1-(evt.clientY-evt.target.offsetParent.offsetTop)/canvas.offsetWidth))
-            var value = globals.vol.buf[(globals.vol.ny-1-row)*globals.vol.nx+col]
-            if (evt.button == 0) {
-               findEl("mod_tmin").value = value
-               mod_vol_draw_layer(globals.vol.layer)
-               }
-            else if (evt.button == 2) {
-               findEl("mod_tmax").value = value
-               mod_vol_draw_layer(globals.vol.layer)
-               }
-            }
+         canvas.onmousemove = null
+         canvas.onmouseup = null
          canvas.oncontextmenu = function(evt) {
             evt.preventDefault()
             evt.stopPropagation()
             }
-         mod_vol_draw_layer(globals.vol.layer)
-         })
-      /*
-      findEl("show_mesh",false).addEventListener("click", function() {
-         ui.ui_clear();
-         var canvas = findEl("mod_input_canvas");
-         canvas.width = globals.vol.nx;
-         canvas.height = globals.vol.ny;
-         canvas.style.display = "inline";
-         if ((findEl("mod_min_threshold").value == "") || (findEl("mod_max_threshold").value == "")) {
-            ui.ui_prompt("error: show histogram to find thresholds");
-            return;
-            };
-         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_mesh_handler;
-         globals.vol.stop = false;
-         window.onkeydown = function(evt) {
-            if (evt.keyCode == 83) globals.vol.stop = true;
-            };
-         globals.vol.layer = 0;
-         globals.vol.ptr = 0;
-         globals.vol.buf = new Array(2);
-         globals.vol.buf[0] = new Float32Array(globals.vol.nx * globals.vol.ny);
-         globals.vol.buf[1] = new Float32Array(globals.vol.nx * globals.vol.ny);
          globals.mesh.rules = meshUtils.march_rules()
-         globals.mesh.triangles = 0;
-         var blob = globals.input_file.slice(0, globals.vol.layer_size);
-         file_reader.readAsArrayBuffer(blob);
-         });
+         mod_vol_draw_layer()
+         })
+/*
       findEl('save_stl',false).addEventListener("click", function() {
          ui.ui_clear();
          var canvas = findEl("mod_input_canvas");
@@ -341,19 +276,19 @@ define(['require',
          var blob = globals.input_file.slice(0, globals.vol.layer_size);
          file_reader.readAsArrayBuffer(blob);
          });
+*/
       }
-   */
    //
    // mod_vol_draw_layer
    //
-   function mod_vol_draw_layer(layer) {
-      if (!((layer >= 0) && (layer < globals.vol.nz) && (globals.vol.drawing == false)))
+   function mod_vol_draw_layer() {
+      if (!((globals.vol.layer >= 0) && (globals.vol.layer < globals.vol.nz) && (globals.vol.drawing == false)))
          return
       globals.vol.drawing == true
       var file_reader = new FileReader()
       file_reader.onload = mod_vol_draw_layer_handler
-      start = layer*globals.vol.layer_size
-      end = (layer+1)*globals.vol.layer_size
+      start = globals.vol.layer*globals.vol.layer_size
+      end = (globals.vol.layer+1)*globals.vol.layer_size
       var blob = globals.input_file.slice(start,end)
       file_reader.readAsArrayBuffer(blob)
       }
@@ -366,6 +301,15 @@ define(['require',
       else if (findEl("mod_int16").checked)
          var buf = new Uint16Array(event.target.result)
       globals.vol.buf = buf
+      if (globals.vol.mode == "mesh") {
+         var file_reader = new FileReader()
+         file_reader.onload = mod_vol_draw_layer_mesh_handler
+         start = (globals.vol.layer+1)*globals.vol.layer_size
+         end = (globals.vol.layer+2)*globals.vol.layer_size
+         var blob = globals.input_file.slice(start,end)
+         file_reader.readAsArrayBuffer(blob)
+         return
+         }
       var nx = globals.vol.nx
       var ny = globals.vol.ny
       var nz = globals.vol.nz
@@ -417,6 +361,23 @@ define(['require',
       ctx.putImageData(img, 0, 0)
       globals.vol.drawing == false
       }               
+   //
+   // mod_vol_draw_layer_mesh_handler
+   //
+   function mod_vol_draw_layer_mesh_handler(event) {
+      if (findEl("mod_float32").checked)
+         var buf = new Float32Array(event.target.result)
+      else if (findEl("mod_int16").checked)
+         var buf = new Uint16Array(event.target.result)
+      //
+      // triangulate layer
+      //
+      var tmin = parseFloat(findEl("mod_tmin").value)
+      var tmax = parseFloat(findEl("mod_tmax").value)
+      var mesh = meshUtils.march_triangulate(tmin,tmax,globals.vol.buf,buf,
+         globals.vol.nx,globals.vol.ny,globals.vol.nz,globals.vol.layer)
+      vol_view.mesh_draw(mesh)
+      }
    //
    // mod_vol_mesh_handler
    //
@@ -601,6 +562,8 @@ define(['require',
          }
       }
    return {
-      mod_load_handler: mod_load_handler
+      mod_load_handler: mod_load_handler,
+      draw_layer: mod_vol_draw_layer
       }
    });
+
