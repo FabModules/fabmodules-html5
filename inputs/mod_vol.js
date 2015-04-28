@@ -376,88 +376,10 @@ define(['require',
       var tmax = parseFloat(findEl("mod_tmax").value)
       var mesh = meshUtils.march_triangulate(tmin,tmax,globals.vol.buf,buf,
          globals.vol.nx,globals.vol.ny,globals.vol.nz,globals.vol.layer)
+      //
+      // draw layer
+      //
       vol_view.mesh_draw(mesh)
-      }
-   //
-   // mod_vol_mesh_handler
-   //
-   function mod_vol_mesh_handler(event) {
-      var nx = globals.vol.nx
-      var ny = globals.vol.ny
-      var nz = globals.vol.nz
-      var min_threshold = parseFloat(findEl("mod_min_threshold").value)
-      var max_threshold = parseFloat(findEl("mod_max_threshold").value)
-      //
-      // push layer into buffer
-      //
-      if (globals.vol.layer == 0) {
-         var buffer = globals.vol.buf[1]
-         for (var row = 0; row < ny; ++row)
-            for (var col = 0; col < nx; ++col)
-               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
-         }
-      if (globals.vol.layer < (nz+1)) {
-         if (findEl("mod_float32").checked)
-            var buf = new Float32Array(event.target.result)
-         else if (findEl("mod_int16").checked)
-            var buf = new Uint16Array(event.target.result)
-         var buffer = globals.vol.buf[globals.vol.ptr]
-         for (var row = 0; row < ny; ++row)
-            for (var col = 0; col < nx; ++col)
-               buffer[(ny-1-row)*nx+col] = buf[(ny-1-row)*nx+col]
-         }
-      else {
-         var buffer = globals.vol.buf[globals.vol.ptr]
-         for (var row = 0; row < ny; ++row)
-            for (var col = 0; col < nx; ++col)
-               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
-         }
-      //
-      // triangulate layer
-      //
-      var mesh = meshUtils.march_triangulate(min_threshold, max_threshold, globals.vol.buf,
-         globals.vol.ptr, globals.vol.nx, globals.vol.ny,
-         globals.vol.nz, globals.vol.layer)
-      mesh_view.mesh_draw(mesh)
-      globals.mesh.triangles += mesh.length
-      //
-      // increment layer
-      //
-      globals.vol.layer += 1
-      globals.vol.ptr += 1
-      if (globals.vol.ptr == globals.vol.buf.length)
-         globals.vol.ptr = 0
-      ui.ui_prompt("layer: " + globals.vol.layer + ', left: pan, right: rotate, scroll: zoom (s to stop)')
-      findEl("mod_triangles").value = globals.mesh.triangles
-      if (globals.vol.stop == true) {
-         ui.ui_prompt("")
-         window.onkeydown = null
-         return
-         }
-      if (globals.vol.layer <= nz) {
-         //
-         // read next layer
-         //
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_mesh_handler;
-         start = globals.vol.layer * globals.vol.layer_size
-         end = (globals.vol.layer + 1) * globals.vol.layer_size
-         var blob = globals.input_file.slice(start, end)
-         file_reader.readAsArrayBuffer(blob)
-         }
-      else if (globals.vol.layer == (nz+1)) {
-         //
-         // top
-         //
-         mod_vol_mesh_handler()
-         }
-      else {
-         //
-         // done
-         //
-         ui.ui_prompt("")
-         window.onkeydown = null
-         }
       }
    //
    // mod_vol_stl_handler
