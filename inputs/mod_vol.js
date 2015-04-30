@@ -243,40 +243,26 @@ define(['require',
          globals.mesh.rules = meshUtils.march_rules()
          mod_vol_draw_layer()
          })
-/*
-      findEl('save_stl',false).addEventListener("click", function() {
+      findEl("save_stl",false).addEventListener("click", function() {
          ui.ui_clear();
-         var canvas = findEl("mod_input_canvas");
-         canvas.width = globals.vol.nx;
-         canvas.height = globals.vol.ny;
-         canvas.style.display = "inline";
          if (globals.input_size != globals.vol.size) {
             ui.ui_prompt("error: vol size does not match file size");
             return;
             };
-         if (findEl("mod_triangles").value == "") {
-            ui.ui_prompt("error: show mesh to calculate number of triangles");
-            return;
-            };
-         globals.vol.layer_size = globals.vol.size / globals.vol.nz;
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_stl_handler;
-         globals.vol.stop = false;
-         window.onkeydown = function(evt) {
-            if (evt.keyCode == 83) globals.vol.stop = true;
-            };
-         globals.vol.layer = 0;
-         globals.vol.ptr = 0;
-         globals.vol.buf = new Array(2);
-         globals.vol.buf[0] = new Float32Array(globals.vol.nx * globals.vol.ny);
-         globals.vol.buf[1] = new Float32Array(globals.vol.nx * globals.vol.ny);
-         globals.mesh.rules = meshUtils.march_rules();
-         globals.mesh.buf = new ArrayBuffer(80 + 4 + globals.mesh.triangles * (4 * 3 * 4 + 2));
-         globals.mesh.triangles = 0;
-         var blob = globals.input_file.slice(0, globals.vol.layer_size);
-         file_reader.readAsArrayBuffer(blob);
-         });
-*/
+         ui.ui_prompt("layer: 0, triangles: 0 (s to stop)")
+         var canvas = findEl("mod_input_canvas");
+         canvas.width = globals.vol.nx;
+         canvas.height = globals.vol.ny;
+         canvas.style.display = "inline";
+         canvas.onmousemove = null
+         canvas.onmouseup = null
+         canvas.oncontextmenu = function(evt) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            }
+         globals.vol.triangles = null
+         mod_vol_save_stl()
+         })
       }
    //
    // mod_vol_draw_layer
@@ -382,105 +368,140 @@ define(['require',
       vol_view.mesh_draw(mesh)
       }
    //
-   // mod_vol_stl_handler
+   // mod_vol_save_stl
    //
-   function mod_vol_stl_handler(event) {
-      var nx = globals.vol.nx
-      var ny = globals.vol.ny
-      var nz = globals.vol.nz
-      var min_threshold = parseFloat(findEl("mod_min_threshold").value)
-      var max_threshold = parseFloat(findEl("mod_max_threshold").value)
-      var view = new DataView(globals.mesh.buf)
-      var endian = true
-      //
-      // push layer into buffer
-      //
-      if (globals.vol.layer == 0) {
-         var buffer = globals.vol.buf[1]
-         for (var row = 0; row < ny; ++row)
-            for (var col = 0; col < nx; ++col)
-               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
+   function mod_vol_save_stl() {
+      globals.vol.stop = false;
+      window.onkeydown = function(evt) {
+         if (evt.keyCode == 83) globals.vol.stop = true;
          }
-      if (globals.vol.layer < (nz+1)) {
-         if (findEl("mod_float32").checked)
-            var buf = new Float32Array(event.target.result)
-         else if (findEl("mod_int16").checked)
-            var buf = new Uint16Array(event.target.result)
-         var buffer = globals.vol.buf[globals.vol.ptr]
-         for (var row = 0; row < ny; ++row)
-            for (var col = 0; col < nx; ++col)
-               buffer[(ny-1-row)*nx+col] = buf[(ny-1-row)*nx+col]
+      globals.mesh.rules = meshUtils.march_rules()
+      globals.vol.layer_size = globals.vol.size/globals.vol.nz;
+      globals.vol.layer = 0
+      globals.vol.triangle = 0
+      if (globals.vol.triangles != null) {
+         //
+         // second pass
+         //
+         globals.vol.index = 80+4
+         globals.vol.buf = new ArrayBuffer(80+4+globals.vol.triangles*(4*3*4+2))
+         globals.vol.view = new DataView(globals.vol.buf)
          }
-      else {
-         var buffer = globals.vol.buf[globals.vol.ptr]
-         for (var row = 0; row < ny; ++row)
-            for (var col = 0; col < nx; ++col)
-               buffer[(ny-1-row)*nx+col] = -Number.MAX_VALUE
+      var file_reader = new FileReader()
+      file_reader.onload = mod_vol_save_stl_start_handler
+      start = 0
+      end = globals.vol.layer_size
+      var blob = globals.input_file.slice(start,end)
+      file_reader.readAsArrayBuffer(blob)
+      }
+   //
+   // mod_vol_save_stl_start_handler
+   //
+   function mod_vol_save_stl_start_handler(event) {
+      if (findEl("mod_float32").checked)
+         globals.vol.buf1 = new Float32Array(event.target.result)
+      else if (findEl("mod_int16").checked)
+         globals.vol.buf1 = new Uint16Array(event.target.result)
+      var file_reader = new FileReader()
+      file_reader.onload = mod_vol_save_stl_read_handler
+      start = globals.vol.layer_size
+      end = 2*globals.vol.layer_size
+      var blob = globals.input_file.slice(start,end)
+      file_reader.readAsArrayBuffer(blob)
+      }
+   //
+   // mod_vol_save_stl_read_handler
+   //
+   function mod_vol_save_stl_read_handler(event) {
+      if (globals.vol.stop == true) {
+         globals.vol.mesh = null
+         ui.ui_prompt("")
+         window.onkeydown = null
+         return
          }
+      globals.vol.buf0 = globals.vol.buf1
+      if (findEl("mod_float32").checked)
+         globals.vol.buf1 = new Float32Array(event.target.result)
+      else if (findEl("mod_int16").checked)
+        globals.vol.buf1 = new Uint16Array(event.target.result)
       //
       // triangulate layer
       //
-      var mesh = meshUtils.march_triangulate(min_threshold, max_threshold, globals.vol.buf,
-         globals.vol.ptr, globals.vol.nx, globals.vol.ny,
-         globals.vol.nz, globals.vol.layer)
-      for (var t = 0; t < mesh.length; ++t) {
-         var index = 80 + 4 + globals.mesh.triangles * (4 * 3 * 4 + 2)
-         view.setFloat32(index + 12, mesh[t][0][0], endian)
-         view.setFloat32(index + 16, mesh[t][0][1], endian)
-         view.setFloat32(index + 20, mesh[t][0][2], endian)
-         view.setFloat32(index + 24, mesh[t][1][0], endian)
-         view.setFloat32(index + 28, mesh[t][1][1], endian)
-         view.setFloat32(index + 32, mesh[t][1][2], endian)
-         view.setFloat32(index + 36, mesh[t][2][0], endian)
-         view.setFloat32(index + 40, mesh[t][2][1], endian)
-         view.setFloat32(index + 44, mesh[t][2][2], endian)
-         globals.mesh.triangles += 1
+      var tmin = parseFloat(findEl("mod_tmin").value)
+      var tmax = parseFloat(findEl("mod_tmax").value)
+      var mesh = meshUtils.march_triangulate(tmin,tmax,globals.vol.buf0,globals.vol.buf1,
+         globals.vol.nx,globals.vol.ny,globals.vol.nz,globals.vol.layer)
+      //
+      // accumulate layer
+      //
+      if (globals.vol.triangles == null) {
+         //
+         // first pass
+         //
+         vol_view.mesh_draw(mesh)
+         globals.vol.triangle += mesh.length
+         ui.ui_prompt("mesh layer: "+globals.vol.layer+" triangles: "+globals.vol.triangle+" (s to stop)")
+         }
+      else {
+         //
+         // second pass
+         //
+         for (var t = 0; t < mesh.length; ++t) {
+            globals.vol.view.setFloat32(globals.vol.index+12,mesh[t][0][0],true)
+            globals.vol.view.setFloat32(globals.vol.index+16,mesh[t][0][1],true)
+            globals.vol.view.setFloat32(globals.vol.index+20,mesh[t][0][2],true)
+            globals.vol.view.setFloat32(globals.vol.index+24,mesh[t][1][0],true)
+            globals.vol.view.setFloat32(globals.vol.index+28,mesh[t][1][1],true)
+            globals.vol.view.setFloat32(globals.vol.index+32,mesh[t][1][2],true)
+            globals.vol.view.setFloat32(globals.vol.index+36,mesh[t][2][0],true)
+            globals.vol.view.setFloat32(globals.vol.index+40,mesh[t][2][1],true)
+            globals.vol.view.setFloat32(globals.vol.index+44,mesh[t][2][2],true)
+            globals.vol.index += 4*3*4+2
+            }
+         globals.vol.triangle += mesh.length
+         ui.ui_prompt("write layer: "+globals.vol.layer+" triangles: "+globals.vol.triangle+"/"+globals.vol.triangles+" (s to stop)")
          }
       //
       // increment layer
       //
       globals.vol.layer += 1
-      globals.vol.ptr += 1
-      if (globals.vol.ptr == globals.vol.buf.length)
-         globals.vol.ptr = 0
-      ui.ui_prompt("stl layer: " + globals.vol.layer + " (s to stop)")
-      findEl("mod_triangles").value = globals.mesh.triangles
-      if (globals.vol.stop == true) {
-         ui.ui_prompt("")
-         window.onkeydown = null
-         return
-         }
-      if (globals.vol.layer <= nz) {
+      if (globals.vol.layer < (globals.vol.nz-1)) {
          //
-         // read next layer
+         // not done, read next layer
          //
-         var file_reader = new FileReader();
-         file_reader.onload = mod_vol_stl_handler;
-         start = globals.vol.layer * globals.vol.layer_size
-         end = (globals.vol.layer + 1) * globals.vol.layer_size
-         var blob = globals.input_file.slice(start, end)
+         var file_reader = new FileReader()
+         file_reader.onload = mod_vol_save_stl_read_handler
+         start = (globals.vol.layer+1)*globals.vol.layer_size
+         end = (globals.vol.layer+2)*globals.vol.layer_size
+         var blob = globals.input_file.slice(start,end)
          file_reader.readAsArrayBuffer(blob)
-         }
-      else if (globals.vol.layer == (nz+1)) {
-         //
-         // top
-         //
-         mod_vol_stl_handler()
+         return
          }
       else {
          //
          // done
          //
-         ui.ui_prompt("")
-         window.onkeydown = null
-         view.setUint32(80, globals.mesh.triangles, endian)
-         var blob = new Blob([globals.mesh.buf], {
-            type: "application/octet-stream"
-         });
-         var download_link = findEl("mod_download")
-         download_link.download = globals.input_name + ".stl"
-         download_link.href = window.URL.createObjectURL(blob)
-         download_link.click()
+         if (globals.vol.triangles == null) {
+            //
+            // first pass
+            //
+            globals.vol.triangles = globals.vol.triangle
+            mod_vol_save_stl()
+            }
+         else {
+            //
+            // second pass
+            //
+            ui.ui_prompt("")
+            globals.vol.view.setUint32(80,globals.vol.triangles,true)
+            var blob = new Blob([globals.vol.buf], {
+               type: "application/octet-stream"
+               });
+            var download_link = findEl("mod_download")
+            download_link.download = globals.input_name + ".stl"
+            download_link.href = window.URL.createObjectURL(blob)
+            download_link.click()
+            }
          }
       }
    return {
