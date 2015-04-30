@@ -552,94 +552,6 @@ define(['mods/mod_globals','processes/mod_image'],
             return v
             }
          //
-         // triangulate_min
-         //    triangulate a voxel minimum threshold
-         //
-         function triangulate_min() {
-            //
-            // set rule table index
-            //
-            index = 0
-            if (w[0] < threshold) index += 1
-            if (w[1] < threshold) index += 2
-            if (w[2] < threshold) index += 4
-            if (w[3] < threshold) index += 8
-            if (w[4] < threshold) index += 16
-            if (w[5] < threshold) index += 32
-            if (w[6] < threshold) index += 64
-            if (w[7] < threshold) index += 128
-            //
-            // loop over rule chars
-            //
-            var rule = globals.mesh.rules[index]
-            i = 0;
-            while (i < rule.length) {
-               if (rule[i] == ' ') {
-                  //
-                  // space between rules
-                  //
-                  i += 1
-                  continue
-                  }
-               else {
-                  //
-                  // add vertices for rule to mesh
-                  //
-                  var c0 = rule[i]
-                  i += 1
-                  var c1 = rule[i]
-                  i += 1
-                  var c2 = rule[i]
-                  i += 1
-                  mesh[mesh.length] = [vertex(c0), vertex(c1), vertex(c2)]
-                  }
-               }
-            }
-         //
-         // triangulate_max
-         //    triangulate a voxel max threshold
-         //
-         function triangulate_max() {
-            //
-            // set rule table index
-            //
-            index = 0
-            if (w[0] < threshold) index += 1
-            if (w[1] < threshold) index += 2
-            if (w[2] < threshold) index += 4
-            if (w[3] < threshold) index += 8
-            if (w[4] < threshold) index += 16
-            if (w[5] < threshold) index += 32
-            if (w[6] < threshold) index += 64
-            if (w[7] < threshold) index += 128
-            //
-            // loop over rule chars
-            //
-            var rule = globals.mesh.rules[index]
-            i = 0;
-            while (i < rule.length) {
-               if (rule[i] == ' ') {
-                  //
-                  // space between rules
-                  //
-                  i += 1
-                  continue
-                  }
-               else {
-                  //
-                  // add vertices for rule to mesh
-                  //
-                  var c0 = rule[i]
-                  i += 1
-                  var c1 = rule[i]
-                  i += 1
-                  var c2 = rule[i]
-                  i += 1
-                  mesh[mesh.length] = [vertex(c2), vertex(c1), vertex(c0)]
-                  }
-               }
-            }
-         //
          // init layer mesh
          //
          var mesh = []
@@ -653,20 +565,116 @@ define(['mods/mod_globals','processes/mod_image'],
          // loop over layer
          //
          var w = new Array(8)
-         for (var y = 0; y < (ny - 1); ++y) {
-            for (var x = 0; x < (nx - 1); ++x) {
-               w[0] = buf0[(ny - 1 - y) * nx + x]
-               w[1] = buf0[(ny - 1 - y) * nx + (x + 1)]
-               w[2] = buf0[(ny - 1 - (y + 1)) * nx + x]
-               w[3] = buf0[(ny - 1 - (y + 1)) * nx + (x + 1)]
-               w[4] = buf1[(ny - 1 - y) * nx + x]
-               w[5] = buf1[(ny - 1 - y) * nx + (x + 1)]
-               w[6] = buf1[(ny - 1 - (y + 1)) * nx + x]
-               w[7] = buf1[(ny - 1 - (y + 1)) * nx + (x + 1)]
-               var threshold = min_threshold
-               triangulate_min()
-               var threshold = max_threshold
-               triangulate_max()
+         //
+         // triangulate minimum threshold
+         //
+         if (min_threshold != "") {
+            var threshold = parseFloat(min_threshold)
+            for (var y = 0; y < (ny - 1); ++y) {
+               for (var x = 0; x < (nx - 1); ++x) {
+                  w[0] = buf0[(ny - 1 - y) * nx + x]
+                  w[1] = buf0[(ny - 1 - y) * nx + (x + 1)]
+                  w[2] = buf0[(ny - 1 - (y + 1)) * nx + x]
+                  w[3] = buf0[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  w[4] = buf1[(ny - 1 - y) * nx + x]
+                  w[5] = buf1[(ny - 1 - y) * nx + (x + 1)]
+                  w[6] = buf1[(ny - 1 - (y + 1)) * nx + x]
+                  w[7] = buf1[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  //
+                  // set rule table index
+                  //
+                  var index = 0
+                  if (w[0] < threshold) index += 1
+                  if (w[1] < threshold) index += 2
+                  if (w[2] < threshold) index += 4
+                  if (w[3] < threshold) index += 8
+                  if (w[4] < threshold) index += 16
+                  if (w[5] < threshold) index += 32
+                  if (w[6] < threshold) index += 64
+                  if (w[7] < threshold) index += 128
+                  //
+                  // loop over rule chars
+                  //
+                  var rule = globals.mesh.rules[index]
+                  var i = 0;
+                  while (i < rule.length) {
+                     if (rule[i] == ' ') {
+                        //
+                        // space between rules
+                        //
+                        i += 1
+                        continue
+                        }
+                     else {
+                        //
+                        // add vertices for rule to mesh
+                        //
+                        var c0 = rule[i]
+                        i += 1
+                        var c1 = rule[i]
+                        i += 1
+                        var c2 = rule[i]
+                        i += 1
+                        mesh[mesh.length] = [vertex(c0), vertex(c1), vertex(c2)]
+                        }
+                     }
+                  }
+               }
+            }
+         //
+         // triangulate maximum threshold
+         //
+         if (max_threshold != "") {
+            var threshold = parseFloat(max_threshold)
+            for (var y = 0; y < (ny - 1); ++y) {
+               for (var x = 0; x < (nx - 1); ++x) {
+                  w[0] = buf0[(ny - 1 - y) * nx + x]
+                  w[1] = buf0[(ny - 1 - y) * nx + (x + 1)]
+                  w[2] = buf0[(ny - 1 - (y + 1)) * nx + x]
+                  w[3] = buf0[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  w[4] = buf1[(ny - 1 - y) * nx + x]
+                  w[5] = buf1[(ny - 1 - y) * nx + (x + 1)]
+                  w[6] = buf1[(ny - 1 - (y + 1)) * nx + x]
+                  w[7] = buf1[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  //
+                  // set rule table index
+                  //
+                  var index = 0
+                  if (w[0] < threshold) index += 1
+                  if (w[1] < threshold) index += 2
+                  if (w[2] < threshold) index += 4
+                  if (w[3] < threshold) index += 8
+                  if (w[4] < threshold) index += 16
+                  if (w[5] < threshold) index += 32
+                  if (w[6] < threshold) index += 64
+                  if (w[7] < threshold) index += 128
+                  //
+                  // loop over rule chars
+                  //
+                  var rule = globals.mesh.rules[index]
+                  var i = 0;
+                  while (i < rule.length) {
+                     if (rule[i] == ' ') {
+                        //
+                        // space between rules
+                        //
+                        i += 1
+                        continue
+                        }
+                     else {
+                        //
+                        // add vertices for rule to mesh
+                        //
+                        var c0 = rule[i]
+                        i += 1
+                        var c1 = rule[i]
+                        i += 1
+                        var c2 = rule[i]
+                        i += 1
+                        mesh[mesh.length] = [vertex(c2), vertex(c1), vertex(c0)]
+                        }
+                     }
+                  }
                }
             }
          return mesh
