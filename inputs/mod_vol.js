@@ -328,8 +328,12 @@ define(['require',
             }
          }
       else if (globals.vol.mode == "section") {
-         var tmin = parseFloat(findEl("mod_tmin").value)
-         var tmax = parseFloat(findEl("mod_tmax").value)
+         var tmin = findEl("mod_tmin").value
+         if (tmin == "")
+            tmin = -Number.MAX_VALUE
+         var tmax = findEl("mod_tmax").value
+         if (tmax == "")
+            tmax = Number.MAX_VALUE
          for (var row = 0; row < ny; ++row) {
             for (var col = 0; col < nx; ++col) {
                var value = buf[(ny-1-row)*nx+col]
