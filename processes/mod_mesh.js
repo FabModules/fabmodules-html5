@@ -568,8 +568,8 @@ define(['mods/mod_globals','processes/mod_image'],
          //
          // triangulate minimum threshold
          //
-         var threshold = min_threshold
-         if (threshold != NaN) {
+         if (min_threshold != "") {
+            var threshold = parseFloat(min_threshold)
             for (var y = 0; y < (ny - 1); ++y) {
                for (var x = 0; x < (nx - 1); ++x) {
                   w[0] = buf0[(ny - 1 - y) * nx + x]
@@ -624,8 +624,8 @@ define(['mods/mod_globals','processes/mod_image'],
          //
          // triangulate maximum threshold
          //
-         var threshold = max_threshold
-         if (threshold != NaN) {
+         if (max_threshold != "") {
+            var threshold = parseFloat(max_threshold)
             for (var y = 0; y < (ny - 1); ++y) {
                for (var x = 0; x < (nx - 1); ++x) {
                   w[0] = buf0[(ny - 1 - y) * nx + x]

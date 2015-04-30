@@ -362,8 +362,8 @@ define(['require',
       //
       // triangulate layer
       //
-      var tmin = parseFloat(findEl("mod_tmin").value)
-      var tmax = parseFloat(findEl("mod_tmax").value)
+      var tmin = findEl("mod_tmin").value
+      var tmax = findEl("mod_tmax").value
       var mesh = meshUtils.march_triangulate(tmin,tmax,globals.vol.buf,buf,
          globals.vol.nx,globals.vol.ny,globals.vol.nz,globals.vol.layer)
       //
@@ -431,8 +431,8 @@ define(['require',
       //
       // triangulate layer
       //
-      var tmin = parseFloat(findEl("mod_tmin").value)
-      var tmax = parseFloat(findEl("mod_tmax").value)
+      var tmin = findEl("mod_tmin").value
+      var tmax = findEl("mod_tmax").value
       var mesh = meshUtils.march_triangulate(tmin,tmax,globals.vol.buf0,globals.vol.buf1,
          globals.vol.nx,globals.vol.ny,globals.vol.nz,globals.vol.layer)
       //
