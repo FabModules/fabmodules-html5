@@ -145,9 +145,6 @@ function(require) {
       var dy = globals.height/globals.dpi
       var nx = globals.width
       var ny = globals.height
-      var power = parseFloat(findEl("mod_power").value)
-      var speed = parseFloat(findEl("mod_speed").value)
-      var rate = parseFloat(findEl("mod_rate").value)
       var ox = parseFloat(findEl("mod_x_origin").value)/25.4
       var oy = parseFloat(findEl("mod_y_origin").value)/25.4
       var scale = 600.0*dx/(nx-1) // 600 DPI
@@ -167,43 +164,47 @@ function(require) {
          var xoffset = 600.0*(ox-dx)
          var yoffset = 600.0*oy
          }
- esc   %   -   1   2   3   4   5   X // start of job
- esc   E // reset
- esc   !   m   1   0   N   U   n   t   i   t   l   e   d   -   1 // file name
-      var str = "%-12345X@PJL JOB NAME=" + globals.input_basename + "\r\n"
-      str += "E@PJL ENTER LANGUAGE=PCL\r\n"
-      if (findEl("mod_autofocus").checked)
+      var str = "%-12345X" // start of job
+      str += "E" // reset
+      str += "!m"+globals.input_basename.length+"N"+globals.input_basename // file name
+      // if (findEl("mod_autofocus").checked)
       //
       // init with autofocus on
       //
       //   str += ???
-      else
+      // else
       // 
       // init with autofocus off
       //
       //   str += ???
- esc   !   v   6   4   V // velocity for 16 pens, 0500 = 50%
-   0   0   1   0   0   5   0   0   0   5   0   0   0   5   0   0
-   0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-   0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-   0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
- esc   !   v   6   4   P // power for 16 pens, 0500 = 50%
-   0   0   1   0   0   5   0   0   0   5   0   0   0   5   0   0
-   0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-   0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-   0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
- esc   %   1   A // PCL mode
- esc   *   t   1   0   1   6   R // raster resolution 1016
- esc   &   u   1   0   1   6   D // unit of measure 1016
-      str += "&l0U&l0Z&u600D*p0X*p0Y*t600R*r0F&y50P&z50S*r6600T*r5100S*r1A*rC%1BIN;"
-      str += "XR" + rate + ";YP" + power + ";ZS" + speed + ";\n"
- esc   *   p   2   0   3   2   X // start cursor X position
- esc   *   p   2   0   3   2   Y // start cursor Y position
- esc   *   r   1   A // move carriage to cursor
- esc   *   r   C // close raster cluster
- esc   %   1   B   ;   // HPGL mode
- P   R   ;   // plot relative
- S   P   1   ; // pen 1
+      //esc   !   v   1   6   R // what is this? Enable/disable Pulse Per Inch for 16 pens ,range 0-1, This command is for vector only
+      //1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+      var rate = parseFloat(findEl("mod_rate").value)
+      //str += esc!v#I // PPI for 16 pens, 0001-1524
+      var speed = parseFloat(findEl("mod_speed").value)
+      //str += esc   !   v   6   4   V // velocity for 16 pens, 0500 = 50%
+      //0   0   1   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      var power = parseFloat(findEl("mod_power").value)
+      //str += esc   !   v   6   4   P // power for 16 pens, 0500 = 50%
+      //0   0   1   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      //str += esc   %   1   A // PCL mode
+      //str += esc   *   t   1   0   1   6   R // raster resolution 1016
+      //str += esc   &   u   1   0   1   6   D // unit of measure 1016
+      //   str += "&l0U&l0Z&u600D*p0X*p0Y*t600R*r0F&y50P&z50S*r6600T*r5100S*r1A*rC%1BIN;"
+      //   str += "XR" + rate + ";YP" + power + ";ZS" + speed + ";\n"
+      //str += esc   *   p   2   0   3   2   X // start cursor X position
+      //str += esc   *   p   2   0   3   2   Y // start cursor Y position
+      //str += esc   *   r   1   A // move carriage to cursor
+      //str += esc   *   r   C // close raster cluster
+      //str += esc   %   1   B   ;   // HPGL mode
+      //P   R   ;   // plot relative
+      //S   P   1   ; // pen 1
       //
       // loop over segments
       //
@@ -215,25 +216,25 @@ function(require) {
          y = yoffset+scale*(ny-path[seg][0][1])
          if (x < 0) x = 0
          if (y < 0) y = 0
- P   D   1   0   1   6   ,   0   ;   // pen down
- P   D   0   ,   -   1   0   1   6   ; 
- P   D   -   1   0   1   6   ,   0   ;
- P   D   0   ,   1   0   1   6   ; 
- P   U   ; // pen up
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
+         //P   D   1   0   1   6   ,   0   ;   // pen down
+         //P   D   0   ,   -   1   0   1   6   ; 
+         //P   D   -   1   0   1   6   ,   0   ;
+         //P   D   0   ,   1   0   1   6   ; 
+         //P   U   ; // pen up
+         //   str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
          for (var pt = 1; pt < path[seg].length; ++pt) {
             x = xoffset+scale*path[seg][pt][0]
             y = yoffset+scale*(ny-path[seg][pt][1])
             if (x < 0) x = 0
             if (y < 0) y = 0
-            str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
+            //str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
             }
-         str += "\n"
+         //str += "\n"
          }
-      str += "%0B%1BPUE%-12345X@PJL EOJ \r\n"
- esc   %   1   A // PCL mode
- esc   E // reset
- esc   %   -   1   2   3   4   5   X // end of job
+      //   str += "%0B%1BPUE%-12345X@PJL EOJ \r\n"
+      //esc   %   1   A // PCL mode
+      //esc   E // reset
+      //esc   %   -   1   2   3   4   5   X // end of job
       return str
       }
    return {
