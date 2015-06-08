@@ -21,7 +21,7 @@ function(require) {
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
    var Handlebars = require('handlebars');
-   var mod_gcc_controls_tpl = Handlebars.compile(require('text!templates/mod_gcc_laser_controls.html'))
+   var mod_gcc_laser_controls_tpl = Handlebars.compile(require('text!templates/mod_gcc_laser_controls.html'))
    var findEl = globals.findEl
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
@@ -119,7 +119,7 @@ function(require) {
       globals.output = "GCC_laser"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = mod_epilog_controls_tpl()
+      controls.innerHTML = mod_gcc_laser_controls_tpl()
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"
@@ -147,22 +147,22 @@ function(require) {
       var ny = globals.height
       var ox = parseFloat(findEl("mod_x_origin").value)/25.4
       var oy = parseFloat(findEl("mod_y_origin").value)/25.4
-      var scale = 600.0*dx/(nx-1) // 600 DPI
+      var scale = 1016*dx/(nx-1) // 1016 DPI
       if (findEl("mod_bottom_left").checked) {
-         var xoffset = 600.0*ox
-         var yoffset = 600.0*(oy-dy)
+         var xoffset = 1016*ox
+         var yoffset = 1016*(oy-dy)
          }
       else if (findEl("mod_bottom_right").checked) {
-         var xoffset = 600.0*(ox-dx)
-         var yoffset = 600.0*(oy-dy)
+         var xoffset = 1016*(ox-dx)
+         var yoffset = 1016*(oy-dy)
          }
       else if (findEl("mod_top_left").checked) {
-         var xoffset = 600.0*ox
-         var yoffset = 600.0*oy
+         var xoffset = 1016*ox
+         var yoffset = 1016*oy
          }
       else if (findEl("mod_top_right").checked) {
-         var xoffset = 600.0*(ox-dx)
-         var yoffset = 600.0*oy
+         var xoffset = 1016*(ox-dx)
+         var yoffset = 1016*oy
          }
       var str = "%-12345X" // start of job
       str += "E" // reset
@@ -177,34 +177,30 @@ function(require) {
       // init with autofocus off
       //
       //   str += ???
-      //esc   !   v   1   6   R // what is this? Enable/disable Pulse Per Inch for 16 pens ,range 0-1, This command is for vector only
-      //1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+      str += "!v16R" // Enable Pulse Per Inch for 16 pens, range 0-1
+      str += "1111111111111111"
       var rate = parseFloat(findEl("mod_rate").value)
-      //str += esc!v#I // PPI for 16 pens, 0001-1524
+      str += "!v64I" // PPI for 16 pens, 0001-1524
+      str += ("0000"+(rate.toFixed(0))).slice(-4)
+      str += "050005000500050005000500050005000500050005000500050005000500"
       var speed = parseFloat(findEl("mod_speed").value)
-      //str += esc   !   v   6   4   V // velocity for 16 pens, 0500 = 50%
-      //0   0   1   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
+      str += "!v64V" // velocity for 16 pens, 0500 = 50%
+      str += ("0000"+((speed*10).toFixed(0))).slice(-4)
+      str += "050005000500050005000500050005000500050005000500050005000500"
       var power = parseFloat(findEl("mod_power").value)
-      //str += esc   !   v   6   4   P // power for 16 pens, 0500 = 50%
-      //0   0   1   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //0   5   0   0   0   5   0   0   0   5   0   0   0   5   0   0
-      //str += esc   %   1   A // PCL mode
-      //str += esc   *   t   1   0   1   6   R // raster resolution 1016
-      //str += esc   &   u   1   0   1   6   D // unit of measure 1016
-      //   str += "&l0U&l0Z&u600D*p0X*p0Y*t600R*r0F&y50P&z50S*r6600T*r5100S*r1A*rC%1BIN;"
-      //   str += "XR" + rate + ";YP" + power + ";ZS" + speed + ";\n"
-      //str += esc   *   p   2   0   3   2   X // start cursor X position
-      //str += esc   *   p   2   0   3   2   Y // start cursor Y position
-      //str += esc   *   r   1   A // move carriage to cursor
-      //str += esc   *   r   C // close raster cluster
-      //str += esc   %   1   B   ;   // HPGL mode
-      //P   R   ;   // plot relative
-      //S   P   1   ; // pen 1
+      str += "!v64P" // power for 16 pens, 0500 = 50%
+      str += ("0000"+((power*10).toFixed(0))).slice(-4)
+      str += "050005000500050005000500050005000500050005000500050005000500"
+      str += "%1A" // PCL mode
+      str += "*t1016R" // raster resolution 1016
+      str += "&u1016D" // unit of measure 1016
+      str += "*p"+xoffset.toFixed(0)+"X" // start cursor X position
+      str += "*p"+yoffset.toFixed(0)+"Y" // start cursor Y position
+      str += "*r1A" // move carriage to cursor
+      str += "*rC" // close raster cluster
+      str += "%1B;"   // HPGL mode
+      str += "PR;"   // plot relative
+      str += "SP1;" // pen 1
       //
       // loop over segments
       //
@@ -212,34 +208,27 @@ function(require) {
          //
          // loop over points
          //
-         x = xoffset+scale*path[seg][0][0]
-         y = yoffset+scale*(ny-path[seg][0][1])
+         x = scale*path[seg][0][0]
+         y = scale*(ny-path[seg][0][1])
          if (x < 0) x = 0
          if (y < 0) y = 0
-         //P   D   1   0   1   6   ,   0   ;   // pen down
-         //P   D   0   ,   -   1   0   1   6   ; 
-         //P   D   -   1   0   1   6   ,   0   ;
-         //P   D   0   ,   1   0   1   6   ; 
-         //P   U   ; // pen up
-         //   str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
+         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
          for (var pt = 1; pt < path[seg].length; ++pt) {
-            x = xoffset+scale*path[seg][pt][0]
-            y = yoffset+scale*(ny-path[seg][pt][1])
+            x = scale*path[seg][pt][0]
+            y = scale*(ny-path[seg][pt][1])
             if (x < 0) x = 0
             if (y < 0) y = 0
-            //str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
+            str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
             }
-         //str += "\n"
          }
-      //   str += "%0B%1BPUE%-12345X@PJL EOJ \r\n"
-      //esc   %   1   A // PCL mode
-      //esc   E // reset
-      //esc   %   -   1   2   3   4   5   X // end of job
+      str += "%1A" // PCL mode
+      str += "E" // reset
+      str += "%-12345X" // end of job
       return str
       }
    return {
       mod_load_handler: mod_load_handler,
-      mod_Epilog_path: mod_Epilog_path
+      mod_GCC_laser_path: mod_GCC_laser_path
       }
    })
 
