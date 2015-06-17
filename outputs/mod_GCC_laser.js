@@ -194,12 +194,13 @@ function(require) {
       str += "%1A" // PCL mode
       str += "*t1016R" // raster resolution 1016
       str += "&u1016D" // unit of measure 1016
-      str += "*p"+xoffset.toFixed(0)+"X" // start cursor X position
-      str += "*p"+yoffset.toFixed(0)+"Y" // start cursor Y position
+      //str += "*p"+xoffset.toFixed(0)+"X" // start cursor X position
+      //str += "*p"+yoffset.toFixed(0)+"Y" // start cursor Y position
       str += "*r1A" // move carriage to cursor
       str += "*rC" // close raster cluster
       str += "%1B;"   // HPGL mode
-      str += "PR;"   // plot relative
+      //str += "PR;"   // plot relative
+      str += "PA;"   // plot relative
       str += "SP1;" // pen 1
       //
       // loop over segments
@@ -208,14 +209,14 @@ function(require) {
          //
          // loop over points
          //
-         x = scale*path[seg][0][0]
-         y = scale*(ny-path[seg][0][1])
+         x = xoffset+scale*path[seg][0][0]
+         y = yoffset+scale*(ny-path[seg][0][1])
          if (x < 0) x = 0
          if (y < 0) y = 0
          str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
          for (var pt = 1; pt < path[seg].length; ++pt) {
-            x = scale*path[seg][pt][0]
-            y = scale*(ny-path[seg][pt][1])
+            x = xoffset+scale*path[seg][pt][0]
+            y = yoffset+scale*(ny-path[seg][pt][1])
             if (x < 0) x = 0
             if (y < 0) y = 0
             str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
