@@ -17,12 +17,14 @@ wget -x http://fabmodules.org/inputs/mod_vol.js
 wget -x http://fabmodules.org/inputs/mod_vol_view.js
 wget -x http://fabmodules.org/outputs/mod_Epilog.js
 wget -x http://fabmodules.org/outputs/mod_eps.js
+wget -x http://fabmodules.org/outputs/mod_GCC_laser.js
 wget -x http://fabmodules.org/outputs/mod_G.js
 wget -x http://fabmodules.org/outputs/mod_outputs.js
 wget -x http://fabmodules.org/outputs/mod_Oxford.js
 wget -x http://fabmodules.org/outputs/mod_Roland_mill.js
 wget -x http://fabmodules.org/outputs/mod_Roland_vinyl.js
 wget -x http://fabmodules.org/outputs/mod_Shopbot.js
+wget -x http://fabmodules.org/outputs/mod_Smoothie_G.js
 wget -x http://fabmodules.org/outputs/mod_svg.js
 wget -x http://fabmodules.org/outputs/mod_Trotec.js
 wget -x http://fabmodules.org/processes/mod_image.js
@@ -36,6 +38,7 @@ wget -x http://fabmodules.org/mod_server/mod_server.js
 wget -x http://fabmodules.org/mod_server/mod_lp.py
 wget -x http://fabmodules.org/mod_server/mod_serial.py
 wget -x http://fabmodules.org/templates/mod_epilog_controls.html
+wget -x http://fabmodules.org/templates/mod_gcc_laser_controls.html
 wget -x http://fabmodules.org/templates/mod_g_controls.html
 wget -x http://fabmodules.org/templates/mod_oxford_controls.html
 wget -x http://fabmodules.org/templates/mod_path_file_controls.html

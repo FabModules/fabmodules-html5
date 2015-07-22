@@ -28,7 +28,6 @@ echo '<a href=https://github.com/FabModules/fabmodules-html5/issues>report issue
 echo 'version: '`date`'<br><br>' >> mods.html
 ls index.html > mods.tmp
 ls mod_settings >> mods.tmp
-ls mod_get >> mods.tmp
 ls mod_serve >> mods.tmp
 ls mod_index >> mods.tmp
 ls mods/*js >> mods.tmp
@@ -50,11 +49,5 @@ echo 'acknowledge the fab modules project. Copyright is<br>' >> mods.html
 echo 'retained and must be preserved. The work is provided<br>' >> mods.html
 echo 'as is; no warranty is provided, and users accept all<br>' >> mods.html
 echo 'liability.' >> mods.html
-echo "#!/bin/bash" > mod_get
-awk '{ printf "wget -x http://fabmodules.org/" $0 "\n" }' mods.tmp >> mod_get
-echo "wget -x http://requirejs.org/docs/release/2.1.15/minified/require.js -O fabmodules.org/require.js" >> mod_get
-echo "wget -x http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v2.0.0.js -O fabmodules.org/handlebars-v2.0.0.js" >> mod_get
-echo "cd fabmodules.org/mod_server" >> mod_get
-echo "npm install ws" >> mod_get
 rm mods.tmp
 

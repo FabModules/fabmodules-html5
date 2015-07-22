@@ -3,7 +3,7 @@
 //   fab modules mesh routines
 //
 // Neil Gershenfeld 
-// (c) Massachusetts Institute of Technology 2014
+// (c) Massachusetts Institute of Technology 2014,5
 // 
 // This work may be reproduced, modified, distributed, performed, and 
 // displayed for any purpose, but must acknowledge the fab modules 
@@ -29,9 +29,9 @@ define(['mods/mod_globals','processes/mod_image'],
          for (var row = 0; row < img.height; ++row)
             for (var col = 0; col < img.width; ++col)
                view.setFloat32(row * 4 * img.width + col * 4, zclear)
-               //
-               // set triangle heights
-               //
+         //
+         // set triangle heights
+         //
          var rz = globals.mesh.rz
          var rx = globals.mesh.rx
          var dy = globals.mesh.dy
@@ -40,7 +40,7 @@ define(['mods/mod_globals','processes/mod_image'],
          var zlim = {
             zmin: 1e10,
             zmax: -1e10
-         }
+            }
          for (var t = 0; t < mesh.length; ++t)
             mod_mesh_height_triangle(mesh[t], img, rz, rx, dy, dx, s, zlim)
          globals.zmin = 25.4 * (zlim.zmin - zlim.zmax) / globals.dpi
@@ -51,11 +51,11 @@ define(['mods/mod_globals','processes/mod_image'],
             for (var col = 0; col < img.width; ++col) {
                var z = view.getFloat32((img.height - 1 - row) * 4 * img.width + col * 4)
                if (z == zclear)
-                  view.setFloat32((img.height - 1 - row) * 4 * img.width + col * 4, zlim.zmin)
-            }
-            //
-            // map height to intensity
-            //
+                  view.setFloat32((img.height - 1 - row) * 4 * img.width + col * 4, zlim.zmax)
+               }
+         //
+         // map height to intensity
+         //
          var imax = 256 * 256 * 256 - 1
          for (var row = 0; row < img.height; ++row)
             for (var col = 0; col < img.width; ++col) {
@@ -65,13 +65,12 @@ define(['mods/mod_globals','processes/mod_image'],
                img.set(row, col, 1, ((i >> 8) & 255))
                img.set(row, col, 2, ((i >> 16) & 255))
                img.set(row, col, 3, 255)
-            }
-      }
+               }
+         }
       //
       // mod_mesh_height_triangle
       //    add triangle to height map
       //
-
       function mod_mesh_height_triangle(t, img, rz, rx, dy, dx, s, zlim) {
          //
          // pos
@@ -109,8 +108,8 @@ define(['mods/mod_globals','processes/mod_image'],
                x: xn,
                y: yn,
                z: zf
+               }
             }
-         }
          var p0 = pos(t[0])
          var x0 = p0.x
          var y0 = p0.y
@@ -128,9 +127,9 @@ define(['mods/mod_globals','processes/mod_image'],
          //
          if (((x1 - x0) * (y1 - y2) - (x1 - x2) * (y1 - y0)) >= 0)
             return
-            //
-            // sort projection order
-            //
+         //
+         // sort projection order
+         //
          if (y1 > y2) {
             var temp = x1;
             x1 = x2;
@@ -141,7 +140,7 @@ define(['mods/mod_globals','processes/mod_image'],
             var temp = z1;
             z1 = z2;
             z2 = temp
-         }
+            }
          if (y0 > y1) {
             var temp = x0;
             x0 = x1;
@@ -152,7 +151,7 @@ define(['mods/mod_globals','processes/mod_image'],
             var temp = z0;
             z0 = z1;
             z1 = temp
-         }
+            }
          if (y1 > y2) {
             var temp = x1;
             x1 = x2;
@@ -163,7 +162,7 @@ define(['mods/mod_globals','processes/mod_image'],
             var temp = z1;
             z1 = z2;
             z2 = temp
-         }
+            }
          //
          // check orientation after sort
          //
@@ -194,9 +193,9 @@ define(['mods/mod_globals','processes/mod_image'],
                   var z = z12 + slope * (x - x12)
                   if (z > view.getFloat32((img.height - 1 - y) * 4 * img.width + x * 4))
                      view.setFloat32((img.height - 1 - y) * 4 * img.width + x * 4, z)
+                  }
                }
             }
-         }
          if (y1 != y0) {
             for (var y = y0; y <= y1; ++y) {
                if (y < 0) continue
@@ -216,15 +215,14 @@ define(['mods/mod_globals','processes/mod_image'],
                   var z = z01 + slope * (x - x01)
                   if (z > view.getFloat32((img.height - 1 - y) * 4 * img.width + x * 4))
                      view.setFloat32((img.height - 1 - y) * 4 * img.width + x * 4, z)
+                  }
                }
             }
          }
-      }
       //
       // mod_mesh_march_rules
       //    marching cubes rule table
       //
-
       function mod_mesh_march_rules() {
          //
          // vertices:
@@ -252,44 +250,41 @@ define(['mods/mod_globals','processes/mod_image'],
          // add_rule
          //    add a rule and its variants to the table
          //
-         function add_rule(rules, index, edges) {
+         function add_rule(rules,index,edges) {
             rules[index] = edges
             for (var i = 0; i < 4; ++i) {
                for (var j = 0; j < 4; ++j) {
                   for (var k = 0; k < 4; ++k) {
                      index = rotate_x(rules, index)
-                  }
+                     }
                   index = rotate_y(rules, index)
-               }
+                  }
                index = rotate_z(rules, index)
+               }
             }
-         }
          //
          // b
          //    return string as binary
          //
-
          function b(num) {
             var v = 0
             for (var i = 0; i < num.length; ++i)
                if (num[num.length - i - 1] == '1')
                   v += Math.pow(2, i)
             return v
-         }
+            }
          //
          // print_rules
          //    print the rule table
          //
-
          function print_rules(rules) {
             for (var i = 0; i < 256; ++i)
                console.log(i + ' ' + rules[i])
-         }
+             }
          //
          // rotate_x
          //   rotate rule around x and add
          //
-
          function rotate_x(rules, index) {
             var new_index =
                (((index >> 4) & 1) << 0) + (((index >> 5) & 1) << 1) + (((index >> 0) & 1) << 2) + (((index >> 1) & 1) << 3) + (((index >> 6) & 1) << 4) + (((index >> 7) & 1) << 5) + (((index >> 2) & 1) << 6) + (((index >> 3) & 1) << 7)
@@ -335,16 +330,15 @@ define(['mods/mod_globals','processes/mod_image'],
                   case ' ':
                      new_rule += ' ';
                      break;
+                  }
                }
-            }
             rules[new_index] = new_rule
             return new_index
-         }
+            }
          //
          // rotate_y
          //   rotate rule around y and add
          //
-
          function rotate_y(rules, index) {
             var new_index =
                (((index >> 1) & 1) << 0) + (((index >> 5) & 1) << 1) + (((index >> 3) & 1) << 2) + (((index >> 7) & 1) << 3) + (((index >> 0) & 1) << 4) + (((index >> 4) & 1) << 5) + (((index >> 2) & 1) << 6) + (((index >> 6) & 1) << 7)
@@ -390,16 +384,15 @@ define(['mods/mod_globals','processes/mod_image'],
                   case ' ':
                      new_rule += ' ';
                      break;
+                  }
                }
-            }
             rules[new_index] = new_rule
             return new_index
-         }
+             }
          //
          // rotate_z
          //   rotate rule around z and add
          //
-
          function rotate_z(rules, index) {
             var new_index =
                (((index >> 2) & 1) << 0) + (((index >> 0) & 1) << 1) + (((index >> 3) & 1) << 2) + (((index >> 1) & 1) << 3) + (((index >> 6) & 1) << 4) + (((index >> 4) & 1) << 5) + (((index >> 7) & 1) << 6) + (((index >> 5) & 1) << 7)
@@ -445,11 +438,11 @@ define(['mods/mod_globals','processes/mod_image'],
                   case ' ':
                      new_rule += ' ';
                      break;
+                  }
                }
-            }
             rules[new_index] = new_rule
             return new_index
-         }
+            }
          var rules = new Array(255)
          add_rule(rules, b('00000000'), "") // 0
          add_rule(rules, b('11111111'), "") // ~0
@@ -482,13 +475,12 @@ define(['mods/mod_globals','processes/mod_image'],
          add_rule(rules, b('01001110'), "lkg lga lad agf") // 14
          add_rule(rules, b('10110001'), "gkl agl dal fga") // ~14
          return rules
-      }
+         }
       //
       // mod_mesh_march_triangulate
       //    triangulate layer
       //
-
-      function mod_mesh_march_triangulate(min_threshold, max_threshold, buf, ptr, nx, ny, nz, z) {
+      function mod_mesh_march_triangulate(min_threshold,max_threshold,buf0,buf1,nx,ny,nz,z) {
          //
          // vertex
          //    interpolate a triangle vertex
@@ -556,97 +548,9 @@ define(['mods/mod_globals','processes/mod_image'],
                   v[1] = y + (w[4] - threshold) / (w[4] - w[6])
                   v[2] = z + 1
                   break
-            }
+               }
             return v
-         }
-         //
-         // triangulate_min
-         //    triangulate a voxel minimum threshold
-         //
-
-         function triangulate_min() {
-            //
-            // set rule table index
-            //
-            index = 0
-            if (w[0] < threshold) index += 1
-            if (w[1] < threshold) index += 2
-            if (w[2] < threshold) index += 4
-            if (w[3] < threshold) index += 8
-            if (w[4] < threshold) index += 16
-            if (w[5] < threshold) index += 32
-            if (w[6] < threshold) index += 64
-            if (w[7] < threshold) index += 128
-            //
-            // loop over rule chars
-            //
-            var rule = globals.mesh.rules[index]
-            i = 0;
-            while (i < rule.length) {
-               if (rule[i] == ' ') {
-                  //
-                  // space between rules
-                  //
-                  i += 1
-                  continue
-               } else {
-                  //
-                  // add vertices for rule to mesh
-                  //
-                  var c0 = rule[i]
-                  i += 1
-                  var c1 = rule[i]
-                  i += 1
-                  var c2 = rule[i]
-                  i += 1
-                  mesh[mesh.length] = [vertex(c0), vertex(c1), vertex(c2)]
-               }
             }
-         }
-         //
-         // triangulate_max
-         //    triangulate a voxel max threshold
-         //
-
-         function triangulate_max() {
-            //
-            // set rule table index
-            //
-            index = 0
-            if (w[0] < threshold) index += 1
-            if (w[1] < threshold) index += 2
-            if (w[2] < threshold) index += 4
-            if (w[3] < threshold) index += 8
-            if (w[4] < threshold) index += 16
-            if (w[5] < threshold) index += 32
-            if (w[6] < threshold) index += 64
-            if (w[7] < threshold) index += 128
-            //
-            // loop over rule chars
-            //
-            var rule = globals.mesh.rules[index]
-            i = 0;
-            while (i < rule.length) {
-               if (rule[i] == ' ') {
-                  //
-                  // space between rules
-                  //
-                  i += 1
-                  continue
-               } else {
-                  //
-                  // add vertices for rule to mesh
-                  //
-                  var c0 = rule[i]
-                  i += 1
-                  var c1 = rule[i]
-                  i += 1
-                  var c2 = rule[i]
-                  i += 1
-                  mesh[mesh.length] = [vertex(c2), vertex(c1), vertex(c0)]
-               }
-            }
-         }
          //
          // init layer mesh
          //
@@ -658,120 +562,128 @@ define(['mods/mod_globals','processes/mod_image'],
          mesh.zmin = 0
          mesh.zmax = nz
          //
-         // set layer buffers
+         // loop over layer
          //
-         if (ptr == 0) {
-            var bot = 1
-            var top = 0
-         } else {
-            var bot = 0
-            var top = 1
-         }
-         if (z == 0)
-            buf[bot] = new Float32Array(nx * ny)
-         else if (z == nz)
-            buf[top] = new Float32Array(nx * ny)
-            //
-            // loop over layer
-            //
          var w = new Array(8)
-         for (var y = 0; y < (ny - 1); ++y) {
-            for (var x = 0; x < (nx - 1); ++x) {
-               w[0] = buf[bot][(ny - 1 - y) * nx + x]
-               w[1] = buf[bot][(ny - 1 - y) * nx + (x + 1)]
-               w[2] = buf[bot][(ny - 1 - (y + 1)) * nx + x]
-               w[3] = buf[bot][(ny - 1 - (y + 1)) * nx + (x + 1)]
-               w[4] = buf[top][(ny - 1 - y) * nx + x]
-               w[5] = buf[top][(ny - 1 - y) * nx + (x + 1)]
-               w[6] = buf[top][(ny - 1 - (y + 1)) * nx + x]
-               w[7] = buf[top][(ny - 1 - (y + 1)) * nx + (x + 1)]
-               var threshold = min_threshold
-               triangulate_min()
-               var threshold = max_threshold
-               triangulate_max()
+         //
+         // triangulate minimum threshold
+         //
+         if (min_threshold != "") {
+            var threshold = parseFloat(min_threshold)
+            for (var y = 0; y < (ny - 1); ++y) {
+               for (var x = 0; x < (nx - 1); ++x) {
+                  w[0] = buf0[(ny - 1 - y) * nx + x]
+                  w[1] = buf0[(ny - 1 - y) * nx + (x + 1)]
+                  w[2] = buf0[(ny - 1 - (y + 1)) * nx + x]
+                  w[3] = buf0[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  w[4] = buf1[(ny - 1 - y) * nx + x]
+                  w[5] = buf1[(ny - 1 - y) * nx + (x + 1)]
+                  w[6] = buf1[(ny - 1 - (y + 1)) * nx + x]
+                  w[7] = buf1[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  //
+                  // set rule table index
+                  //
+                  var index = 0
+                  if (w[0] < threshold) index += 1
+                  if (w[1] < threshold) index += 2
+                  if (w[2] < threshold) index += 4
+                  if (w[3] < threshold) index += 8
+                  if (w[4] < threshold) index += 16
+                  if (w[5] < threshold) index += 32
+                  if (w[6] < threshold) index += 64
+                  if (w[7] < threshold) index += 128
+                  //
+                  // loop over rule chars
+                  //
+                  var rule = globals.mesh.rules[index]
+                  var i = 0;
+                  while (i < rule.length) {
+                     if (rule[i] == ' ') {
+                        //
+                        // space between rules
+                        //
+                        i += 1
+                        continue
+                        }
+                     else {
+                        //
+                        // add vertices for rule to mesh
+                        //
+                        var c0 = rule[i]
+                        i += 1
+                        var c1 = rule[i]
+                        i += 1
+                        var c2 = rule[i]
+                        i += 1
+                        mesh[mesh.length] = [vertex(c0), vertex(c1), vertex(c2)]
+                        }
+                     }
+                  }
+               }
             }
-         }
          //
-         // loop over boundary
+         // triangulate maximum threshold
          //
-         for (var y = 0; y < (ny - 1); ++y) {
-            //
-            // left
-            //
-            x = 0
-            w[0] = 0
-            w[1] = buf[bot][(ny - 1 - y) * nx + 0]
-            w[2] = 0
-            w[3] = buf[bot][(ny - 1 - (y + 1)) * nx + 0]
-            w[4] = 0
-            w[5] = buf[top][(ny - 1 - y) * nx + 0]
-            w[6] = 0
-            w[7] = buf[top][(ny - 1 - (y + 1)) * nx + 0]
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-            //
-            // right
-            //
-            x = nx - 1
-            w[0] = buf[bot][(ny - 1 - y) * nx + (nx - 1)]
-            w[1] = 0
-            w[2] = buf[bot][(ny - 1 - (y + 1)) * nx + (nx - 1)]
-            w[3] = 0
-            w[4] = buf[top][(ny - 1 - y) * nx + (nx - 1)]
-            w[5] = 0
-            w[6] = buf[top][(ny - 1 - (y + 1)) * nx + (nx - 1)]
-            w[7] = 0
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-         }
-         for (var x = 0; x < (nx - 1); ++x) {
-            //
-            // bottom
-            //
-            y = 0
-            w[0] = 0
-            w[1] = 0
-            w[2] = buf[bot][(ny - 1 - (0)) * nx + x]
-            w[3] = buf[bot][(ny - 1 - (0)) * nx + (x + 1)]
-            w[4] = 0
-            w[5] = 0
-            w[6] = buf[top][(ny - 1 - (0)) * nx + x]
-            w[7] = buf[top][(ny - 1 - (0)) * nx + (x + 1)]
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-            //
-            // top
-            //
-            y = ny - 1
-            w[0] = buf[bot][(ny - 1 - (ny - 1)) * nx + x]
-            w[1] = buf[bot][(ny - 1 - (ny - 1)) * nx + (x + 1)]
-            w[2] = 0
-            w[3] = 0
-            w[4] = buf[top][(ny - 1 - (ny - 1)) * nx + x]
-            w[5] = buf[top][(ny - 1 - (ny - 1)) * nx + (x + 1)]
-            w[6] = 0
-            w[7] = 0
-            var threshold = min_threshold
-            triangulate_min()
-            var threshold = max_threshold
-            triangulate_max()
-         }
+         if (max_threshold != "") {
+            var threshold = parseFloat(max_threshold)
+            for (var y = 0; y < (ny - 1); ++y) {
+               for (var x = 0; x < (nx - 1); ++x) {
+                  w[0] = buf0[(ny - 1 - y) * nx + x]
+                  w[1] = buf0[(ny - 1 - y) * nx + (x + 1)]
+                  w[2] = buf0[(ny - 1 - (y + 1)) * nx + x]
+                  w[3] = buf0[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  w[4] = buf1[(ny - 1 - y) * nx + x]
+                  w[5] = buf1[(ny - 1 - y) * nx + (x + 1)]
+                  w[6] = buf1[(ny - 1 - (y + 1)) * nx + x]
+                  w[7] = buf1[(ny - 1 - (y + 1)) * nx + (x + 1)]
+                  //
+                  // set rule table index
+                  //
+                  var index = 0
+                  if (w[0] < threshold) index += 1
+                  if (w[1] < threshold) index += 2
+                  if (w[2] < threshold) index += 4
+                  if (w[3] < threshold) index += 8
+                  if (w[4] < threshold) index += 16
+                  if (w[5] < threshold) index += 32
+                  if (w[6] < threshold) index += 64
+                  if (w[7] < threshold) index += 128
+                  //
+                  // loop over rule chars
+                  //
+                  var rule = globals.mesh.rules[index]
+                  var i = 0;
+                  while (i < rule.length) {
+                     if (rule[i] == ' ') {
+                        //
+                        // space between rules
+                        //
+                        i += 1
+                        continue
+                        }
+                     else {
+                        //
+                        // add vertices for rule to mesh
+                        //
+                        var c0 = rule[i]
+                        i += 1
+                        var c1 = rule[i]
+                        i += 1
+                        var c2 = rule[i]
+                        i += 1
+                        mesh[mesh.length] = [vertex(c2), vertex(c1), vertex(c0)]
+                        }
+                     }
+                  }
+               }
+            }
          return mesh
-      }
-
-
+         }
       return {
          'heightmap': mod_mesh_height_map,
          'height_map': mod_mesh_height_map,
          'height_triangle': mod_mesh_height_triangle,
          'march_rules': mod_mesh_march_rules,
          'march_triangulate': mod_mesh_march_triangulate,
-      };
-
-   });
+         };
+      });
