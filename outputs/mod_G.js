@@ -93,6 +93,54 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["overlap", "50"],
          ["error", "1.5"],
       ])
+      mod_add_process([
+         ["name", "PCB traces (1/64)"],
+         ["module", "G"],
+         ["controls", "mod_path_image_21D_controls"],
+         ["routine", "mod_G_path"],
+         ["command", "gedit"],
+         ["cut_speed", "4"],
+         ["plunge_speed", "2"],
+         ["spindle_speed", "10000"],
+         ["depth", "0.1"],
+         ["diameter", "0.4"],
+         ["offsets", "4"],
+         ["overlap", "50"],
+         ["error", "1.1"],
+         ["merge", "1.5"],
+      ])
+      mod_add_process([
+         ["name", "PCB outline (1/32)"],
+         ["module", "G"],
+         ["controls", "mod_path_image_22D_controls"],
+         ["routine", "mod_G_path"],
+         ["command", "gedit"],
+         ["cut_speed", "4"],
+         ["plunge_speed", "2"],
+         ["spindle_speed", "10000"],
+         ["depth", "0.6"],
+         ["thickness", "1.7"],
+         ["diameter", "0.79"],
+         ["offsets", "1"],
+         ["error", "1.1"],
+         ["merge", "1.5"],
+      ])
+      mod_add_process([
+         ["name", "PCB traces (0.010)"],
+         ["module", "G"],
+         ["controls", "mod_path_image_21D_controls"],
+         ["routine", "mod_G_path"],
+         ["command", "gedit"],
+         ["cut_speed", "2"],
+         ["plunge_speed", "1"],
+         ["spindle_speed", "10000"],
+         ["depth", "0.1"],
+         ["diameter", "0.254"],
+         ["offsets", "1"],
+         ["overlap", "50"],
+         ["error", "1.1"],
+         ["merge", "1.5"],
+      ])
    }
    //
    // mod_load_handler
