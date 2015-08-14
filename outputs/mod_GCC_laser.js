@@ -210,13 +210,13 @@ function(require) {
          // loop over points
          //
          x = xoffset+scale*path[seg][0][0]
-         y = yoffset+scale*(ny-path[seg][0][1])
+         y = yoffset+scale*(path[seg][0][1])
          if (x < 0) x = 0
          if (y < 0) y = 0
          str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
          for (var pt = 1; pt < path[seg].length; ++pt) {
             x = xoffset+scale*path[seg][pt][0]
-            y = yoffset+scale*(ny-path[seg][pt][1])
+            y = yoffset+scale*(path[seg][pt][1])
             if (x < 0) x = 0
             if (y < 0) y = 0
             str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
