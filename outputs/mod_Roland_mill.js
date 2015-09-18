@@ -1,10 +1,9 @@
 //
 // mod_Roland_mill.js
 //   fab modules Roland mill output
-//   currently only MDX-20
 //
 // Neil Gershenfeld 
-// (c) Massachusetts Institute of Technology 2014
+// (c) Massachusetts Institute of Technology 2015
 // 
 // This work may be reproduced, modified, distributed, performed, and 
 // displayed for any purpose, but must acknowledge the fab modules 
@@ -13,33 +12,34 @@
 // liability.
 //
 
-define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html', 'mods/mod_ui', 'mods/mod_globals', 'mods/mod_file'], function(require) {
-
+define(['require',
+   'handlebars',
+   'text!templates/mod_roland_mill_controls.html',
+   'mods/mod_ui',
+   'mods/mod_globals',
+   'mods/mod_file'],
+   function(require) {
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
    var Handlebars = require('handlebars')
    var fileUtils = require('mods/mod_file');
    var mod_roland_mill_controls_tpl = Handlebars.compile(require('text!templates/mod_roland_mill_controls.html'))
    var findEl = globals.findEl
-
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
-
-   var model = 'mdx_20';
-   
+   var model = 'mdx_20';  
    var rml_units = {
       mdx_20: 40.0,
       mdx_40: 100.0,
       srm_20: 100.0
-   };
-   
+      };
    var rml_unit = rml_units.mdx_20;
-   
    if (input == "path (.svg)") {
       //
       // vector input processes
       //
-   } else {
+      }
+   else {
       //
       // raster input processes
       //
@@ -55,7 +55,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["overlap", "50"],
          ["error", "1.1"],
          ["merge", "1.5"],
-      ])
+         ])
       mod_add_process([
          ["name", "PCB outline (1/32)"],
          ["module", "Roland_mill"],
@@ -68,7 +68,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["offsets", "1"],
          ["error", "1.1"],
          ["merge", "1.5"],
-      ])
+         ])
       mod_add_process([
          ["name", "PCB traces (0.010)"],
          ["module", "Roland_mill"],
@@ -81,7 +81,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["overlap", "50"],
          ["error", "1.1"],
          ["merge", "1.5"],
-      ])
+         ])
       mod_add_process([
          ["name", "wax rough cut (1/8)"],
          ["module", "Roland_mill"],
@@ -95,7 +95,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["offsets", "-1"],
          ["error", "1.5"],
          ["merge", "1.5"],
-      ])
+         ])
       mod_add_process([
          ["name", "wax finish cut (1/8)"],
          ["module", "Roland_mill"],
@@ -107,87 +107,67 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ["length", "25.4"],
          ["overlap", "50"],
          ["error", "1.5"],
-      ])
-   }
+         ])
+      }
    //
    // mod_load_handler
    //   file load handler
    //
-
    function mod_load_handler() {
       globals.output = "Roland_mill"
       ui.ui_prompt("process?")
-
-
       var controls = findEl("mod_output_controls")
-
       var ctx = {
          mod_xmin: globals.xmin,
          show_move : true
-      }
-
-
-
+         }
       // if (globals.ymin != "") {
       //    ctx.show_move = true;
       // }
-
       controls.innerHTML = mod_roland_mill_controls_tpl(ctx);
-
       if (globals.xmin != "")
          findEl("mod_xmin").setAttribute("value", globals.xmin)
-
       if (globals.ymin != "") {
          findEl("mod_ymin").setAttribute("value", globals.ymin)
-      }
+         }
       if (globals.zmin != "") {
          findEl("mod_zmin").setAttribute("value", globals.zmin)
-      }
-      
+         }
       findEl("mod_roland_machine", false).addEventListener("change", function(ev){
          rml_unit = rml_units[this.value];
-	 model = this.value;
+	      model = this.value;
          if (model == 'mdx_20') {
             cmd="mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
-         } else {
+            }
+         else {
             cmd="mod_lp.py /dev/usb/lp1";
-         }
+            }
          findEl("mod_command").value = cmd; 
-      },false);
-
-
+         },false);
       findEl("mod_ymin",false).addEventListener("input", function() {
          globals.ymin = findEl("mod_ymin").value;
-      });
-
+         });
       findEl("mod_xmin",false).addEventListener("input", function() {
          globals.xmin = findEl("mod_xmin").value
-      });
-
+         });
       findEl("mod_zmin",false).addEventListener("input", function() {
          globals.zmin = findEl("mod_zmin").value
-      });
-
-
-
+         });
       if (findEl('mod_move',false)) {
          findEl('mod_move').addEventListener("click", function() {
             var name = "move.rml";
             var xmin = rml_unit * parseFloat(findEl("mod_xmin").value);
             var ymin = rml_unit * parseFloat(findEl("mod_ymin").value);
             var zmin = rml_unit * parseFloat(findEl("mod_zmin").value);
-
             var file = "PA;PA;!VZ10;!PZ0,100;PU " + xmin + " " + ymin + ";PD " + xmin + " " + ymin + ";!MC0;";
             if (model != 'mdx_20') {
-                file = "PA;PA;!VZ10;Z "+ xmin + "," + ymin + "," + zmin + ";!MC0"
-            }
-
+               file = "PA;PA;!VZ10;Z "+ xmin + "," + ymin + "," + zmin + ";!MC0"
+               }
             var command = findEl("mod_command").value;
             var server = findEl("mod_server").value;
             fileUtils.send(name, file, command, server);
-         });
-      }
-      
+            });
+         }
       findEl('mod_home',false).addEventListener("click", function() {
          var name = "home.rml";
          var xmin = rml_unit * parseFloat(findEl("mod_xmin").value);
@@ -196,8 +176,7 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          var command = findEl("mod_command").value;
          var server = findEl("mod_server").value;
          fileUtils.send(name, file, command, server);
-      });
-
+         });
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"
@@ -205,16 +184,18 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
          ui.ui_clear()
          ui.ui_show_input()
          ui.ui_menu_process()
-      }
+         }
       label.onmouseover = function(e) {
          this.style.background = ui.defaults.highlight_background_color
-      }
+         }
       label.onmouseout = function(e) {
          this.style.background = ui.defaults.background_color
+         }
       }
-   }
-   
-
+   //
+   // mod_Roland_Mill_path
+   //    convert 3D path to RML
+   //
    function mod_Roland_Mill_path(path) {
       globals.type = ".rml"
       var dx = 25.4 * globals.width / globals.dpi
@@ -255,12 +236,12 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
             y = yoffset + scale * path[seg][pt][1]
             z = zoffset + scale * path[seg][pt][2]
             str += "Z" + x.toFixed(0) + "," + y.toFixed(0) + "," + z.toFixed(0) + ";\n"
-         }
+            }
          //
          // move up
          //
          str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n"
-      }
+         }
       //
       // return to home
       //
@@ -275,13 +256,11 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
       // return string
       //
       return str
-   }
-   
+      }
    //
    // mod_Roland_MDX_20_path
    //    convert 3D path to RML
    //
-
    function mod_Roland_MDX_20_path(path) {
       globals.type = ".rml"
       var dx = 25.4 * globals.width / globals.dpi
@@ -322,12 +301,12 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
             y = yoffset + scale * path[seg][pt][1]
             z = zoffset + scale * path[seg][pt][2]
             str += "Z" + x.toFixed(0) + "," + y.toFixed(0) + "," + z.toFixed(0) + ";\n"
-         }
+            }
          //
          // move up
          //
          str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n"
-      }
+         }
       //
       // return to home
       //
@@ -342,12 +321,10 @@ define(['require', 'handlebars', 'text!templates/mod_roland_mill_controls.html',
       // return string
       //
       return str
-   }
-
+      }
    return {
       mod_load_handler: mod_load_handler,
       mod_Roland_MDX_20_path: mod_Roland_MDX_20_path,
       mod_Roland_Mill_path: mod_Roland_Mill_path
-   }
-
-});
+      }
+   });
