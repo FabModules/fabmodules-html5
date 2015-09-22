@@ -118,12 +118,8 @@ define(['require',
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
       var ctx = {
-         mod_xmin: globals.xmin,
-         show_move : true
+         show_move: true
          }
-      // if (globals.ymin != "") {
-      //    ctx.show_move = true;
-      // }
       controls.innerHTML = mod_roland_mill_controls_tpl(ctx);
       if (globals.xmin != "")
          findEl("mod_xmin").setAttribute("value", globals.xmin)
@@ -137,10 +133,18 @@ define(['require',
          rml_unit = rml_units[this.value];
 	      model = this.value;
          if (model == 'mdx_20') {
-            cmd="mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            cmd = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            findEl("mod_xhome").value = 0;
+            findEl("mod_yhome").value = 152.4;
+            findEl("mod_zhome").value = 60.5;
+            findEl("mod_jog").value = 60.5;
             }
          else {
-            cmd="mod_lp.py /dev/usb/lp1";
+            cmd = "mod_print.py /dev/usb/lp1 ';'";
+            findEl("mod_xhome").value = 0;
+            findEl("mod_yhome").value = 152.4;
+            findEl("mod_zhome").value = 60.5;
+            findEl("mod_jog").value = 60.5;
             }
          findEl("mod_command").value = cmd; 
          },false);
@@ -153,26 +157,38 @@ define(['require',
       findEl("mod_zmin",false).addEventListener("input", function() {
          globals.zmin = findEl("mod_zmin").value
          });
-      if (findEl('mod_move',false)) {
-         findEl('mod_move').addEventListener("click", function() {
-            var name = "move.rml";
-            var xmin = rml_unit * parseFloat(findEl("mod_xmin").value);
-            var ymin = rml_unit * parseFloat(findEl("mod_ymin").value);
-            var zmin = rml_unit * parseFloat(findEl("mod_zmin").value);
-            var file = "PA;PA;!VZ10;!PZ0,100;PU " + xmin + " " + ymin + ";PD " + xmin + " " + ymin + ";!MC0;";
-            if (model != 'mdx_20') {
-               file = "PA;PA;!VZ10;Z "+ xmin + "," + ymin + "," + zmin + ";!MC0"
-               }
+      if (findEl('mod_move_xy',false)) {
+         findEl('mod_move_xy').addEventListener("click", function() {
+            var name = "move_xy.rml";
+            var x0 = rml_unit * parseFloat(findEl("mod_xmin").value);
+            var y0 = rml_unit * parseFloat(findEl("mod_ymin").value);
+            var z0 = rml_unit * parseFloat(findEl("mod_zmin").value);
+            var zjog = rml_unit * parseFloat(findEl("mod_jog").value);
+            var file = "PA;PA;VS10;!VZ10;!PZ0,"+zjog+";PU"+x0+","+y0+";!MC0;"
             var command = findEl("mod_command").value;
             var server = findEl("mod_server").value;
             fileUtils.send(name, file, command, server);
-            });
+            })
+         }
+      if (findEl('mod_move_xyz',false)) {
+         findEl('mod_move_xyz').addEventListener("click", function() {
+            var name = "move_xyz.rml";
+            var x0 = rml_unit * parseFloat(findEl("mod_xmin").value);
+            var y0 = rml_unit * parseFloat(findEl("mod_ymin").value);
+            var z0 = rml_unit * parseFloat(findEl("mod_zmin").value);
+            var zjog = rml_unit * parseFloat(findEl("mod_jog").value);
+            file = "PA;PA;VS10;!VZ10;!PZ0,"+zjog+";Z"+x0+","+y0+","+z0+";!MC0;"
+            var command = findEl("mod_command").value;
+            var server = findEl("mod_server").value;
+            fileUtils.send(name, file, command, server);
+            })
          }
       findEl('mod_home',false).addEventListener("click", function() {
          var name = "home.rml";
-         var xmin = rml_unit * parseFloat(findEl("mod_xmin").value);
-         var ymin = rml_unit * parseFloat(findEl("mod_ymin").value);
-         var file = "PA;PA;PU;H;";
+         var xhome = rml_unit * parseFloat(findEl("mod_xhome").value);
+         var yhome = rml_unit * parseFloat(findEl("mod_yhome").value);
+         var zhome = rml_unit * parseFloat(findEl("mod_yhome").value);
+         var file = "PA;PA;!PZ0,"+zhome+";PU"+xhome+","+yhome+";!MC0;";
          var command = findEl("mod_command").value;
          var server = findEl("mod_server").value;
          fileUtils.send(name, file, command, server);
@@ -202,16 +218,17 @@ define(['require',
       var nx = globals.width
       var speed = parseFloat(findEl("mod_speed").value)
       var jog = parseFloat(findEl("mod_jog").value)
-      var ijog = Math.floor(rml_unit * jog) // 40/mm
-      var scale = rml_unit * dx / (nx - 1) // 40/mm
-      var xmin = parseFloat(findEl("mod_xmin").value)
-      var ymin = parseFloat(findEl("mod_ymin").value)
-      var xoffset = rml_unit * xmin // 40/mm
-      var yoffset = rml_unit * ymin // 40/mm
-      var zoffset = 0
+      var ijog = Math.floor(rml_unit * jog)
+      var scale = rml_unit * dx / (nx - 1)
+      var x0 = parseFloat(findEl("mod_xmin").value)
+      var y0 = parseFloat(findEl("mod_ymin").value)
+      var z0 = parseFloat(findEl("mod_zmin").value)
+      var xoffset = rml_unit * x0
+      var yoffset = rml_unit * y0
+      var zoffset = rml_unit * z0
       var str = "PA;PA;" // plot absolute
       str += "VS" + speed + ";!VZ" + speed + ";"
-      str += "!PZ-" + 0 + "," + ijog + ";" // set jog 
+      str += "!PZ" + 0 + "," + ijog + ";" // set jog 
       str += "!MC1;\n" // turn motor on
       //
       // follow segments
@@ -243,80 +260,12 @@ define(['require',
          str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n"
          }
       //
-      // return to home
+      // turn off motor and move back
       //
-      str += "H;\n"
-      //
-      // pad end of file with motor off commands for Modela buffering bug
-      //
-      //for (var i = 0; i < 1000; ++i)
-      //for (var i = 0; i < 10; ++i)
-      //   str += "!MC0;"
-      //
-      // return string
-      //
-      return str
-      }
-   //
-   // mod_Roland_MDX_20_path
-   //    convert 3D path to RML
-   //
-   function mod_Roland_MDX_20_path(path) {
-      globals.type = ".rml"
-      var dx = 25.4 * globals.width / globals.dpi
-      var nx = globals.width
-      var speed = parseFloat(findEl("mod_speed").value)
-      var jog = parseFloat(findEl("mod_jog").value)
-      var ijog = Math.floor(40 * jog) // 40/mm
-      var scale = 40.0 * dx / (nx - 1) // 40/mm
-      var xmin = parseFloat(findEl("mod_xmin").value)
-      var ymin = parseFloat(findEl("mod_ymin").value)
-      var xoffset = 40.0 * xmin // 40/mm
-      var yoffset = 40.0 * ymin // 40/mm
-      var zoffset = 0
-      var str = "PA;PA;" // plot absolute
-      str += "VS" + speed + ";!VZ" + speed + ";"
-      str += "!PZ-" + 0 + "," + ijog + ";" // set jog 
-      str += "!MC1;\n" // turn motor on
-      //
-      // follow segments
-      //
-      for (var seg = 0; seg < path.length; ++seg) {
-         //
-         // move up to starting point
-         //
-         x = xoffset + scale * path[seg][0][0]
-         y = yoffset + scale * path[seg][0][1]
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n"
-         //
-         // move down
-         //
-         z = zoffset + scale * path[seg][0][2]
-         str += "Z" + x.toFixed(0) + "," + y.toFixed(0) + "," + z.toFixed(0) + ";\n"
-         for (var pt = 1; pt < path[seg].length; ++pt) {
-            //
-            // move to next point
-            //
-            x = xoffset + scale * path[seg][pt][0]
-            y = yoffset + scale * path[seg][pt][1]
-            z = zoffset + scale * path[seg][pt][2]
-            str += "Z" + x.toFixed(0) + "," + y.toFixed(0) + "," + z.toFixed(0) + ";\n"
-            }
-         //
-         // move up
-         //
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n"
-         }
-      //
-      // return to home
-      //
-      str += "H;\n"
-      //
-      // pad end of file with motor off commands for Modela buffering bug
-      //
-      //for (var i = 0; i < 1000; ++i)
-      //for (var i = 0; i < 10; ++i)
-      //   str += "!MC0;"
+      var xhome = rml_unit * parseFloat(findEl("mod_xhome").value);
+      var yhome = rml_unit * parseFloat(findEl("mod_yhome").value);
+      var zhome = rml_unit * parseFloat(findEl("mod_yhome").value);
+      str += "PA;PA;!PZ0,"+zhome+";PU"+xhome+","+yhome+";!MC0;";
       //
       // return string
       //
@@ -324,7 +273,6 @@ define(['require',
       }
    return {
       mod_load_handler: mod_load_handler,
-      mod_Roland_MDX_20_path: mod_Roland_MDX_20_path,
       mod_Roland_Mill_path: mod_Roland_Mill_path
       }
    });
