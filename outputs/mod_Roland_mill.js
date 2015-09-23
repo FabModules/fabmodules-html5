@@ -137,7 +137,7 @@ define(['require',
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
-            findEl("mod_jog").value = 60.5;
+            findEl("mod_jog").value = 2.0;
             }
          else {
             cmd = "mod_print.py /dev/usb/lp1 ';'";
