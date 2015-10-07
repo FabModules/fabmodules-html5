@@ -1,6 +1,5 @@
 Fab Modules Project
 
-
 > Neil Gershenfeld
 > (c) Massachusetts Institute of Technology 2014
 >

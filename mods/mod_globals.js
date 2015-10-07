@@ -32,8 +32,6 @@ define(function() {
       //if (domCache[id] != undefined && (ignoreCache == undefined || ignoreCache)){
       //   return domCache[id];
       //}
-      //domCache[id] = document.getElementById(id);
-      //return domCache[id];
       return document.getElementById(id);
    };
    
