@@ -13,26 +13,23 @@
 //
 
 
-define(["require", "mods/mod_ui", "mods/mod_globals"], function(require) {
-
+define(["require",
+   "mods/mod_ui",
+   "mods/mod_globals"],
+   function(require) {
    var ui = require("mods/mod_ui");
    var globals = require("mods/mod_globals");
-
    var findEl = globals.findEl;
-
-
    //
    // defines
    //
    var X = 0
    var Y = 1
    var Z = 2
-
    //
    // mod_path_show_gl
    //    show a path with WebGL
    //
-
       function mod_path_show_gl(path) {
          if (path.length == 0)
             return

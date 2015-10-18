@@ -18,7 +18,7 @@
 self.addEventListener('message', function(e) {
    var ret = fn[e.data[0]](e.data)
    self.postMessage(['return', ret])
-}, false)
+   }, false)
 //
 // define colors
 //

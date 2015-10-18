@@ -12,12 +12,13 @@
 // liability.
 //
 
-define(['require', 'mods/mod_globals', 'mods/mod_ui'], function(require) {
-
+define(['require',
+   'mods/mod_globals',
+   'mods/mod_ui'],
+   function(require) {
    var globals = require('mods/mod_globals');
    var ui = require('mods/mod_ui');
    var findEl = globals.findEl;
-
    //
    // mod_mesh_draw
    //    draw mesh

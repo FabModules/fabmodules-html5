@@ -3,7 +3,7 @@
 //   fab modules mesh routines
 //
 // Neil Gershenfeld 
-// (c) Massachusetts Institute of Technology 2014,5
+// (c) Massachusetts Institute of Technology 2015
 // 
 // This work may be reproduced, modified, distributed, performed, and 
 // displayed for any purpose, but must acknowledge the fab modules 
@@ -11,8 +11,11 @@
 // provided as is; no warranty is provided, and users accept all 
 // liability.
 //
-define(['mods/mod_globals','processes/mod_image'],
-   function(globals) {
+define(['require',
+   'mods/mod_globals',
+   'processes/mod_image'],
+   function(require) {
+      var globals = require('mods/mod_globals')
       var imageUtils = require('processes/mod_image')
       //
       // mod_mesh_height_map

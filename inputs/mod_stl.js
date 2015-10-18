@@ -20,9 +20,8 @@ define(['require',
    'mods/mod_file',
    'processes/mod_mesh',
    'processes/mod_mesh_view',
-   'text!templates/mod_stl_input_controls.html'
-   ], function(require) {
-
+   'text!templates/mod_stl_input_controls.html'],
+   function(require) {
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
    var globals = require('mods/mod_globals');
@@ -32,7 +31,6 @@ define(['require',
    var meshView = require('processes/mod_mesh_view');
    var findEl = globals.findEl;
    var mod_stl_input_controls_tpl = Handlebars.compile(require('text!templates/mod_stl_input_controls.html'));
-
    //
    // mod_load_handler
    //   file load handler
