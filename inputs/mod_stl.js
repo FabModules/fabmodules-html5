@@ -121,28 +121,34 @@ define(['require',
          globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
          });
+      //
       findEl("mod_rz",false).addEventListener("keyup", function() {
          globals.mesh.rz = Math.PI * parseFloat(this.value) / 180;
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
          });
+      //
       findEl("mod_rx",false).addEventListener("keyup", function() {
          globals.mesh.rx = Math.PI * parseFloat(this.value) / 180;
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
          });
+      //
       findEl("mod_dy",false).addEventListener("keyup", function() {
          globals.mesh.dy = parseFloat(this.value);
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
          });
+      //
       findEl("mod_dx",false).addEventListener("keyup", function() {
          globals.mesh.dx = parseFloat(this.value);
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
          });
+      //
       findEl("mod_s",false).addEventListener("keyup", function() {
          globals.mesh.s = parseFloat(this.value);
          globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
          globals.mesh.draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, globals.mesh.rx, globals.mesh.rz);
          });
+      //
       findEl('show_mesh',false).addEventListener("click", function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
@@ -153,11 +159,13 @@ define(['require',
          div.innerHTML = "";
          meshView.mesh_draw(globals.mesh);
          });
+      //
       findEl("mod_dpi",false).addEventListener("keyup", function() {
          globals.dpi = parseFloat(findEl("mod_dpi").value);
          globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
          });
+      //
       findEl('calculate_height_map',false).addEventListener("click",function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
