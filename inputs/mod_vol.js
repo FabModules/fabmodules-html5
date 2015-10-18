@@ -19,9 +19,8 @@ define(['require',
    'mods/mod_globals',
    'mods/mod_file',
    'processes/mod_mesh',
-   'inputs/mod_vol_view'
-   ], function(require) {
-   
+   'inputs/mod_vol_view'],
+   function(require) {
    var ui = require('mods/mod_ui');
    var Handlebars = require('handlebars');
    var mod_vol_input_controls_tpl = Handlebars.compile(require('text!templates/mod_vol_input_controls.html'));
@@ -30,7 +29,6 @@ define(['require',
    var fileUtils = require('mods/mod_file');
    var meshUtils = require('processes/mod_mesh');
    var findEl = globals.findEl;
-
    //
    // mod_load_handler
    //   file load handler
@@ -307,8 +305,8 @@ define(['require',
       // show layer
       //
       if (globals.vol.mode == "density") {
-         var vmin = 1e10
-         var vmax = -1e10
+         var vmin = Number.MAX_VALUE
+         var vmax = -Number.MAX_VALUE
          for (var row = 0; row < ny; ++row) {
             for (var col = 0; col < nx; ++col) {
                value = buf[(ny-1-row)*nx+col]

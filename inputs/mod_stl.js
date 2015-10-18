@@ -75,11 +75,12 @@ define(['require',
          ui.ui_prompt("must be binary STL")
          return
          }
+      //
       // update globals
+      //
       globals.mesh.units = 1
       globals.dpi = 100
       globals.width = (globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
-      //
       //
       // set up UI
       //
@@ -104,7 +105,9 @@ define(['require',
          width: globals.width
          }
       controls.innerHTML = mod_stl_input_controls_tpl(ctx);
+      //
       // event handlers
+      //
       findEl("mod_units",false).addEventListener("keyup", function() {
          globals.mesh.units = parseFloat(findEl("mod_units").value);
          findEl("mod_mm").innerHTML =
@@ -155,7 +158,7 @@ define(['require',
          globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
          });
-      findEl('calculate_height_map',false).addEventListener("click", function() {
+      findEl('calculate_height_map',false).addEventListener("click",function() {
          ui.ui_clear();
          var label = findEl("mod_processes_label");
          label.style.display = "none";
@@ -164,7 +167,7 @@ define(['require',
          var div = findEl("mod_process_controls");
          div.innerHTML = "";
          var canvas = findEl("mod_input_canvas");
-         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
          globals.height = globals.width;
          canvas.width = globals.width;
          canvas.height = globals.width;
@@ -176,9 +179,9 @@ define(['require',
          var output_canvas = findEl("mod_output_canvas");
          output_canvas.width = globals.width;
          output_canvas.height = globals.width;
-         var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-         meshUtils.height_map(globals.mesh, img);
-         ctx.putImageData(img, 0, 0);
+         var img = ctx.getImageData(0,0,canvas.width,canvas.height);
+         meshUtils.height_map(globals.mesh,img);
+         ctx.putImageData(img,0,0);
          ui.ui_prompt("");
          });
       //

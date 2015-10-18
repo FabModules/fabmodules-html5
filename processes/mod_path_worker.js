@@ -525,7 +525,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
             // offset tool
             //
             var rcol = sign * col + offset
-            var izmax = -1e10
+            var izmax = -Number.MAX_VALUE
             for (var t = 0; t < tool.length; ++t) {
                var iz = tool[t][2] +
                   view.getInt32((img.height - 1 - (row + tool[t][0])) * 4 * img.width + (rcol + tool[t][1]) * 4, false)
@@ -577,7 +577,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
             // offset tool
             //
             var rrow = sign * row + offset
-            var izmax = -1e10
+            var izmax = -Number.MAX_VALUE
             for (var t = 0; t < tool.length; ++t) {
                var iz = tool[t][2] +
                   view.getInt32((img.height - 1 - (rrow + tool[t][0])) * 4 * img.width + (col + tool[t][1]) * 4, false)
@@ -639,7 +639,7 @@ function mod_path_worker_image_set_height(img, bottom_z, bottom_i, top_z, top_i,
 function mod_path_worker_image_show_distances(img) {
    img.set = mod_image_set
    var view = new DataView(img)
-   var imin = 1e10
+   var imin = Number.MAX_VALUE
    var imax = 0
    for (var row = 0; row < img.height; ++row) {
       for (var col = 0; col < img.width; ++col) {

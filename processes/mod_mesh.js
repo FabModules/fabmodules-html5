@@ -27,7 +27,7 @@ define(['require',
          //
          // clear array
          //
-         var zclear = -1e10
+         var zclear = -Number.MAX_VALUE
          var view = new DataView(img.data.buffer)
          for (var row = 0; row < img.height; ++row)
             for (var col = 0; col < img.width; ++col)
@@ -41,8 +41,8 @@ define(['require',
          var dx = globals.mesh.dx
          var s = globals.mesh.s
          var zlim = {
-            zmin: 1e10,
-            zmax: -1e10
+            zmin: Number.MAX_VALUE,
+            zmax: -Number.MAX_VALUE
             }
          for (var t = 0; t < mesh.length; ++t)
             mod_mesh_height_triangle(mesh[t], img, rz, rx, dy, dx, s, zlim)
