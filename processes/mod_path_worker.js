@@ -461,33 +461,34 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    //
    // set height
    //
-   self.postMessage(['prompt', 'set height'])
-   mod_path_worker_image_set_height(img, bottom_z, bottom_i, top_z, top_i, dpi)
+   self.postMessage(['prompt','set height'])
+   mod_path_worker_image_set_height(img,bottom_z,bottom_i,top_z,top_i,dpi)
    //
    // set tool
    //
-   var ir = Math.floor(0.5 + dpi * dia / (2 * 25.4))
-   var id = Math.floor(0.5 + ((100 - overlap) / 100) * dpi * dia / 25.4)
+   var ir = Math.floor(0.5+dpi*dia/(2*25.4))
+   var id = Math.floor(0.5+((100-overlap)/100)*dpi*dia/25.4)
    var tool = []
    for (var row = 0; row < 2 * ir; ++row) {
       for (var col = 0; col < 2 * ir; ++col) {
-         var r = Math.sqrt((row - ir) * (row - ir) + (col - ir) * (col - ir))
+         var r = Math.sqrt((row-ir)*(row-ir)+(col-ir)*(col-ir))
          if (r < ir) {
             if (type) {
                //
                // flat end
                //
-               tool[tool.length] = [row - ir, col - ir, 0]
-            } else {
+               tool[tool.length] = [row-ir,col-ir,0]
+               }
+            else {
                //
                // ball end
                //
-               var iz = Math.sqrt(ir * ir - ((row - ir) * (row - ir) + (col - ir) * (col - ir))) - ir
-               tool[tool.length] = [row - ir, col - ir, iz]
+               var iz = Math.sqrt(ir*ir-((row-ir)*(row-ir)+(col-ir)*(col-ir)))-ir
+               tool[tool.length] = [row-ir,col-ir,iz]
+               }
             }
          }
       }
-   }
    /*
    //
    // set clearance
@@ -512,7 +513,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
       var sign = 1
       path[path.length] = []
       for (var row = ir; row <= (img.height - ir); row += id) {
-         self.postMessage(['prompt', 'row ' + row + '/' + img.height])
+         self.postMessage(['prompt','row '+row+'/'+img.height])
          var offset = 0 * (sign + 1) / 2 + (img.width - 1) * (1 - sign) / 2
          newpath = []
          for (var col = ir; col < (img.width - ir); ++col) {
@@ -523,11 +524,11 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
             var izmax = -Number.MAX_VALUE
             for (var t = 0; t < tool.length; ++t) {
                var iz = tool[t][2] +
-                  view.getInt32((img.height - 1 - (row + tool[t][0])) * 4 * img.width + (rcol + tool[t][1]) * 4, false)
+                  view.getInt32((img.height-1-(row+tool[t][0]))*4*img.width+(rcol+tool[t][1])*4,false)
                if (iz > izmax)
                   izmax = iz
-            }
-            newpath[newpath.length] = [rcol, row, izmax]
+               }
+            newpath[newpath.length] = [rcol,row,izmax]
             /*
             //
             // check clearance
@@ -543,11 +544,11 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
                   }
                }
             */
-         }
+            }
          //
          // vectorize
          //
-         newpath = mod_path_worker_vectorize3_segment(newpath, error)
+         newpath = mod_path_worker_vectorize3_segment(newpath,error)
          //
          // add to path
          //
@@ -555,8 +556,8 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
             path[path.length - 1][path[path.length - 1].length] = newpath[pt]
          self.postMessage(['path', path])
          sign = -sign
+         }
       }
-   }
    //
    // yz
    //
@@ -564,7 +565,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
       var sign = -1
       path[path.length] = []
       for (var col = ir; col <= (img.width - ir); col += id) {
-         self.postMessage(['prompt', 'column ' + col + '/' + img.width])
+         self.postMessage(['prompt','column '+col+'/'+img.width])
          var offset = 0 * (sign + 1) / 2 + (img.height - 1) * (1 - sign) / 2
          newpath = []
          for (var row = ir; row < (img.height - ir); ++row) {
@@ -575,19 +576,19 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
             var izmax = -Number.MAX_VALUE
             for (var t = 0; t < tool.length; ++t) {
                var iz = tool[t][2] +
-                  view.getInt32((img.height - 1 - (rrow + tool[t][0])) * 4 * img.width + (col + tool[t][1]) * 4, false)
+                  view.getInt32((img.height-1-(rrow+tool[t][0]))*4*img.width+(col+tool[t][1])*4,false)
                if (iz > izmax)
                   izmax = iz
-            }
-            newpath[newpath.length] = [col, rrow, izmax]
+               }
+            newpath[newpath.length] = [col,rrow,izmax]
             //
             // check clearance
             //
-         }
+            }
          //
          // vectorize
          //
-         newpath = mod_path_worker_vectorize3_segment(newpath, error)
+         newpath = mod_path_worker_vectorize3_segment(newpath,error)
          //
          // add to path
          //
@@ -595,8 +596,8 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
             path[path.length - 1][path[path.length - 1].length] = newpath[pt]
          self.postMessage(['path', path])
          sign = -sign
+         }
       }
-   }
    //
    // report collision
    //
@@ -605,26 +606,24 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    // return
    //
    return path
-}
+   }
 //
 // mod_path_worker_image_set_height
 //    set image intensity to Int32 height
 //
-function mod_path_worker_image_set_height(img, bottom_z, bottom_i, top_z, top_i, dpi) {
+function mod_path_worker_image_set_height(img,bottom_z,bottom_i,top_z,top_i,dpi) {
    img.get = mod_path_worker_get
    var view = new DataView(img.data.buffer)
-   var imax = 256 * 256 * 256 - 1
+   var imax = 256*256*256-1
    for (var row = 0; row < img.height; ++row) {
       for (var col = 0; col < img.width; ++col) {
-         var intensity = (img.get(row, col, 0) + (img.get(row, col, 1) << 8) + (img.get(row, col, B) << 16)) / imax
-         //var intensity = (img.get(row,col,R) + img.get(row,col,G)
-         //   + img.get(row,col,B))/(3*255)
-         var z = bottom_z + (top_z - bottom_z) * (intensity - bottom_i) / (top_i - bottom_i)
-         var iz = Math.floor(0.5 + dpi * z / 25.4)
-         view.setInt32((img.height - 1 - row) * 4 * img.width + col * 4, iz)
+         var intensity = (img.get(row,col,0)+(img.get(row,col,1)<<8)+(img.get(row,col,B)<<16))/imax
+         var z = bottom_z+(top_z-bottom_z)*(intensity-bottom_i)/(top_i-bottom_i)
+         var iz = Math.floor(0.5+dpi*z/25.4)
+         view.setInt32((img.height-1-row)*4*img.width+col*4,iz)
+         }
       }
    }
-}
 //
 // mod_path_worker_image_show_distances
 //    show Uint32 array distances
@@ -931,15 +930,15 @@ function mod_path_worker_threshold(img, threshold) {
 // mod_path_worker_vectorize2
 //    vectorize 2D path
 //
-function mod_path_worker_vectorize2(oldpath, error) {
+function mod_path_worker_vectorize2(oldpath,error) {
    var path = []
    var count = 0
    for (var seg = 0; seg < oldpath.length; ++seg) {
       var x0 = oldpath[seg][0][X]
       var y0 = oldpath[seg][0][Y]
       path[path.length] = [
-         [x0, y0]
-      ]
+         [x0,y0]
+         ]
       count += 1
       var xsum = x0
       var ysum = y0
@@ -953,42 +952,44 @@ function mod_path_worker_vectorize2(oldpath, error) {
             xsum += x
             ysum += y
             sum += 1
-         } else {
-            var xmean = xsum / sum
-            var ymean = ysum / sum
-            var dx = xmean - x0
-            var dy = ymean - y0
-            var d = Math.sqrt(dx * dx + dy * dy)
-            var nx = dy / d
-            var ny = -dx / d
-            var l = Math.abs(nx * (x - x0) + ny * (y - y0))
+            }
+         else {
+            var xmean = xsum/sum
+            var ymean = ysum/sum
+            var dx = xmean-x0
+            var dy = ymean-y0
+            var d = Math.sqrt(dx*dx+dy*dy)
+            var nx = dy/d
+            var ny = -dx/d
+            var l = Math.abs(nx*(x-x0)+ny*(y-y0))
             if (l < error) {
                xsum += x
                ysum += y
                sum += 1
-            } else {
-               path[path.length - 1][path[path.length - 1].length] = [xold, yold]
+               }
+            else {
+               path[path.length-1][path[path.length-1].length] = [xold,yold]
                count += 1
                x0 = xold
                y0 = yold
                xsum = xold
                ysum = yold
                sum = 1
+               }
+            }
+         if (pt == (oldpath[seg].length-1)) {
+            path[path.length-1][path[path.length-1].length] = [x,y]
+            count += 1
             }
          }
-         if (pt == (oldpath[seg].length - 1)) {
-            path[path.length - 1][path[path.length - 1].length] = [x, y]
-            count += 1
-         }
       }
-   }
    return path
-}
+   }
 //
 // mod_path_worker_vectorize3
 //    vectorize 3D path
 //
-function mod_path_worker_vectorize3(oldpath, error) {
+function mod_path_worker_vectorize3(oldpath,error) {
    var path = []
    var count = 0
    for (var seg = 0; seg < oldpath.length; ++seg) {
@@ -1015,28 +1016,30 @@ function mod_path_worker_vectorize3(oldpath, error) {
             ysum += y
             zsum += z
             sum += 1
-         } else {
-            var xmean = xsum / sum
-            var ymean = ysum / sum
-            var zmean = zsum / sum
-            var dx = xmean - x0
-            var dy = ymean - y0
-            var dz = zmean - z0
-            var d = Math.sqrt(dx * dx + dy * dy + dz * dz)
-            var nx = dx / d
-            var ny = dy / d
-            var nz = dz / d
-            var vx = (x - x0)
-            var vy = (y - y0)
-            var vz = (z - z0)
-            var l = Math.sqrt((vx * vx + vy * vy + vz * vz) - (vx * nx + vy * ny + vz * nz) * (vx * nx + vy * ny + vz * nz))
+            }
+         else {
+            var xmean = xsum/sum
+            var ymean = ysum/sum
+            var zmean = zsum/sum
+            var dx = xmean-x0
+            var dy = ymean-y0
+            var dz = zmean-z0
+            var d = Math.sqrt(dx*dx+dy*dy+dz*dz)
+            var nx = dx/d
+            var ny = dy/d
+            var nz = dz/d
+            var vx = (x-x0)
+            var vy = (y-y0)
+            var vz = (z-z0)
+            var l = Math.sqrt((vx*vx+vy*vy+vz*vz)-(vx*nx+vy*ny+vz*nz)*(vx*nx+vy*ny+vz*nz))
             if (l < error) {
                xsum += x
                ysum += y
                zsum += z
                sum += 1
-            } else {
-               path[path.length - 1][path[path.length - 1].length] = [xold, yold, zold]
+               }
+            else {
+               path[path.length-1][path[path.length-1].length] = [xold,yold,zold]
                count += 1
                x0 = xold
                y0 = yold
@@ -1045,27 +1048,27 @@ function mod_path_worker_vectorize3(oldpath, error) {
                ysum = yold
                zsum = zold
                sum = 1
+               }
+            }
+         if (pt == (oldpath[seg].length - 1)) {
+            path[path.length-1][path[path.length-1].length] = [x,y,z]
+            count += 1
             }
          }
-         if (pt == (oldpath[seg].length - 1)) {
-            path[path.length - 1][path[path.length - 1].length] = [x, y, z]
-            count += 1
-         }
       }
-   }
    return path
-}
+   }
 //
 // mod_path_worker_vectorize3_segment
 //    vectorize 3D path segment
 //
-function mod_path_worker_vectorize3_segment(oldpath, error) {
+function mod_path_worker_vectorize3_segment(oldpath,error) {
    var path = []
    var count = 0
    var x0 = oldpath[0][X]
    var y0 = oldpath[0][Y]
    var z0 = oldpath[0][Z]
-   path[path.length] = [x0, y0, z0]
+   path[path.length] = [x0,y0,z0]
    count += 1
    var xsum = x0
    var ysum = y0
@@ -1083,28 +1086,30 @@ function mod_path_worker_vectorize3_segment(oldpath, error) {
          ysum += y
          zsum += z
          sum += 1
-      } else {
-         var xmean = xsum / sum
-         var ymean = ysum / sum
-         var zmean = zsum / sum
-         var dx = xmean - x0
-         var dy = ymean - y0
-         var dz = zmean - z0
-         var d = Math.sqrt(dx * dx + dy * dy + dz * dz)
-         var nx = dx / d
-         var ny = dy / d
-         var nz = dz / d
-         var vx = (x - x0)
-         var vy = (y - y0)
-         var vz = (z - z0)
-         var l = Math.sqrt((vx * vx + vy * vy + vz * vz) - (vx * nx + vy * ny + vz * nz) * (vx * nx + vy * ny + vz * nz))
+         }
+      else {
+         var xmean = xsum/sum
+         var ymean = ysum/sum
+         var zmean = zsum/sum
+         var dx = xmean-x0
+         var dy = ymean-y0
+         var dz = zmean-z0
+         var d = Math.sqrt(dx*dx+dy*dy+dz*dz)
+         var nx = dx/d
+         var ny = dy/d
+         var nz = dz/d
+         var vx = (x-x0)
+         var vy = (y-y0)
+         var vz = (z-z0)
+         var l = Math.sqrt((vx*vx+vy*vy+vz*vz)-(vx*nx+vy*ny+vz*nz)*(vx*nx+vy*ny+vz*nz))
          if (l < error) {
             xsum += x
             ysum += y
             zsum += z
             sum += 1
-         } else {
-            path[path.length] = [xold, yold, zold]
+            }
+         else {
+            path[path.length] = [xold,yold,zold]
             count += 1
             x0 = xold
             y0 = yold
@@ -1113,12 +1118,12 @@ function mod_path_worker_vectorize3_segment(oldpath, error) {
             ysum = yold
             zsum = zold
             sum = 1
+            }
+         }
+      if (pt == (oldpath.length - 1)) {
+         path[path.length] = [x,y,z]
+         count += 1
          }
       }
-      if (pt == (oldpath.length - 1)) {
-         path[path.length] = [x, y, z]
-         count += 1
-      }
-   }
    return path
-}
+   }
