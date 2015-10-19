@@ -21,17 +21,17 @@ define(['require',
       // mod_mesh_height_map
       //    calculate height map from mesh
       //
-      function mod_mesh_height_map(mesh, img) {
+      function mod_mesh_height_map(mesh,img) {
          img.get = imageUtils.get
          img.set = imageUtils.set
          //
          // clear array
          //
-         var zclear = -Number.MAX_VALUE
+         var zclear = -1e10
          var view = new DataView(img.data.buffer)
          for (var row = 0; row < img.height; ++row)
             for (var col = 0; col < img.width; ++col)
-               view.setFloat32(row * 4 * img.width + col * 4, zclear)
+               view.setFloat32(row*4*img.width+col*4,zclear)
          //
          // set triangle heights
          //
@@ -45,16 +45,16 @@ define(['require',
             zmax: -Number.MAX_VALUE
             }
          for (var t = 0; t < mesh.length; ++t)
-            mod_mesh_height_triangle(mesh[t], img, rz, rx, dy, dx, s, zlim)
-         globals.zmin = 25.4 * (zlim.zmin - zlim.zmax) / globals.dpi
+            mod_mesh_height_triangle(mesh[t],img,rz,rx,dy,dx,s,zlim)
+         globals.zmin = 25.4*(zlim.zmin-zlim.zmax)/globals.dpi
          //
          // set background
          //
          for (var row = 0; row < img.height; ++row)
             for (var col = 0; col < img.width; ++col) {
-               var z = view.getFloat32((img.height - 1 - row) * 4 * img.width + col * 4)
+               var z = view.getFloat32((img.height-1-row)*4*img.width+col*4)
                if (z == zclear)
-                  view.setFloat32((img.height - 1 - row) * 4 * img.width + col * 4, zlim.zmax)
+                  view.setFloat32((img.height-1-row)*4*img.width+col*4,zlim.zmax)
                }
          //
          // map height to intensity
@@ -62,19 +62,19 @@ define(['require',
          var imax = 256 * 256 * 256 - 1
          for (var row = 0; row < img.height; ++row)
             for (var col = 0; col < img.width; ++col) {
-               var z = view.getFloat32((img.height - 1 - row) * 4 * img.width + col * 4)
-               var i = Math.floor(imax * (z - zlim.zmin) / (zlim.zmax - zlim.zmin))
-               img.set(row, col, 0, (i & 255))
-               img.set(row, col, 1, ((i >> 8) & 255))
-               img.set(row, col, 2, ((i >> 16) & 255))
-               img.set(row, col, 3, 255)
+               var z = view.getFloat32((img.height-1-row)*4*img.width+col*4)
+               var i = Math.floor(imax*(z-zlim.zmin)/(zlim.zmax-zlim.zmin))
+               img.set(row,col,0,(i & 255))
+               img.set(row,col,1,((i >> 8) & 255))
+               img.set(row,col,2,((i >> 16) & 255))
+               img.set(row,col,3,255)
                }
          }
       //
       // mod_mesh_height_triangle
       //    add triangle to height map
       //
-      function mod_mesh_height_triangle(t, img, rz, rx, dy, dx, s, zlim) {
+      function mod_mesh_height_triangle(t,img,rz,rx,dy,dx,s,zlim) {
          //
          // pos
          //    return vertex coordinates

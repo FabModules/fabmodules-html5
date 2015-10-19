@@ -57,283 +57,278 @@ var fn = {}
 //
 // mod_path_worker_get
 //    get image value
-
-   function mod_path_worker_get(row, col, element) {
-      return this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element]
+function mod_path_worker_get(row, col, element) {
+   return this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element]
    }
-   //
-   // mod_path_worker_set
-   //   set image value
-   //
-
-   function mod_path_worker_set(row, col, element, value) {
-      this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element] = value
+//
+// mod_path_worker_set
+//   set image value
+//
+function mod_path_worker_set(row, col, element, value) {
+   this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element] = value
    }
-   //
-   // mod_path_worker_dir
-   //    return number of site directions
-   //
-
-   function mod_path_worker_dir(row, col) {
-      var num = 0
-      if (this.get(row, col, DIRECTION) & NORTH) num += 1
-      if (this.get(row, col, DIRECTION) & SOUTH) num += 1
-      if (this.get(row, col, DIRECTION) & EAST) num += 1
-      if (this.get(row, col, DIRECTION) & WEST) num += 1
-      return num
+//
+// mod_path_worker_dir
+//    return number of site directions
+//
+function mod_path_worker_dir(row, col) {
+   var num = 0
+   if (this.get(row, col, DIRECTION) & NORTH) num += 1
+   if (this.get(row, col, DIRECTION) & SOUTH) num += 1
+   if (this.get(row, col, DIRECTION) & EAST) num += 1
+   if (this.get(row, col, DIRECTION) & WEST) num += 1
+   return num
    }
-   //
-   // mod_path_worker_find_distances
-   //    find Euclidean distance to interior in a thresholded array
-   //
+//
+// mod_path_worker_find_distances
+//    find Euclidean distance to interior in a thresholded array
+//
 
-   function mod_path_worker_find_distances(img) {
-      img.get = mod_path_worker_get
-      img.set = mod_path_worker_set
-      var view = new DataView(img.data.buffer)
-      var nx = img.width
-      var ny = img.height
-
-         function distance(g, x, y, i) {
-            return ((y - i) * (y - i) + g[i][x] * g[i][x])
-         }
-
-         function intersection(g, x, y0, y1) {
-            return ((g[y0][x] * g[y0][x] - g[y1][x] * g[y1][x] + y0 * y0 - y1 * y1) / (2.0 * (y0 - y1)))
-         }
-         //
-         // allocate arrays
-         //
-      var g = []
-      for (var y = 0; y < ny; ++y)
-         g[y] = new Uint32Array(nx)
-      var h = []
-      for (var y = 0; y < ny; ++y)
-         h[y] = new Uint32Array(nx)
-      var distances = []
-      for (var y = 0; y < ny; ++y)
-         distances[y] = new Uint32Array(nx)
-      var starts = new Uint32Array(ny)
-      var minimums = new Uint32Array(ny)
-      //
-      // column scan
-      //  
-      for (var y = 0; y < ny; ++y) {
-         //
-         // right pass
-         //
-         var closest = -nx
-         for (var x = 0; x < nx; ++x) {
-            if (img.get(y, x, STATE) & INTERIOR) {
-               g[y][x] = 0
-               closest = x
-            } else
-               g[y][x] = (x - closest)
-         }
-         //
-         // left pass
-         //
-         closest = 2 * nx
-         for (var x = (nx - 1); x >= 0; --x) {
-            if (img.get(y, x, STATE) & INTERIOR)
-               closest = x
-            else {
-               var d = (closest - x)
-               if (d < g[y][x])
-                  g[y][x] = d
-            }
-         }
+function mod_path_worker_find_distances(img) {
+   img.get = mod_path_worker_get
+   img.set = mod_path_worker_set
+   var view = new DataView(img.data.buffer)
+   var nx = img.width
+   var ny = img.height
+   function distance(g, x, y, i) {
+      return ((y - i) * (y - i) + g[i][x] * g[i][x])
       }
+   function intersection(g, x, y0, y1) {
+      return ((g[y0][x] * g[y0][x] - g[y1][x] * g[y1][x] + y0 * y0 - y1 * y1) / (2.0 * (y0 - y1)))
+      }
+   //
+   // allocate arrays
+   //
+   var g = []
+   for (var y = 0; y < ny; ++y)
+      g[y] = new Uint32Array(nx)
+   var h = []
+   for (var y = 0; y < ny; ++y)
+      h[y] = new Uint32Array(nx)
+   var distances = []
+   for (var y = 0; y < ny; ++y)
+      distances[y] = new Uint32Array(nx)
+   var starts = new Uint32Array(ny)
+   var minimums = new Uint32Array(ny)
+   //
+   // column scan
+   //  
+   for (var y = 0; y < ny; ++y) {
       //
-      // row scan
+      // right pass
       //
+      var closest = -nx
       for (var x = 0; x < nx; ++x) {
-         var segment = 0
-         starts[0] = 0
-         minimums[0] = 0
-         //
-         // down 
-         //
-         for (var y = 1; y < ny; ++y) {
-            while ((segment >= 0) &&
-               (distance(g, x, starts[segment], minimums[segment]) > distance(g, x, starts[segment], y)))
-               segment -= 1
-            if (segment < 0) {
-               segment = 0
-               minimums[0] = y
-            } else {
-               newstart = 1 + intersection(g, x, minimums[segment], y)
-               if (newstart < ny) {
-                  segment += 1
-                  minimums[segment] = y
-                  starts[segment] = newstart
+         if (img.get(y, x, STATE) & INTERIOR) {
+            g[y][x] = 0
+            closest = x
+            }
+         else
+            g[y][x] = (x - closest)
+         }
+      //
+      // left pass
+      //
+      closest = 2 * nx
+      for (var x = (nx - 1); x >= 0; --x) {
+         if (img.get(y, x, STATE) & INTERIOR)
+            closest = x
+         else {
+            var d = (closest - x)
+            if (d < g[y][x])
+               g[y][x] = d
+            }
+         }
+      }
+   //
+   // row scan
+   //
+   for (var x = 0; x < nx; ++x) {
+      var segment = 0
+      starts[0] = 0
+      minimums[0] = 0
+      //
+      // down 
+      //
+      for (var y = 1; y < ny; ++y) {
+         while ((segment >= 0) &&
+            (distance(g, x, starts[segment], minimums[segment]) > distance(g, x, starts[segment], y)))
+            segment -= 1
+         if (segment < 0) {
+            segment = 0
+            minimums[0] = y
+            }
+         else {
+            newstart = 1 + intersection(g, x, minimums[segment], y)
+            if (newstart < ny) {
+               segment += 1
+               minimums[segment] = y
+               starts[segment] = newstart
                }
             }
          }
-         //
-         // up 
-         //
-         for (var y = (ny - 1); y >= 0; --y) {
-            var d = Math.sqrt(distance(g, x, y, minimums[segment]))
-            view.setUint32((img.height - 1 - y) * 4 * img.width + x * 4, d)
-            if (y == starts[segment])
-               segment -= 1
+      //
+      // up 
+      //
+      for (var y = (ny - 1); y >= 0; --y) {
+         var d = Math.sqrt(distance(g, x, y, minimums[segment]))
+         view.setUint32((img.height - 1 - y) * 4 * img.width + x * 4, d)
+         if (y == starts[segment])
+            segment -= 1
+         }
+      }
+   }
+//
+// mod_path_worker_find_edges
+//    find edges
+//
+function mod_path_worker_find_edges(img) {
+   img.get = mod_path_worker_get
+   img.set = mod_path_worker_set
+   //
+   // check corners (todo)
+   //
+   //
+   // check border
+   //
+   for (var row = 1; row < (img.height - 1); ++row) {
+      col = 0
+      if (img.get(row, col, STATE) & INTERIOR) {
+         var sum =
+            (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR)
+         if (sum != 5) {
+            img.set(row, col, STATE,
+               img.get(row, col, STATE) | EDGE)
+         }
+      }
+      col = img.width - 1
+      if (img.get(row, col, STATE) & INTERIOR) {
+         var sum =
+            (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col - 1, STATE) & INTERIOR) + (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR)
+         if (sum != 5) {
+            img.set(row, col, STATE,
+               img.get(row, col, STATE) | EDGE)
+         }
+      }
+   }
+   for (var col = 1; col < (img.width - 1); ++col) {
+      row = 0
+      if (img.get(row, col, STATE) & INTERIOR) {
+         var sum =
+            (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR)
+         if (sum != 5) {
+            img.set(row, col, STATE,
+               img.get(row, col, STATE) | EDGE)
+         }
+      }
+      row = img.height - 1
+      if (img.get(row, col, STATE) & INTERIOR) {
+         var sum =
+            (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR) + (img.get(row - 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR)
+         if (sum != 5) {
+            img.set(row, col, STATE,
+               img.get(row, col, STATE) | EDGE)
          }
       }
    }
    //
-   // mod_path_worker_find_edges
-   //    find edges
+   // check body
    //
-
-   function mod_path_worker_find_edges(img) {
-      img.get = mod_path_worker_get
-      img.set = mod_path_worker_set
-      //
-      // check corners (todo)
-      //
-      //
-      // check border
-      //
-      for (var row = 1; row < (img.height - 1); ++row) {
-         col = 0
-         if (img.get(row, col, STATE) & INTERIOR) {
-            var sum =
-               (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR)
-            if (sum != 5) {
-               img.set(row, col, STATE,
-                  img.get(row, col, STATE) | EDGE)
-            }
-         }
-         col = img.width - 1
-         if (img.get(row, col, STATE) & INTERIOR) {
-            var sum =
-               (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col - 1, STATE) & INTERIOR) + (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR)
-            if (sum != 5) {
-               img.set(row, col, STATE,
-                  img.get(row, col, STATE) | EDGE)
-            }
-         }
-      }
+   for (var row = 1; row < (img.height - 1); ++row) {
       for (var col = 1; col < (img.width - 1); ++col) {
-         row = 0
          if (img.get(row, col, STATE) & INTERIOR) {
             var sum =
-               (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR)
-            if (sum != 5) {
-               img.set(row, col, STATE,
-                  img.get(row, col, STATE) | EDGE)
-            }
-         }
-         row = img.height - 1
-         if (img.get(row, col, STATE) & INTERIOR) {
-            var sum =
-               (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col - 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR) + (img.get(row - 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR)
-            if (sum != 5) {
+               (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR) + (img.get(row - 1, col - 1, STATE) & INTERIOR)
+            if (sum != 8) {
                img.set(row, col, STATE,
                   img.get(row, col, STATE) | EDGE)
             }
          }
       }
-      //
-      // check body
-      //
-      for (var row = 1; row < (img.height - 1); ++row) {
-         for (var col = 1; col < (img.width - 1); ++col) {
-            if (img.get(row, col, STATE) & INTERIOR) {
-               var sum =
-                  (img.get(row, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col - 1, STATE) & INTERIOR) + (img.get(row + 1, col, STATE) & INTERIOR) + (img.get(row + 1, col + 1, STATE) & INTERIOR) + (img.get(row, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col + 1, STATE) & INTERIOR) + (img.get(row - 1, col, STATE) & INTERIOR) + (img.get(row - 1, col - 1, STATE) & INTERIOR)
-               if (sum != 8) {
-                  img.set(row, col, STATE,
-                     img.get(row, col, STATE) | EDGE)
-               }
+   }
+}
+//
+// mod_path_worker_follow_edges
+//    follow image edges
+//
+function mod_path_worker_follow_edges(img, error) {
+   //
+   // edge follower
+   //
+   function follow_edges(row, col) {
+      if (img.dir(row, col) != 0) {
+         ++segments
+         var x = col
+         var y = row
+         path[path.length] = [
+            [x, y]
+         ]
+         while (1) {
+            if (img.get(y, x, DIRECTION) & NORTH) {
+               img.set(y, x, DIRECTION,
+                  img.get(y, x, DIRECTION) & ~NORTH)
+               y += 1
+               path[path.length - 1][path[path.length - 1].length] = [x, y]
+            } else if (img.get(y, x, DIRECTION) & SOUTH) {
+               img.set(y, x, DIRECTION,
+                  img.get(y, x, DIRECTION) & ~SOUTH)
+               y -= 1
+               path[path.length - 1][path[path.length - 1].length] = [x, y]
+            } else if (img.get(y, x, DIRECTION) & EAST) {
+               img.set(y, x, DIRECTION,
+                  img.get(y, x, DIRECTION) & ~EAST)
+               x += 1
+               path[path.length - 1][path[path.length - 1].length] = [x, y]
+            } else if (img.get(y, x, DIRECTION) & WEST) {
+               img.set(y, x, DIRECTION,
+                  img.get(y, x, DIRECTION) & ~WEST)
+               x -= 1
+               path[path.length - 1][path[path.length - 1].length] = [x, y]
+            }
+            if (img.dir(y, x) == 0) {
+               break
             }
          }
       }
    }
+   img.get = mod_path_worker_get
+   img.set = mod_path_worker_set
+   img.dir = mod_path_worker_dir
+   var segments = points = 0
+   var path = []
    //
-   // mod_path_worker_follow_edges
-   //    follow image edges
+   // follow border starts
    //
-
-   function mod_path_worker_follow_edges(img, error) {
-      //
-      // edge follower
-      //
-      function follow_edges(row, col) {
-         if (img.dir(row, col) != 0) {
-            ++segments
-            var x = col
-            var y = row
-            path[path.length] = [
-               [x, y]
-            ]
-            while (1) {
-               if (img.get(y, x, DIRECTION) & NORTH) {
-                  img.set(y, x, DIRECTION,
-                     img.get(y, x, DIRECTION) & ~NORTH)
-                  y += 1
-                  path[path.length - 1][path[path.length - 1].length] = [x, y]
-               } else if (img.get(y, x, DIRECTION) & SOUTH) {
-                  img.set(y, x, DIRECTION,
-                     img.get(y, x, DIRECTION) & ~SOUTH)
-                  y -= 1
-                  path[path.length - 1][path[path.length - 1].length] = [x, y]
-               } else if (img.get(y, x, DIRECTION) & EAST) {
-                  img.set(y, x, DIRECTION,
-                     img.get(y, x, DIRECTION) & ~EAST)
-                  x += 1
-                  path[path.length - 1][path[path.length - 1].length] = [x, y]
-               } else if (img.get(y, x, DIRECTION) & WEST) {
-                  img.set(y, x, DIRECTION,
-                     img.get(y, x, DIRECTION) & ~WEST)
-                  x -= 1
-                  path[path.length - 1][path[path.length - 1].length] = [x, y]
-               }
-               if (img.dir(y, x) == 0) {
-                  break
-               }
-            }
-         }
-      }
-      img.get = mod_path_worker_get
-      img.set = mod_path_worker_set
-      img.dir = mod_path_worker_dir
-      var segments = points = 0
-      var path = []
-      //
-      // follow border starts
-      //
-      for (var row = 1; row < (img.height - 1); ++row) {
-         col = 0
-         follow_edges(row, col)
-         col = img.width - 1
-         follow_edges(row, col)
-      }
-      for (var col = 1; col < (img.width - 1); ++col) {
-         row = 0
-         follow_edges(row, col)
-         row = img.height - 1
-         follow_edges(row, col)
-      }
-      //
-      // follow body paths
-      //
-      for (var row = 1; row < (img.height - 1); ++row) {
-         for (var i = 1; i < (img.width - 1); ++i) {
-            if (((row + 2) % 2) == 0)
-               col = i
-            else
-               col = img.width - i - 1
-            follow_edges(row, col)
-         }
-      }
-      return path
+   for (var row = 1; row < (img.height - 1); ++row) {
+      col = 0
+      follow_edges(row, col)
+      col = img.width - 1
+      follow_edges(row, col)
+   }
+   for (var col = 1; col < (img.width - 1); ++col) {
+      row = 0
+      follow_edges(row, col)
+      row = img.height - 1
+      follow_edges(row, col)
    }
    //
-   // mod_path_worker_image_2D_calculate
-   //    path from image 2D calculate
+   // follow body paths
    //
+   for (var row = 1; row < (img.height - 1); ++row) {
+      for (var i = 1; i < (img.width - 1); ++i) {
+         if (((row + 2) % 2) == 0)
+            col = i
+         else
+            col = img.width - i - 1
+         follow_edges(row, col)
+      }
+   }
+   return path
+}
+//
+// mod_path_worker_image_2D_calculate
+//    path from image 2D calculate
+//
 fn["mod_path_worker_image_2D_calculate"] = function(args) {
    var process_img = args[1]
    var output_img = args[2]
@@ -443,7 +438,7 @@ fn["mod_path_worker_image_2D_calculate"] = function(args) {
    // return path
    //
    return path
-}
+   }
 //
 // mod_path_worker_image_offset_z
 //    z offset Int32 height image
@@ -615,7 +610,6 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
 // mod_path_worker_image_set_height
 //    set image intensity to Int32 height
 //
-
 function mod_path_worker_image_set_height(img, bottom_z, bottom_i, top_z, top_i, dpi) {
    img.get = mod_path_worker_get
    var view = new DataView(img.data.buffer)
@@ -635,7 +629,6 @@ function mod_path_worker_image_set_height(img, bottom_z, bottom_i, top_z, top_i,
 // mod_path_worker_image_show_distances
 //    show Uint32 array distances
 //   
-
 function mod_path_worker_image_show_distances(img) {
    img.set = mod_image_set
    var view = new DataView(img)
@@ -664,7 +657,6 @@ function mod_path_worker_image_show_distances(img) {
 // mod_path_worker_image_show_states
 //    show states
 //
-
 function mod_path_worker_image_show_states(img) {
    img.get = function(row, col, element) {
       return this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element]
@@ -727,7 +719,6 @@ function mod_path_worker_image_show_states(img) {
 // mod_path_worker_offset
 //    offset Uint32 distance array
 //
-
 function mod_path_worker_offset(distances, distance, img) {
    img.set = mod_path_worker_set
    var view = new DataView(distances.data.buffer)
@@ -745,7 +736,6 @@ function mod_path_worker_offset(distances, distance, img) {
 // mod_path_worker_orient_edges
 //    orient edges
 //
-
 function mod_path_worker_orient_edges(img) {
    img.get = mod_path_worker_get
    img.set = mod_path_worker_set
@@ -862,7 +852,6 @@ function mod_path_worker_orient_edges(img) {
 //    sort 2D path weighted
 //    todo: more efficient sort
 //
-
 function mod_path_worker_sort_weighted(path, path_order, merge_distance, order_weight, sequence_weight) {
    if (path.length <= 1)
       return path
@@ -920,7 +909,6 @@ function mod_path_worker_sort_weighted(path, path_order, merge_distance, order_w
 // mod_path_worker_threshold
 //    threshold RGBA image, 0-1 range
 //
-
 function mod_path_worker_threshold(img, threshold) {
    img.get = mod_path_worker_get
    img.set = mod_path_worker_set
@@ -943,7 +931,6 @@ function mod_path_worker_threshold(img, threshold) {
 // mod_path_worker_vectorize2
 //    vectorize 2D path
 //
-
 function mod_path_worker_vectorize2(oldpath, error) {
    var path = []
    var count = 0
@@ -1001,7 +988,6 @@ function mod_path_worker_vectorize2(oldpath, error) {
 // mod_path_worker_vectorize3
 //    vectorize 3D path
 //
-
 function mod_path_worker_vectorize3(oldpath, error) {
    var path = []
    var count = 0
@@ -1073,7 +1059,6 @@ function mod_path_worker_vectorize3(oldpath, error) {
 // mod_path_worker_vectorize3_segment
 //    vectorize 3D path segment
 //
-
 function mod_path_worker_vectorize3_segment(oldpath, error) {
    var path = []
    var count = 0
