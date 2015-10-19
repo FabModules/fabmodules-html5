@@ -475,7 +475,6 @@ define(['require',
       // mod_path_image_22D_controls
       //    path from image 2.2D controls (intensity, depth, thickness)
       //
-
       function mod_path_image_22D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
@@ -483,10 +482,8 @@ define(['require',
          // onclick='mod_path_image_22D()'>"
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>"
          mod_path_file_controls(routine)
-
          controls.innerHTML += mod_path_image_22D_controls_tpl();
          mod_path_file_controls_events(routine,modname)
-
          findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_22D();
          });

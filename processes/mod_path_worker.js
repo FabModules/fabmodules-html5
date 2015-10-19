@@ -512,9 +512,9 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    if (xz) {
       var sign = 1
       path[path.length] = []
-      for (var row = ir; row <= (img.height - ir); row += id) {
+      for (var row = ir; row <= (img.height-ir); row += id) {
          self.postMessage(['prompt','row '+row+'/'+img.height])
-         var offset = 0 * (sign + 1) / 2 + (img.width - 1) * (1 - sign) / 2
+         var offset = 0*(sign+1)/2+(img.width-1)*(1-sign)/2
          newpath = []
          for (var col = ir; col < (img.width - ir); ++col) {
             //
@@ -553,8 +553,8 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
          // add to path
          //
          for (var pt = 0; pt < newpath.length; ++pt)
-            path[path.length - 1][path[path.length - 1].length] = newpath[pt]
-         self.postMessage(['path', path])
+            path[path.length-1][path[path.length-1].length] = newpath[pt]
+         self.postMessage(['path',path])
          sign = -sign
          }
       }
@@ -564,9 +564,9 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    if (yz) {
       var sign = -1
       path[path.length] = []
-      for (var col = ir; col <= (img.width - ir); col += id) {
+      for (var col = ir; col <= (img.width-ir); col += id) {
          self.postMessage(['prompt','column '+col+'/'+img.width])
-         var offset = 0 * (sign + 1) / 2 + (img.height - 1) * (1 - sign) / 2
+         var offset = 0*(sign+1)/2+(img.height-1)*(1-sign)/2
          newpath = []
          for (var row = ir; row < (img.height - ir); ++row) {
             //
@@ -593,8 +593,8 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
          // add to path
          //
          for (var pt = 0; pt < newpath.length; ++pt)
-            path[path.length - 1][path[path.length - 1].length] = newpath[pt]
-         self.postMessage(['path', path])
+            path[path.length-1][path[path.length-1].length] = newpath[pt]
+         self.postMessage(['path',path])
          sign = -sign
          }
       }
