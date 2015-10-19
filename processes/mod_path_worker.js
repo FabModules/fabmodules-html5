@@ -617,7 +617,7 @@ function mod_path_worker_image_set_height(img,bottom_z,bottom_i,top_z,top_i,dpi)
    var imax = 256*256*256-1
    for (var row = 0; row < img.height; ++row) {
       for (var col = 0; col < img.width; ++col) {
-         var intensity = (img.get(row,col,0)+(img.get(row,col,1)<<8)+(img.get(row,col,B)<<16))/imax
+         var intensity = (img.get(row,col,R)+(img.get(row,col,G)<<8)+(img.get(row,col,B)<<16))/imax
          var z = bottom_z+(top_z-bottom_z)*(intensity-bottom_i)/(top_i-bottom_i)
          var iz = Math.floor(0.5+dpi*z/25.4)
          view.setInt32((img.height-1-row)*4*img.width+col*4,iz)
