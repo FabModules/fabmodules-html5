@@ -57,15 +57,15 @@ var fn = {}
 //
 // mod_path_worker_get
 //    get image value
-function mod_path_worker_get(row, col, element) {
-   return this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element]
+function mod_path_worker_get(row,col,element) {
+   return this.data[(this.height-1-row)*this.width*4+col*4+element]
    }
 //
 // mod_path_worker_set
 //   set image value
 //
-function mod_path_worker_set(row, col, element, value) {
-   this.data[(this.height - 1 - row) * this.width * 4 + col * 4 + element] = value
+function mod_path_worker_set(row,col,element,value) {
+   this.data[(this.height-1-row)*this.width*4+col*4+element] = value
    }
 //
 // mod_path_worker_dir
@@ -73,10 +73,10 @@ function mod_path_worker_set(row, col, element, value) {
 //
 function mod_path_worker_dir(row, col) {
    var num = 0
-   if (this.get(row, col, DIRECTION) & NORTH) num += 1
-   if (this.get(row, col, DIRECTION) & SOUTH) num += 1
-   if (this.get(row, col, DIRECTION) & EAST) num += 1
-   if (this.get(row, col, DIRECTION) & WEST) num += 1
+   if (this.get(row,col,DIRECTION) & NORTH) num += 1
+   if (this.get(row,col,DIRECTION) & SOUTH) num += 1
+   if (this.get(row,col,DIRECTION) & EAST) num += 1
+   if (this.get(row,col,DIRECTION) & WEST) num += 1
    return num
    }
 //
@@ -90,11 +90,11 @@ function mod_path_worker_find_distances(img) {
    var view = new DataView(img.data.buffer)
    var nx = img.width
    var ny = img.height
-   function distance(g, x, y, i) {
-      return ((y - i) * (y - i) + g[i][x] * g[i][x])
+   function distance(g,x,y,i) {
+      return ((y-i)*(y-i)+g[i][x]*g[i][x])
       }
-   function intersection(g, x, y0, y1) {
-      return ((g[y0][x] * g[y0][x] - g[y1][x] * g[y1][x] + y0 * y0 - y1 * y1) / (2.0 * (y0 - y1)))
+   function intersection(g,x,y0,y1) {
+      return ((g[y0][x]*g[y0][x]-g[y1][x]*g[y1][x]+y0*y0-y1*y1)/(2.0*(y0-y1)))
       }
    //
    // allocate arrays
@@ -152,14 +152,14 @@ function mod_path_worker_find_distances(img) {
       //
       for (var y = 1; y < ny; ++y) {
          while ((segment >= 0) &&
-            (distance(g, x, starts[segment], minimums[segment]) > distance(g, x, starts[segment], y)))
+            (distance(g,x,starts[segment],minimums[segment]) > distance(g,x,starts[segment],y)))
             segment -= 1
          if (segment < 0) {
             segment = 0
             minimums[0] = y
             }
          else {
-            newstart = 1 + intersection(g, x, minimums[segment], y)
+            newstart = 1 + intersection(g,x,minimums[segment],y)
             if (newstart < ny) {
                segment += 1
                minimums[segment] = y
@@ -171,8 +171,8 @@ function mod_path_worker_find_distances(img) {
       // up 
       //
       for (var y = (ny - 1); y >= 0; --y) {
-         var d = Math.sqrt(distance(g, x, y, minimums[segment]))
-         view.setUint32((img.height - 1 - y) * 4 * img.width + x * 4, d)
+         var d = Math.sqrt(distance(g,x,y,minimums[segment]))
+         view.setUint32((img.height-1-y)*4*img.width+x*4,d)
          if (y == starts[segment])
             segment -= 1
          }
@@ -723,14 +723,14 @@ function mod_path_worker_offset(distances, distance, img) {
    var view = new DataView(distances.data.buffer)
    for (var row = 0; row < img.height; ++row) {
       for (var col = 0; col < img.width; ++col) {
-         if (view.getUint32((distances.height - 1 - row) * distances.width * 4 + col * 4, false) <= distance)
+         if (view.getUint32((distances.height-1-row)*distances.width*4+col*4,false) <= distance)
             img.set(row, col, STATE, INTERIOR)
          else
             img.set(row, col, STATE, EMPTY)
          img.set(row, col, DIRECTION, NONE)
+         }
       }
    }
-}
 //
 // mod_path_worker_orient_edges
 //    orient edges
@@ -851,7 +851,7 @@ function mod_path_worker_orient_edges(img) {
 //    sort 2D path weighted
 //    todo: more efficient sort
 //
-function mod_path_worker_sort_weighted(path, path_order, merge_distance, order_weight, sequence_weight) {
+function mod_path_worker_sort_weighted(path,path_order,merge_distance,order_weight,sequence_weight) {
    if (path.length <= 1)
       return path
    var newpath = []
@@ -979,79 +979,6 @@ function mod_path_worker_vectorize2(oldpath,error) {
             }
          if (pt == (oldpath[seg].length-1)) {
             path[path.length-1][path[path.length-1].length] = [x,y]
-            count += 1
-            }
-         }
-      }
-   return path
-   }
-//
-// mod_path_worker_vectorize3
-//    vectorize 3D path
-//
-function mod_path_worker_vectorize3(oldpath,error) {
-   var path = []
-   var count = 0
-   for (var seg = 0; seg < oldpath.length; ++seg) {
-      var x0 = oldpath[seg][0][X]
-      var y0 = oldpath[seg][0][Y]
-      var z0 = oldpath[seg][0][Z]
-      path[path.length] = [
-         [x0, y0, z0]
-      ]
-      count += 1
-      var xsum = x0
-      var ysum = y0
-      var zsum = z0
-      var sum = 1
-      for (var pt = 1; pt < oldpath[seg].length; ++pt) {
-         var xold = x
-         var yold = y
-         var zold = z
-         var x = oldpath[seg][pt][X]
-         var y = oldpath[seg][pt][Y]
-         var z = oldpath[seg][pt][Z]
-         if (sum == 1) {
-            xsum += x
-            ysum += y
-            zsum += z
-            sum += 1
-            }
-         else {
-            var xmean = xsum/sum
-            var ymean = ysum/sum
-            var zmean = zsum/sum
-            var dx = xmean-x0
-            var dy = ymean-y0
-            var dz = zmean-z0
-            var d = Math.sqrt(dx*dx+dy*dy+dz*dz)
-            var nx = dx/d
-            var ny = dy/d
-            var nz = dz/d
-            var vx = (x-x0)
-            var vy = (y-y0)
-            var vz = (z-z0)
-            var l = Math.sqrt((vx*vx+vy*vy+vz*vz)-(vx*nx+vy*ny+vz*nz)*(vx*nx+vy*ny+vz*nz))
-            if (l < error) {
-               xsum += x
-               ysum += y
-               zsum += z
-               sum += 1
-               }
-            else {
-               path[path.length-1][path[path.length-1].length] = [xold,yold,zold]
-               count += 1
-               x0 = xold
-               y0 = yold
-               z0 = zold
-               xsum = xold
-               ysum = yold
-               zsum = zold
-               sum = 1
-               }
-            }
-         if (pt == (oldpath[seg].length - 1)) {
-            path[path.length-1][path[path.length-1].length] = [x,y,z]
             count += 1
             }
          }
