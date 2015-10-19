@@ -752,8 +752,6 @@ define(['require',
       function mod_path_image_3D_controls(routine,modname) {
          var controls = findEl("mod_process_controls")
          controls.innerHTML = "<br><b>process</b>"
-         //    controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'\
-         // onclick='mod_path_image_3D()'>"
          controls.innerHTML += "<br><input type='button' id='mod_path' value='calculate'>"
          mod_path_file_controls(routine)
          controls.innerHTML += "<br>bottom z (mm):"
