@@ -457,6 +457,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    var bottom_i = args[10]
    var top_z = args[11]
    var top_i = args[12]
+   var top_zn = Math.floor(0.5+dpi*top_z/25.4)
    var view = new DataView(img.data.buffer)
    //
    // set height
