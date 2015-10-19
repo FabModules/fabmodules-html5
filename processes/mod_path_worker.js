@@ -550,7 +550,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
          //
          newpath = mod_path_worker_vectorize3_segment(newpath,error)
          //
-         // add to path
+         // prune and add to path
          //
          for (var pt = 0; pt < newpath.length; ++pt)
             path[path.length-1][path[path.length-1].length] = newpath[pt]
@@ -590,7 +590,7 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
          //
          newpath = mod_path_worker_vectorize3_segment(newpath,error)
          //
-         // add to path
+         // prune and add to path
          //
          for (var pt = 0; pt < newpath.length; ++pt)
             path[path.length-1][path[path.length-1].length] = newpath[pt]
