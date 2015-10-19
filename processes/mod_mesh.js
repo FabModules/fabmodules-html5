@@ -90,23 +90,23 @@ define(['require',
             var z = 2*(v[2]-(globals.mesh.zmax+globals.mesh.zmin)/2)/d
             var cz = Math.cos(rz)
             var sz = Math.sin(rz)
-            var xrz = cz * x - sz * y
-            var yrz = sz * x + cz * y
+            var xrz = cz*x-sz*y
+            var yrz = sz*x+cz*y
             var zrz = z
             var xrx = xrz
             var cx = Math.cos(rx)
             var sx = Math.sin(rx)
-            var yrx = cx * yrz + sx * zrz
-            var zrx = -sx * yrz + cx * zrz
-            var xd = xrx + dx
-            var yd = yrx + dy
+            var yrx = cx*yrz+sx*zrz
+            var zrx = -sx*yrz+cx*zrz
+            var xd = xrx+dx
+            var yd = yrx+dy
             var zd = zrx
-            var xs = xd * s
-            var ys = yd * s
+            var xs = xd*s
+            var ys = yd*s
             var zs = zd
-            var xn = Math.floor(0.5 + (img.width - 1) * (1 + xs) / 2)
-            var yn = Math.floor(0.5 + (img.width - 1) * (1 + ys) / 2)
-            var zf = Math.floor(0.5 + (img.width - 1) * (1 + zs) / 2)
+            var xn = Math.floor(0.5+(img.width-1)*(1+xs)/2)
+            var yn = Math.floor(0.5+(img.width-1)*(1+ys)/2)
+            var zf = Math.floor(0.5+(img.width-1)*(1+zs)/2)
             if (zf > zlim.zmax) zlim.zmax = zf
             if (zf < zlim.zmin) zlim.zmin = zf
             return {
@@ -130,7 +130,7 @@ define(['require',
          //
          // check normal if needs to be drawn
          //
-         if (((x1 - x0) * (y1 - y2) - (x1 - x2) * (y1 - y0)) >= 0)
+         if (((x1-x0)*(y1-y2)-(x1-x2)*(y1-y0)) >= 0)
             return
          //
          // sort projection order
@@ -171,7 +171,7 @@ define(['require',
          //
          // check orientation after sort
          //
-         if (x1 < (x0 + ((x2 - x0) * (y1 - y0)) / (y2 - y0)))
+         if (x1 < (x0+((x2-x0)*(y1-y0))/(y2-y0)))
             var dir = 1;
          else
             var dir = -1;
@@ -183,43 +183,43 @@ define(['require',
             for (var y = y1; y <= y2; ++y) {
                if (y < 0) continue
                if (y > (img.height - 1)) break
-               x12 = Math.floor(0.5 + x1 + (y - y1) * (x2 - x1) / (y2 - y1))
-               z12 = z1 + (y - y1) * (z2 - z1) / (y2 - y1)
-               x02 = Math.floor(0.5 + x0 + (y - y0) * (x2 - x0) / (y2 - y0))
-               z02 = z0 + (y - y0) * (z2 - z0) / (y2 - y0)
+               x12 = Math.floor(0.5+x1+(y-y1)*(x2-x1)/(y2-y1))
+               z12 = z1+(y-y1)*(z2-z1)/(y2-y1)
+               x02 = Math.floor(0.5+x0+(y-y0)*(x2-x0)/(y2-y0))
+               z02 = z0+(y-y0)*(z2-z0)/(y2-y0)
                if (x12 != x02)
-                  var slope = (z02 - z12) / (x02 - x12)
+                  var slope = (z02-z12)/(x02-x12)
                else
                   var slope = 0
                var x = x12 - dir
                while (x != x02) {
                   x += dir
-                  if ((x < 0) || (x > (img.width - 1))) continue
-                  var z = z12 + slope * (x - x12)
-                  if (z > view.getFloat32((img.height - 1 - y) * 4 * img.width + x * 4))
-                     view.setFloat32((img.height - 1 - y) * 4 * img.width + x * 4, z)
+                  if ((x < 0) || (x > (img.width-1))) continue
+                  var z = z12+slope*(x-x12)
+                  if (z > view.getFloat32((img.height-1-y)*4*img.width+x*4))
+                     view.setFloat32((img.height-1-y)*4*img.width+x*4,z)
                   }
                }
             }
          if (y1 != y0) {
             for (var y = y0; y <= y1; ++y) {
                if (y < 0) continue
-               if (y > (img.height - 1)) break
-               x01 = Math.floor(0.5 + x0 + (y - y0) * (x1 - x0) / (y1 - y0))
-               z01 = z0 + (y - y0) * (z1 - z0) / (y1 - y0)
-               x02 = Math.floor(0.5 + x0 + (y - y0) * (x2 - x0) / (y2 - y0))
-               z02 = z0 + (y - y0) * (z2 - z0) / (y2 - y0)
+               if (y > (img.height-1)) break
+               x01 = Math.floor(0.5+x0+(y-y0)*(x1-x0)/(y1-y0))
+               z01 = z0+(y-y0)*(z1-z0)/(y1-y0)
+               x02 = Math.floor(0.5+x0+(y-y0)*(x2-x0)/(y2-y0))
+               z02 = z0+(y-y0)*(z2-z0)/(y2-y0)
                if (x01 != x02)
-                  var slope = (z02 - z01) / (x02 - x01)
+                  var slope = (z02-z01)/(x02-x01)
                else
                   var slope = 0
                var x = x01 - dir
                while (x != x02) {
                   x += dir
-                  if ((x < 0) || (x > (img.width - 1))) continue
-                  var z = z01 + slope * (x - x01)
-                  if (z > view.getFloat32((img.height - 1 - y) * 4 * img.width + x * 4))
-                     view.setFloat32((img.height - 1 - y) * 4 * img.width + x * 4, z)
+                  if ((x < 0) || (x > (img.width-1))) continue
+                  var z = z01+slope*(x-x01)
+                  if (z > view.getFloat32((img.height-1-y)*4*img.width+x*4))
+                     view.setFloat32((img.height-1-y)*4*img.width+x*4,z)
                   }
                }
             }
