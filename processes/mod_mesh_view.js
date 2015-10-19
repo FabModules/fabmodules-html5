@@ -67,40 +67,31 @@ define(['require',
       canvas.onmouseup = function(evt) {
          globals.down = false
          if (globals.button == 0) {
-            globals.mesh.dx = globals.mesh.dx + 2 * (evt.clientX - globals.xdown) /
-               (canvas.offsetWidth * globals.mesh.s)
-            globals.mesh.dy = globals.mesh.dy - 2 * (evt.clientY - globals.ydown) /
-               (canvas.offsetWidth * globals.mesh.s)
-            draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy,
-               globals.mesh.rx, globals.mesh.rz)
+            globals.mesh.dx = globals.mesh.dx+2*(evt.clientX-globals.xdown)/(canvas.offsetWidth*globals.mesh.s)
+            globals.mesh.dy = globals.mesh.dy-2*(evt.clientY-globals.ydown)/(canvas.offsetWidth*globals.mesh.s)
+            draw(globals.mesh.s,globals.mesh.dx,globals.mesh.dy,globals.mesh.rx, globals.mesh.rz)
             }
          else if (globals.button == 2) {
-            globals.mesh.rz = globals.mesh.rz + Math.PI * (evt.clientX - globals.xdown) /
-               canvas.offsetWidth
-            globals.mesh.rx = globals.mesh.rx - Math.PI * (evt.clientY - globals.ydown) /
-               canvas.offsetHeight
+            globals.mesh.rz = globals.mesh.rz+Math.PI*(evt.clientX-globals.xdown)/canvas.offsetWidth
+            globals.mesh.rx = globals.mesh.rx-Math.PI*(evt.clientY-globals.ydown)/canvas.offsetHeight
             }
          }
       canvas.onmousemove = function(evt) {
          if (globals.down == false)
             return
          if (globals.button == 0) {
-            var dx = globals.mesh.dx + 2 * (evt.clientX - globals.xdown) /
-               (canvas.offsetWidth * globals.mesh.s)
-            var dy = globals.mesh.dy - 2 * (evt.clientY - globals.ydown) /
-               (canvas.offsetWidth * globals.mesh.s)
-            draw(globals.mesh.s, dx, dy, globals.mesh.rx, globals.mesh.rz)
+            var dx = globals.mesh.dx+2*(evt.clientX-globals.xdown)/(canvas.offsetWidth*globals.mesh.s)
+            var dy = globals.mesh.dy-2*(evt.clientY-globals.ydown)/(canvas.offsetWidth*globals.mesh.s)
+            draw(globals.mesh.s,dx,dy,globals.mesh.rx,globals.mesh.rz)
             findEl("mod_dx").value = dx.toFixed(3)
             findEl("mod_dy").value = dy.toFixed(3)
             }
          else if (globals.button == 2) {
-            var rz = globals.mesh.rz + Math.PI * (evt.clientX - globals.xdown) /
-               canvas.offsetWidth
-            var rx = globals.mesh.rx - Math.PI * (evt.clientY - globals.ydown) /
-               canvas.offsetWidth
+            var rz = globals.mesh.rz+Math.PI*(evt.clientX-globals.xdown)/canvas.offsetWidth
+            var rx = globals.mesh.rx-Math.PI*(evt.clientY-globals.ydown)/canvas.offsetWidth
             draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy, rx, rz)
-            findEl("mod_rx").value = (180 * rx / Math.PI).toFixed(3)
-            findEl("mod_rz").value = (180 * rz / Math.PI).toFixed(3)
+            findEl("mod_rx").value = (180*rx/Math.PI).toFixed(3)
+            findEl("mod_rz").value = (180*rz/Math.PI).toFixed(3)
             }
          }
       canvas.onwheel = function(evt) {
@@ -108,11 +99,12 @@ define(['require',
          evt.stopPropagation()
          if (evt.deltaY < 0) {
             globals.mesh.s *= 1.1
-         } else {
+            }
+         else {
             globals.mesh.s *= 0.9
-         }
-         globals.width = Math.floor(0.5 + globals.dpi *
-            (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units))
+            }
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/
+            (globals.mesh.s*globals.mesh.units))
          findEl("mod_px").innerHTML =
             "width: " + globals.width + " px"
          draw(globals.mesh.s, globals.mesh.dx, globals.mesh.dy,
@@ -185,35 +177,39 @@ define(['require',
       //
       var triangles = new Float32Array(3 * 2 * 3 * mesh.length)
       for (var t = 0; t < mesh.length; ++t) {
-         triangles[18 * t + 0] = mesh[t][0][0]
-         triangles[18 * t + 1] = mesh[t][0][1]
-         triangles[18 * t + 2] = mesh[t][0][2]
-         triangles[18 * t + 3] = mesh[t][1][0]
-         triangles[18 * t + 4] = mesh[t][1][1]
-         triangles[18 * t + 5] = mesh[t][1][2]
-         triangles[18 * t + 6] = mesh[t][1][0]
-         triangles[18 * t + 7] = mesh[t][1][1]
-         triangles[18 * t + 8] = mesh[t][1][2]
-         triangles[18 * t + 9] = mesh[t][2][0]
-         triangles[18 * t + 10] = mesh[t][2][1]
-         triangles[18 * t + 11] = mesh[t][2][2]
-         triangles[18 * t + 12] = mesh[t][2][0]
-         triangles[18 * t + 13] = mesh[t][2][1]
-         triangles[18 * t + 14] = mesh[t][2][2]
-         triangles[18 * t + 15] = mesh[t][0][0]
-         triangles[18 * t + 16] = mesh[t][0][1]
-         triangles[18 * t + 17] = mesh[t][0][2]
+         triangles[18*t+0] = mesh[t][0][0]
+         triangles[18*t+1] = mesh[t][0][1]
+         triangles[18*t+2] = mesh[t][0][2]
+         triangles[18*t+3] = mesh[t][1][0]
+         triangles[18*t+4] = mesh[t][1][1]
+         triangles[18*t+5] = mesh[t][1][2]
+         triangles[18*t+6] = mesh[t][1][0]
+         triangles[18*t+7] = mesh[t][1][1]
+         triangles[18*t+8] = mesh[t][1][2]
+         triangles[18*t+9] = mesh[t][2][0]
+         triangles[18*t+10] = mesh[t][2][1]
+         triangles[18*t+11] = mesh[t][2][2]
+         triangles[18*t+12] = mesh[t][2][0]
+         triangles[18*t+13] = mesh[t][2][1]
+         triangles[18*t+14] = mesh[t][2][2]
+         triangles[18*t+15] = mesh[t][0][0]
+         triangles[18*t+16] = mesh[t][0][1]
+         triangles[18*t+17] = mesh[t][0][2]
          }
       //
       // scale
       //
       var v = 0
+      if ((mesh.xmax-mesh.xmin) > (mesh.ymax-mesh.ymin))
+         var d = mesh.xmax-mesh.xmin
+      else
+         var d = mesh.ymax-mesh.ymin
       while (v < triangles.length) {
-         triangles[v] = 2 * (triangles[v] - mesh.xmin) / (mesh.xmax - mesh.xmin) - 1
+         triangles[v] = 2*(triangles[v]-(mesh.xmax+mesh.xmin)/2)/d
          v += 1
-         triangles[v] = 2 * (triangles[v] - (mesh.ymax + mesh.ymin) / 2) / (mesh.xmax - mesh.xmin)
+         triangles[v] = 2*(triangles[v]-(mesh.ymax+mesh.ymin)/2)/d
          v += 1
-         triangles[v] = 2 * (triangles[v] - (mesh.zmax + mesh.zmin) / 2) / (mesh.xmax - mesh.xmin)
+         triangles[v] = 2*(triangles[v]-(mesh.zmax+mesh.zmin)/2)/d
          v += 1
          }
       //
@@ -250,22 +246,22 @@ define(['require',
       //
       // matrix routines
       //
-      function mult4(a, b) {
+      function mult4(a,b) {
          var c = []
          for (var i = 0; i < 4; ++i)
             for (var j = 0; j < 4; ++j)
-               c.push(a[j] * b[4 * i] + a[j + 4] * b[4 * i + 1] + a[j + 8] * b[4 * i + 2] + a[j + 12] * b[4 * i + 3])
+               c.push(a[j]*b[4*i]+a[j+4]*b[4*i+1]+a[j+8]*b[4*i+2]+a[j+12]*b[4*i+3])
          return c
          }
-      function ortho4(left, right, bottom, top, near, far) {
+      function ortho4(left,right,bottom,top,near,far) {
          return [
-            2 / (right - left), 0, 0, -(right + left) / (right - left),
-            0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom),
-            0, 0, -2 / (far - near), -(far + near) / (far - near),
+            2/(right-left), 0, 0, -(right+left)/(right-left),
+            0, 2/(top-bottom), 0, -(top+bottom)/(top-bottom),
+            0, 0, -2/(far-near), -(far+near)/(far-near),
             0, 0, 0, 1,
             ]
          }
-      function translate4(tx, ty, tz) {
+      function translate4(tx,ty,tz) {
          return [
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -302,7 +298,7 @@ define(['require',
             0, 0, 0, 1,
             ]
          }
-      function scale4_xy(sx, sy) {
+      function scale4_xy(sx,sy) {
          return [
             sx, 0, 0, 0,
             0, sy, 0, 0,

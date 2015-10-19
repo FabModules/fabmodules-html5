@@ -79,13 +79,15 @@ define(['require',
          // pos
          //    return vertex coordinates
          //
+
+         if ((globals.mesh.xmax-globals.mesh.xmin) > (globals.mesh.ymax-globals.mesh.ymin))
+            var d = globals.mesh.xmax-globals.mesh.xmin
+         else
+            var d = globals.mesh.ymax-globals.mesh.ymin
          function pos(v) {
-            var x = 2 * (v[0] - globals.mesh.xmin) /
-               (globals.mesh.xmax - globals.mesh.xmin) - 1
-            var y = 2 * (v[1] - (globals.mesh.ymax + globals.mesh.ymin) / 2) /
-               (globals.mesh.xmax - globals.mesh.xmin)
-            var z = 2 * (v[2] - (globals.mesh.zmax + globals.mesh.zmin) / 2) /
-               (globals.mesh.xmax - globals.mesh.xmin)
+            var x = 2*(v[0]-(globals.mesh.xmax+globals.mesh.xmin)/2)/d
+            var y = 2*(v[1]-(globals.mesh.ymax+globals.mesh.ymin)/2)/d
+            var z = 2*(v[2]-(globals.mesh.zmax+globals.mesh.zmin)/2)/d
             var cz = Math.cos(rz)
             var sz = Math.sin(rz)
             var xrz = cz * x - sz * y

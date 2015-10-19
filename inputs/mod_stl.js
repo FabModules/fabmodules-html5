@@ -79,7 +79,12 @@ define(['require',
       //
       globals.mesh.units = 1
       globals.dpi = 100
-      globals.width = (globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(0)
+      if ((globals.mesh.xmax-globals.mesh.xmin) > (globals.mesh.ymax-globals.mesh.ymin))
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/
+            (globals.mesh.s*globals.mesh.units))
+      else
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.ymax-globals.mesh.ymin)/
+            (globals.mesh.s*globals.mesh.units))
       //
       // set up UI
       //
@@ -164,9 +169,14 @@ define(['require',
          });
       //
       findEl("mod_dpi",false).addEventListener("keyup", function() {
-         globals.dpi = parseFloat(findEl("mod_dpi").value);
-         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
-         findEl("mod_px").innerHTML = "width: " + globals.width + " px";
+         globals.dpi = parseFloat(findEl("mod_dpi").value)
+         if ((globals.mesh.xmax-globals.mesh.xmin) > (globals.mesh.ymax-globals.mesh.ymin))
+            globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/
+               (globals.mesh.s*globals.mesh.units))
+         else
+            globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.ymax-globals.mesh.ymin)/
+               (globals.mesh.s*globals.mesh.units))
+         findEl("mod_px").innerHTML = "width: "+globals.width+" px"
          });
       //
       findEl('calculate_height_map',false).addEventListener("click",function() {
@@ -178,7 +188,12 @@ define(['require',
          var div = findEl("mod_process_controls");
          div.innerHTML = "";
          var canvas = findEl("mod_input_canvas");
-         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
+         if ((globals.mesh.xmax-globals.mesh.xmin) > (globals.mesh.ymax-globals.mesh.ymin))
+            globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/
+               (globals.mesh.s*globals.mesh.units))
+         else
+            globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.ymax-globals.mesh.ymin)/
+               (globals.mesh.s*globals.mesh.units))
          globals.height = globals.width;
          canvas.width = globals.width;
          canvas.height = globals.width;
@@ -277,8 +292,14 @@ define(['require',
       globals.mesh.zmax = zmax
       globals.mesh.rz = 0
       globals.mesh.rx = 0
-      globals.mesh.dy = (ymax-ymin)/(xmax-xmin)-1 // bottom-adjust
-      globals.mesh.dx = 0
+      if ((ymax-ymin) < (xmax-xmin)) {
+         globals.mesh.dx = 0
+         globals.mesh.dy = (ymax-ymin)/(xmax-xmin)-1 // bottom-adjust
+         }
+      else {
+         globals.mesh.dx = (xmax-xmin)/(ymax-ymin)-1 // left-adjust
+         globals.mesh.dy = 0
+         }
       globals.mesh.s = 1
       return true
       }
