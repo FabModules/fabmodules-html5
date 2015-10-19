@@ -37,10 +37,9 @@ define(['require',
    //
    function mod_load_handler() {
       var file = findEl("mod_file_input")
-      // file.setAttribute("onchange", "mod_stl_read_handler()")
       file.addEventListener('change', function() {
-         mod_stl_read_handler();
-         });
+         mod_stl_read_handler()
+         })
       }
    //
    // mod_stl_read_handler
@@ -80,7 +79,7 @@ define(['require',
       //
       globals.mesh.units = 1
       globals.dpi = 100
-      globals.width = (globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(0)
+      globals.width = (globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(0)
       //
       // set up UI
       //
@@ -95,12 +94,16 @@ define(['require',
          z_min: globals.mesh.zmin.toFixed(3),
          z_max: globals.mesh.zmin.toFixed(3),
          mesh_units: globals.mesh.units,
-         mm_x: (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
-         mm_y: (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
-         mm_z: (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
-         in_x: ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3),
-         in_y: ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3),
-         in_z: ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3),
+         mm_x: (25.4*(globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3),
+         mm_y: (25.4*(globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3),
+         mm_z: (25.4*(globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3),
+         in_x: ((globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3),
+         in_y: ((globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3),
+         in_z: ((globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3),
+         mod_rz: globals.mesh.rz.toFixed(3),
+         mod_rx: globals.mesh.rx.toFixed(3),
+         mod_dy: globals.mesh.dy.toFixed(3),
+         mod_dx: globals.mesh.dx.toFixed(3),
          dpi: globals.dpi,
          width: globals.width
          }
@@ -111,14 +114,14 @@ define(['require',
       findEl("mod_units",false).addEventListener("keyup", function() {
          globals.mesh.units = parseFloat(findEl("mod_units").value);
          findEl("mod_mm").innerHTML =
-            (25.4 * (globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
-            (25.4 * (globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
-            (25.4 * (globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " mm";
+            (25.4*(globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3) + " x " +
+            (25.4*(globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3) + " x " +
+            (25.4*(globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3) + " mm";
          findEl("mod_in").innerHTML =
-            ((globals.mesh.xmax - globals.mesh.xmin) / globals.mesh.units).toFixed(3) + " x " +
-            ((globals.mesh.ymax - globals.mesh.ymin) / globals.mesh.units).toFixed(3) + " x " +
-            ((globals.mesh.zmax - globals.mesh.zmin) / globals.mesh.units).toFixed(3) + " in";
-         globals.width = Math.floor(0.5 + globals.dpi * (globals.mesh.xmax - globals.mesh.xmin) / (globals.mesh.s * globals.mesh.units));
+            ((globals.mesh.xmax-globals.mesh.xmin)/globals.mesh.units).toFixed(3) + " x " +
+            ((globals.mesh.ymax-globals.mesh.ymin)/globals.mesh.units).toFixed(3) + " x " +
+            ((globals.mesh.zmax-globals.mesh.zmin)/globals.mesh.units).toFixed(3) + " in";
+         globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/(globals.mesh.s*globals.mesh.units));
          findEl("mod_px").innerHTML = "width: " + globals.width + " px";
          });
       //
@@ -274,7 +277,7 @@ define(['require',
       globals.mesh.zmax = zmax
       globals.mesh.rz = 0
       globals.mesh.rx = 0
-      globals.mesh.dy = 0
+      globals.mesh.dy = (ymax-ymin)/(xmax-xmin)-1 // bottom-adjust
       globals.mesh.dx = 0
       globals.mesh.s = 1
       return true
