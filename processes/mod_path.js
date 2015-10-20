@@ -54,7 +54,8 @@ define(['require',
       function mod_path_file_controls(routine) {
          controls = findEl("mod_process_controls")
          ctx = {
-            server: globals.server
+            server: globals.server,
+            send: globals.send
          }
          controls.innerHTML += mod_path_file_controls_tpl(ctx)
       }

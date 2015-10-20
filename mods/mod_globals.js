@@ -9,6 +9,7 @@ define(function() {
    exports.x0 = "" // last x0
    exports.y0 = "" // last y0
    exports.z0 = "" // last z0
+   exports.send = "" // machine send command
    exports.server = '127.0.0.1:12345' // machine server
    exports.type = "" // file type extension
    exports.processes = {} // processes

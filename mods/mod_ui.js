@@ -125,7 +125,7 @@ define([
          return el[0]
          }).indexOf("module")
       var mod = arr[index][1]
-      globals.processes[fn_name + mod] = {
+      globals.processes[fn_name+mod] = {
          func: fn_name,
          name: modname,
          module: mod

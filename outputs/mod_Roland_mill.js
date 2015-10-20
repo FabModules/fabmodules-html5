@@ -126,7 +126,8 @@ define(['require',
          rml_unit = rml_units[this.value];
 	      model = this.value;
          if (model == 'mdx_20') {
-            findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            globals.send = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"
+            findEl("mod_command").value = globals.send
             findEl("mod_x0").value = 10;
             findEl("mod_y0").value = 10;
             findEl("mod_z0").value = 0;
@@ -136,7 +137,8 @@ define(['require',
             findEl("mod_jog").value = 2;
             }
          else if (model == 'mdx_40') {
-            findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            globals.send = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"
+            findEl("mod_command").value = globals.send
             findEl("mod_x0").value = 10;
             findEl("mod_y0").value = 10;
             findEl("mod_z0").value = 0;
@@ -146,7 +148,8 @@ define(['require',
             findEl("mod_jog").value = 2;
             }
          else if (model == 'srm_20') {
-            findEl("mod_command").value = "mod_print.py /dev/usb/lp1 ';'";
+            globals.send = "mod_print.py /dev/usb/lp1 ';'";
+            findEl("mod_command").value = globals.send
             findEl("mod_x0").value = 10;
             findEl("mod_y0").value = 10;
             findEl("mod_z0").value = 10;
