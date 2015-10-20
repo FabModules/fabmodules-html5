@@ -8,18 +8,18 @@
 <br>speed (mm/s):
 &nbsp;<input type="text" id="mod_speed" size="3" value="4">
 <br>x0 (mm):
-&nbsp;<input type="text" id="mod_xmin" size="3" value="10">
+&nbsp;<input type="text" id="mod_x0" size="3" value="10">
 <br>y0 (mm):
-&nbsp;<input type="text" id="mod_ymin" size="3" value="10">
+&nbsp;<input type="text" id="mod_y0" size="3" value="10">
 <br>z0 (mm):
-&nbsp;<input type="text" id="mod_zmin" size="3" value="0">
+&nbsp;<input type="text" id="mod_z0" size="3" value="0">
 {{#if show_move }}
-<br><input type="button" id="mod_move_xyz" value="move to x0,y0,z0">
+<br><input type="button" id="mod_move_xyz" value="move to xyz0">
 {{/if }}
 <br>zjog (mm):
 &nbsp;<input type="text" id="mod_jog" size="3" value="2.0">
 {{#if show_move }}
-<br><input type="button" id="mod_move_xy" value="move to x0,y0,zjog">
+<br><input type="button" id="mod_move_xy" value="move to xy0zjog">
 {{/if }}
 <br>xhome (mm):
 &nbsp;<input type="text" id="mod_xhome" size="3" value="0">
@@ -28,6 +28,6 @@
 <br>zhome (mm):
 &nbsp;<input type="text" id="mod_zhome" size="3" value="60.5">
 {{#if show_move }}
-<br><input type="button" id="mod_home" value="move to xhome,yhome and stop">
+<br><input type="button" id="mod_home" value="move to xyzhome and stop">
 {{/if }}
 

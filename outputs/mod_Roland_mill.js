@@ -121,49 +121,63 @@ define(['require',
          show_move: true
          }
       controls.innerHTML = mod_roland_mill_controls_tpl(ctx);
-      if (globals.xmin != "")
-         findEl("mod_xmin").setAttribute("value", globals.xmin)
-      if (globals.ymin != "") {
-         findEl("mod_ymin").setAttribute("value", globals.ymin)
-         }
-      if (globals.zmin != "") {
-         findEl("mod_zmin").setAttribute("value", globals.zmin)
-         }
+      if (globals.x0 != "")
+         findEl("mod_x0").setAttribute("value",globals.x0)
+      if (globals.y0 != "")
+         findEl("mod_y0").setAttribute("value",globals.y0)
+      if (globals.z0 != "")
+         findEl("mod_z0").setAttribute("value",globals.z0)
       findEl("mod_roland_machine", false).addEventListener("change", function(ev){
          rml_unit = rml_units[this.value];
 	      model = this.value;
          if (model == 'mdx_20') {
             cmd = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            findEl("mod_x0").value = 10;
+            findEl("mod_y0").value = 10;
+            findEl("mod_z0").value = 0;
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
-            findEl("mod_jog").value = 2.0;
+            findEl("mod_jog").value = 2;
+            }
+         else if (model == 'mdx_40') {
+            cmd = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            findEl("mod_x0").value = 10;
+            findEl("mod_y0").value = 10;
+            findEl("mod_z0").value = 0;
+            findEl("mod_xhome").value = 0;
+            findEl("mod_yhome").value = 152.4;
+            findEl("mod_zhome").value = 60.5;
+            findEl("mod_jog").value = 2;
             }
          else if (model == 'srm_20') {
             cmd = "mod_print.py /dev/usb/lp1 ';'";
+            findEl("mod_x0").value = 10;
+            findEl("mod_y0").value = 10;
+            findEl("mod_z0").value = 10;
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
-            findEl("mod_jog").value = 60.5;
+            findEl("mod_jog").value = 12;
             }
          findEl("mod_command").value = cmd; 
          },false);
-      findEl("mod_ymin",false).addEventListener("input", function() {
-         globals.ymin = findEl("mod_ymin").value;
+      findEl("mod_x0",false).addEventListener("input", function() {
+         globals.x0 = findEl("mod_x0").value
          });
-      findEl("mod_xmin",false).addEventListener("input", function() {
-         globals.xmin = findEl("mod_xmin").value
+      findEl("mod_y0",false).addEventListener("input", function() {
+         globals.y0 = findEl("mod_y0").value;
          });
-      findEl("mod_zmin",false).addEventListener("input", function() {
-         globals.zmin = findEl("mod_zmin").value
+      findEl("mod_z0",false).addEventListener("input", function() {
+         globals.z0 = findEl("mod_z0").value
          });
       if (findEl('mod_move_xy',false)) {
          findEl('mod_move_xy').addEventListener("click", function() {
             var name = "move_xy.rml";
-            var x0 = rml_unit * parseFloat(findEl("mod_xmin").value);
-            var y0 = rml_unit * parseFloat(findEl("mod_ymin").value);
-            var z0 = rml_unit * parseFloat(findEl("mod_zmin").value);
-            var zjog = rml_unit * parseFloat(findEl("mod_jog").value);
+            var x0 = rml_unit*parseFloat(findEl("mod_x0").value);
+            var y0 = rml_unit*parseFloat(findEl("mod_y0").value);
+            var z0 = rml_unit*parseFloat(findEl("mod_z0").value);
+            var zjog = rml_unit*parseFloat(findEl("mod_jog").value);
             var file = "PA;PA;VS10;!VZ10;!PZ0,"+zjog+";PU"+x0+","+y0+";!MC0;"
             var command = findEl("mod_command").value;
             var server = findEl("mod_server").value;
@@ -173,9 +187,9 @@ define(['require',
       if (findEl('mod_move_xyz',false)) {
          findEl('mod_move_xyz').addEventListener("click", function() {
             var name = "move_xyz.rml";
-            var x0 = rml_unit * parseFloat(findEl("mod_xmin").value);
-            var y0 = rml_unit * parseFloat(findEl("mod_ymin").value);
-            var z0 = rml_unit * parseFloat(findEl("mod_zmin").value);
+            var x0 = rml_unit*parseFloat(findEl("mod_x0").value);
+            var y0 = rml_unit*parseFloat(findEl("mod_y0").value);
+            var z0 = rml_unit*parseFloat(findEl("mod_z0").value);
             var zjog = rml_unit * parseFloat(findEl("mod_jog").value);
             file = "PA;PA;VS10;!VZ10;!PZ0,"+zjog+";Z"+x0+","+y0+","+z0+";!MC0;"
             var command = findEl("mod_command").value;
@@ -185,9 +199,9 @@ define(['require',
          }
       findEl('mod_home',false).addEventListener("click", function() {
          var name = "home.rml";
-         var xhome = rml_unit * parseFloat(findEl("mod_xhome").value);
-         var yhome = rml_unit * parseFloat(findEl("mod_yhome").value);
-         var zhome = rml_unit * parseFloat(findEl("mod_yhome").value);
+         var xhome = rml_unit*parseFloat(findEl("mod_xhome").value);
+         var yhome = rml_unit*parseFloat(findEl("mod_yhome").value);
+         var zhome = rml_unit*parseFloat(findEl("mod_yhome").value);
          var file = "PA;PA;!PZ0,"+zhome+";PU"+xhome+","+yhome+";!MC0;";
          var command = findEl("mod_command").value;
          var server = findEl("mod_server").value;
@@ -220,12 +234,12 @@ define(['require',
       var jog = parseFloat(findEl("mod_jog").value)
       var ijog = Math.floor(rml_unit * jog)
       var scale = rml_unit * dx / (nx - 1)
-      var x0 = parseFloat(findEl("mod_xmin").value)
-      var y0 = parseFloat(findEl("mod_ymin").value)
-      var z0 = parseFloat(findEl("mod_zmin").value)
-      var xoffset = rml_unit * x0
-      var yoffset = rml_unit * y0
-      var zoffset = rml_unit * z0
+      var x0 = parseFloat(findEl("mod_x0").value)
+      var y0 = parseFloat(findEl("mod_y0").value)
+      var z0 = parseFloat(findEl("mod_z0").value)
+      var xoffset = rml_unit*x0
+      var yoffset = rml_unit*y0
+      var zoffset = rml_unit*z0
       var str = "PA;PA;" // plot absolute
       str += "VS" + speed + ";!VZ" + speed + ";"
       str += "!PZ" + 0 + "," + ijog + ";" // set jog 
