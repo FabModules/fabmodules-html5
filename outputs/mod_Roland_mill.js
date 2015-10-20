@@ -159,8 +159,6 @@ define(['require',
             if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
             if (findEl("mod_z0").value == "") findEl("mod_z0").value = 10
             if (findEl("mod_jog").value == "") findEl("mod_jog").value = 12
-            //findEl("mod_z0").value = 10;
-            //findEl("mod_jog").value = 12;
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
