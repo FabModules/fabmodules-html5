@@ -48,7 +48,6 @@ define(['require',
          ["module", "Roland_mill"],
          ["controls", "mod_path_image_21D_controls"],
          ["routine", "mod_Roland_Mill_path"],
-         ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
          ["depth", "0.1"],
          ["diameter", "0.4"],
          ["offsets", "4"],
@@ -61,7 +60,6 @@ define(['require',
          ["module", "Roland_mill"],
          ["controls", "mod_path_image_22D_controls"],
          ["routine", "mod_Roland_Mill_path"],
-         ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
          ["depth", "0.6"],
          ["thickness", "1.7"],
          ["diameter", "0.79"],
@@ -74,7 +72,6 @@ define(['require',
          ["module", "Roland_mill"],
          ["controls", "mod_path_image_21D_controls"],
          ["routine", "mod_Roland_Mill_path"],
-         ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
          ["depth", "0.1"],
          ["diameter", "0.254"],
          ["offsets", "1"],
@@ -87,7 +84,6 @@ define(['require',
          ["module", "Roland_mill"],
          ["controls", "mod_path_image_25D_controls"],
          ["routine", "mod_Roland_Mill_path"],
-         ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
          ["speed", "20"],
          ["depth", "1"],
          ["diameter", "3.175"],
@@ -101,7 +97,6 @@ define(['require',
          ["module", "Roland_mill"],
          ["controls", "mod_path_image_3D_controls"],
          ["routine", "mod_Roland_Mill_path"],
-         ["command", "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"],
          ["speed", "20"],
          ["diameter", "3.175"],
          ["length", "25.4"],
@@ -131,7 +126,7 @@ define(['require',
          rml_unit = rml_units[this.value];
 	      model = this.value;
          if (model == 'mdx_20') {
-            cmd = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
             findEl("mod_x0").value = 10;
             findEl("mod_y0").value = 10;
             findEl("mod_z0").value = 0;
@@ -141,7 +136,7 @@ define(['require',
             findEl("mod_jog").value = 2;
             }
          else if (model == 'mdx_40') {
-            cmd = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
+            findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr";
             findEl("mod_x0").value = 10;
             findEl("mod_y0").value = 10;
             findEl("mod_z0").value = 0;
@@ -151,7 +146,7 @@ define(['require',
             findEl("mod_jog").value = 2;
             }
          else if (model == 'srm_20') {
-            cmd = "mod_print.py /dev/usb/lp1 ';'";
+            findEl("mod_command").value = "mod_print.py /dev/usb/lp1 ';'";
             findEl("mod_x0").value = 10;
             findEl("mod_y0").value = 10;
             findEl("mod_z0").value = 10;
@@ -160,7 +155,6 @@ define(['require',
             findEl("mod_zhome").value = 60.5;
             findEl("mod_jog").value = 12;
             }
-         findEl("mod_command").value = cmd; 
          },false);
       findEl("mod_x0",false).addEventListener("input", function() {
          globals.x0 = findEl("mod_x0").value
