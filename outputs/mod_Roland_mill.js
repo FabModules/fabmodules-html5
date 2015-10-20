@@ -125,41 +125,45 @@ define(['require',
          findEl("mod_y0").setAttribute("value",globals.y0)
       if (globals.z0 != "")
          findEl("mod_z0").setAttribute("value",globals.z0)
+      if (globals.zjog != "")
+         findEl("mod_jog").setAttribute("value",globals.zjog)
       findEl("mod_roland_machine", false).addEventListener("change", function(ev){
          rml_unit = rml_units[this.value];
 	      model = this.value;
          if (model == 'mdx_20') {
             globals.send = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"
             findEl("mod_command").value = globals.send
-            findEl("mod_x0").value = 10;
-            findEl("mod_y0").value = 10;
-            findEl("mod_z0").value = 0;
+            if (findEl("mod_x0").value == "") findEl("mod_x0").value = 10
+            if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
+            if (findEl("mod_z0").value == "") findEl("mod_z0").value = 0
+            if (findEl("mod_jog").value == "") findEl("mod_jog").value = 2
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
-            findEl("mod_jog").value = 2;
             }
          else if (model == 'mdx_40') {
             globals.send = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"
             findEl("mod_command").value = globals.send
-            findEl("mod_x0").value = 10;
-            findEl("mod_y0").value = 10;
-            findEl("mod_z0").value = 0;
+            if (findEl("mod_x0").value == "") findEl("mod_x0").value = 10
+            if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
+            if (findEl("mod_z0").value == "") findEl("mod_z0").value = 0
+            if (findEl("mod_jog").value == "") findEl("mod_jog").value = 2
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
-            findEl("mod_jog").value = 2;
             }
          else if (model == 'srm_20') {
             globals.send = "mod_print.py /dev/usb/lp1 ';'";
             findEl("mod_command").value = globals.send
-            findEl("mod_x0").value = 10;
-            findEl("mod_y0").value = 10;
-            findEl("mod_z0").value = 10;
+            if (findEl("mod_x0").value == "") findEl("mod_x0").value = 10
+            if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
+            if (findEl("mod_z0").value == "") findEl("mod_z0").value = 10
+            if (findEl("mod_jog").value == "") findEl("mod_jog").value = 12
+            //findEl("mod_z0").value = 10;
+            //findEl("mod_jog").value = 12;
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
             findEl("mod_zhome").value = 60.5;
-            findEl("mod_jog").value = 12;
             }
          },false);
       findEl("mod_x0",false).addEventListener("input", function() {
@@ -170,6 +174,9 @@ define(['require',
          });
       findEl("mod_z0",false).addEventListener("input", function() {
          globals.z0 = findEl("mod_z0").value
+         });
+      findEl("mod_jog",false).addEventListener("input", function() {
+         globals.zjog = findEl("mod_jog").value
          });
       if (findEl('mod_move_xy',false)) {
          findEl('mod_move_xy').addEventListener("click", function() {

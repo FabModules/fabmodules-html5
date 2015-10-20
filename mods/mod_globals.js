@@ -6,12 +6,13 @@ define(function() {
    exports.input = "" // current input module
    exports.output = "" // current output module
    exports.settings = "" // settings
-   exports.x0 = "" // last x0
-   exports.y0 = "" // last y0
-   exports.z0 = "" // last z0
+   exports.x0 = "" // x origin
+   exports.y0 = "" // y origin
+   exports.z0 = "" // z origin
    exports.zmin = "" // bottom z
+   exports.zjog = "" // z jog
    exports.send = "" // machine send command
-   exports.server = '127.0.0.1:12345' // machine server
+   exports.server = '127.0.0.1:12345' // machine send server
    exports.type = "" // file type extension
    exports.processes = {} // processes
    exports.process_edits = {} // process edits
