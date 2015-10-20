@@ -512,7 +512,6 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    //
    if (xz) {
       var sign = 1
-      path[path.length] = []
       for (var row = ir; row <= (img.height-ir); row += id) {
          self.postMessage(['prompt','row '+row+'/'+img.height])
          var offset = 0*(sign+1)/2+(img.width-1)*(1-sign)/2
@@ -553,8 +552,21 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
          //
          // prune and add to path
          //
-         for (var pt = 0; pt < newpath.length; ++pt)
-            path[path.length-1][path[path.length-1].length] = newpath[pt]
+         if (newpath[0][Z] < top_zn) {
+            path[path.length] = []
+            path[path.length-1][path[path.length-1].length] = newpath[0]
+            }
+         for (var pt = 1; pt < newpath.length; ++pt) {
+            if ((newpath[pt-1][Z] == top_zn) && (newpath[pt][Z] < top_zn)) {
+               path[path.length] = []
+               path[path.length-1][path[path.length-1].length] = newpath[pt-1]
+               path[path.length-1][path[path.length-1].length] = newpath[pt]
+               }
+            else if ((newpath[pt-1][Z] < top_zn) && (newpath[pt][Z] < top_zn))
+               path[path.length-1][path[path.length-1].length] = newpath[pt]
+            else if ((newpath[pt-1][Z] < top_zn) && (newpath[pt][Z] == top_zn))
+               path[path.length-1][path[path.length-1].length] = newpath[pt]
+            }
          self.postMessage(['path',path])
          sign = -sign
          }
@@ -564,7 +576,6 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
    //
    if (yz) {
       var sign = -1
-      path[path.length] = []
       for (var col = ir; col <= (img.width-ir); col += id) {
          self.postMessage(['prompt','column '+col+'/'+img.width])
          var offset = 0*(sign+1)/2+(img.height-1)*(1-sign)/2
@@ -593,8 +604,21 @@ fn["mod_path_worker_image_offset_z"] = function(args) {
          //
          // prune and add to path
          //
-         for (var pt = 0; pt < newpath.length; ++pt)
-            path[path.length-1][path[path.length-1].length] = newpath[pt]
+         if (newpath[0][Z] < top_zn) {
+            path[path.length] = []
+            path[path.length-1][path[path.length-1].length] = newpath[0]
+            }
+         for (var pt = 1; pt < newpath.length; ++pt) {
+            if ((newpath[pt-1][Z] == top_zn) && (newpath[pt][Z] < top_zn)) {
+               path[path.length] = []
+               path[path.length-1][path[path.length-1].length] = newpath[pt-1]
+               path[path.length-1][path[path.length-1].length] = newpath[pt]
+               }
+            else if ((newpath[pt-1][Z] < top_zn) && (newpath[pt][Z] < top_zn))
+               path[path.length-1][path[path.length-1].length] = newpath[pt]
+            else if ((newpath[pt-1][Z] < top_zn) && (newpath[pt][Z] == top_zn))
+               path[path.length-1][path[path.length-1].length] = newpath[pt]
+            }
          self.postMessage(['path',path])
          sign = -sign
          }

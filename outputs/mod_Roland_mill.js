@@ -139,7 +139,7 @@ define(['require',
             findEl("mod_zhome").value = 60.5;
             findEl("mod_jog").value = 2.0;
             }
-         else {
+         else if (model == 'srm_20') {
             cmd = "mod_print.py /dev/usb/lp1 ';'";
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
