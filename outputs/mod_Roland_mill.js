@@ -169,6 +169,8 @@ define(['require',
          });
       findEl("mod_z0",false).addEventListener("input", function() {
          globals.z0 = findEl("mod_z0").value
+         findEl("mod_jog").value = parseFloat(globals.z0)+2
+         globals.zjog = findEl("mod_jog").value
          });
       findEl("mod_jog",false).addEventListener("input", function() {
          globals.zjog = findEl("mod_jog").value
