@@ -1,7 +1,6 @@
 //
 // mod_settings
 //   fab module settings
-//   copy items from http://mod.cba.mit.edu/mods.html
 //
 
 //
@@ -9,16 +8,34 @@
 //
 
 mod_edit_process([
+   ["name","PCB traces (1/64)"],
+   ["module","Roland_mill"],
+   ["command","mod_print.py /dev/usb/lp2 ';'"],
+   ])
+
+mod_edit_process([
+   ["name","PCB outline (1/32)"],
+   ["module","Roland_mill"],
+   ["command","mod_print.py /dev/usb/lp2 ';'"],
+   ])
+
+mod_edit_process([
+   ["name","wax rough cut (1/8)"],
+   ["module","Roland_mill"],
+   ["command","mod_print.py /dev/usb/lp2 ';'"],
+   ])
+
+mod_edit_process([
+   ["name","wax finish cut (1/8)"],
+   ["module","Roland_mill"],
+   ["command","mod_print.py /dev/usb/lp2 ';'"],
+   ])
+
+mod_edit_process([
    ["name","7/16 plywood (1/8 mill)"],
    ["module","Shopbot"],
    ["cut_speed","55"],
    ["plunge_speed","30"],
-   ])
-
-mod_edit_process([
-   ["name","PCB traces (1/64)"],
-   ["module","Roland_mill"],
-   ["command","mod_serial.py /dev/ttyUSB1 9600 dsrdtr"],
    ])
 
 //

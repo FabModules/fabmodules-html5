@@ -641,7 +641,10 @@ define(['require',
          mod_path_file_controls_events(routine,modname);
          findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_25D();
-         });
+            })
+         findEl("mod_bottom_z",false).addEventListener("input", function() {
+            globals.zmin = parseFloat(findEl("mod_bottom_z").value)
+            })
       }
       //
       // mod_path_image_3D
@@ -761,6 +764,9 @@ define(['require',
          mod_path_file_controls_events(routine,modname)
          findEl("mod_path",false).addEventListener("click", function() {
             mod_path_image_3D()
+            })
+         findEl("mod_bottom_z",false).addEventListener("input", function() {
+            globals.zmin = parseFloat(findEl("mod_bottom_z").value)
             })
          }
       //

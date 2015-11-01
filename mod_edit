@@ -1,2 +1,2 @@
 #!/bin/bash
-gedit *js */*js *html */*html
+gedit mod_edit mod_settings *js */*js *html */*html
