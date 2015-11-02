@@ -92,7 +92,7 @@ define(['require',
          ["diameter", "3.175"],
          ["overlap", "50"],
          ["offsets", "-1"],
-         ["error", "1.5"],
+         ["error", "1.1"],
          ["merge", "1.5"],
          ])
       mod_add_process([
@@ -104,7 +104,7 @@ define(['require',
          ["diameter", "3.175"],
          ["length", "25.4"],
          ["overlap", "50"],
-         ["error", "1.5"],
+         ["error", "1.1"],
          ])
       }
    //

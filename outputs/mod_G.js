@@ -41,7 +41,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["plunge_speed", "25"],
          ["offsets", "1"],
          ["overlap", "0"],
-         ["error", "1.5"],
+         ["error", "1.1"],
          ["merge", "1.5"],
          ["depth", "3.175"],
          ["thickness", "11.11"],
@@ -58,7 +58,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["spindle_speed", "10000"],
          ["offsets", "1"],
          ["overlap", "0"],
-         ["error", "1.5"],
+         ["error", "1.1"],
          ["merge", "1.5"],
          ["depth", "3.175"],
          ["thickness", "12.7"],
@@ -76,7 +76,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["diameter", "3.175"],
          ["overlap", "50"],
          ["offsets", "-1"],
-         ["error", "1.5"],
+         ["error", "1.1"],
          ["merge", "1.5"],
       ])
       mod_add_process([
@@ -91,7 +91,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["diameter", "3.175"],
          ["length", "25.4"],
          ["overlap", "50"],
-         ["error", "1.5"],
+         ["error", "1.1"],
       ])
       mod_add_process([
          ["name", "PCB traces (1/64)"],

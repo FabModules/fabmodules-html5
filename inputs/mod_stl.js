@@ -78,7 +78,7 @@ define(['require',
       // update globals
       //
       globals.mesh.units = 1
-      globals.dpi = 100
+      globals.dpi = 1000
       if ((globals.mesh.xmax-globals.mesh.xmin) > (globals.mesh.ymax-globals.mesh.ymin))
          globals.width = Math.floor(0.5+globals.dpi*(globals.mesh.xmax-globals.mesh.xmin)/
             (globals.mesh.s*globals.mesh.units))
