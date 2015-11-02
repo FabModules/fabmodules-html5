@@ -103,7 +103,7 @@ define(['require',
          ["speed", "20"],
          ["diameter", "3.175"],
          ["length", "25.4"],
-         ["overlap", "50"],
+         ["overlap", "90"],
          ["error", "1.1"],
          ])
       }
