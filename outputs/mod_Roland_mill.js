@@ -208,7 +208,7 @@ define(['require',
          var name = "home.rml";
          var xhome = rml_unit*parseFloat(findEl("mod_xhome").value);
          var yhome = rml_unit*parseFloat(findEl("mod_yhome").value);
-         var zhome = rml_unit*parseFloat(findEl("mod_yhome").value);
+         var zhome = rml_unit*parseFloat(findEl("mod_zhome").value);
          var file = "PA;PA;!PZ0,"+zhome+";PU"+xhome+","+yhome+";!MC0;";
          var command = findEl("mod_command").value;
          var server = findEl("mod_server").value;
@@ -285,7 +285,7 @@ define(['require',
       //
       var xhome = rml_unit * parseFloat(findEl("mod_xhome").value);
       var yhome = rml_unit * parseFloat(findEl("mod_yhome").value);
-      var zhome = rml_unit * parseFloat(findEl("mod_yhome").value);
+      var zhome = rml_unit * parseFloat(findEl("mod_zhome").value);
       str += "PA;PA;!PZ0,"+zhome+";PU"+xhome+","+yhome+";!MC0;";
       //
       // return string
