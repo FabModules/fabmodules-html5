@@ -24,7 +24,10 @@ var client_address = '127.0.0.1'
 
 console.log("listening for connections from " + client_address + " on " + server_port)
 
+var exec = require('child_process').exec
 var WebSocketServer = require('ws').Server
+var fs = require('fs')
+
 wss = new WebSocketServer({
    port: server_port
 })
@@ -35,15 +38,18 @@ wss.on('connection', function(ws) {
    }
    ws.on('message', function(data) {
       var msg = JSON.parse(data)
-      console.log("executing: " + msg.file_command + ' "' + msg.file_name + '"')
-      var fs = require('fs')
-      fs.writeFile(msg.file_name, msg.file_body, function(err) {
-         console.log(err)
-      })
 
-      var exec = require('child_process').exec,
-         child
-         child = exec(msg.file_command + ' "' + msg.file_name + '"', function(error, stdout, stderr) {
+      if (!msg.file_command) {
+        ws.send("error: " + 'No send command specified');
+        return;
+      }
+      fs.writeFile(msg.file_name, msg.file_body, function(err) {
+         if (err) {
+            ws.send("error: failed to write temporary file, " + err.message)
+         }
+
+         var cmd = msg.file_command + ' "' + msg.file_name + '"';
+         var child = exec(cmd, function(error, stdout, stderr) {
             fs.unlink(msg.file_name, function(err) {
                if (err) throw err
             })
@@ -54,6 +60,8 @@ wss.on('connection', function(ws) {
                console.log("error: " + stderr)
                ws.send("error: " + stderr)
             }
-         })
-   })
+
+         });
+      });
+   });
 });
