@@ -1,15 +1,47 @@
-Fab Modules Project
+# Fab Modules Project
 
-> Neil Gershenfeld
-> (c) Massachusetts Institute of Technology 2014
->
-> Fiore Basile <fiore.basile@gmail.com>
-> Fab Lab Cascina 2015
->
-> This work may be reproduced, modified, distributed,
-> performed, and displayed for any purpose, but must
-> acknowledge the fab modules project. Copyright is
-> retained and must be preserved. The work is provided
-> as is; no warranty is provided, and users accept all 
-> liability.
->
+Fab Modules is a browser-based CAM system, which allows to generate toolpaths for and control
+lasercutters, CNC-mills and waterjets commonly found in [fablabs](https://www.fablabs.io/).
+
+![Milling circuit boards](./screenshot-pcbmilling.png)
+
+## Supported machines
+
+Lasercutters
+
+* Epilog
+* Trotec
+* GCC
+* Universal
+
+Vinylcutters
+
+* GCC
+* Roland
+
+CNC-mills
+
+* Shopbot
+* Roland MDX-15/20/40 and SRM-20
+* Smoothieboard
+
+Speciality machines
+
+* Oxford ulaser
+* Resonetics Excimer microlaser
+* Omax waterjet
+
+Other tools
+
+* Generic G-code output
+* Gerber file
+* DXF and SVG output
+* Mesh
+
+## Using
+
+See [the wiki](https://github.com/FabModules/fabmodules-html5/wiki) for instructions.
+
+## License
+
+Open source, [custom MIT-like license](./LICENSE.md)
