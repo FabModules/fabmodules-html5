@@ -29,6 +29,7 @@ define(['require',
    var input = label.innerHTML
    var model = 'mdx_20';  
    var rml_units = {
+      mdx_15: 40.0,
       mdx_20: 40.0,
       mdx_40: 100.0,
       srm_20: 100.0
@@ -150,6 +151,17 @@ define(['require',
             if (findEl("mod_jog").value == "") findEl("mod_jog").value = 2
             findEl("mod_xhome").value = 0;
             findEl("mod_yhome").value = 152.4;
+            findEl("mod_zhome").value = 60.5;
+            }
+         else if (model == 'mdx_15') {
+            if (findEl("mod_command").value == "") findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 rtscts"
+            globals.send = findEl("mod_command").value
+            if (findEl("mod_x0").value == "") findEl("mod_x0").value = 10
+            if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
+            if (findEl("mod_z0").value == "") findEl("mod_z0").value = 0
+            if (findEl("mod_jog").value == "") findEl("mod_jog").value = 2
+            findEl("mod_xhome").value = 0;
+            findEl("mod_yhome").value = 92.4;
             findEl("mod_zhome").value = 60.5;
             }
          else if (model == 'srm_20') {
