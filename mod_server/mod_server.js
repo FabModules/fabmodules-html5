@@ -19,49 +19,69 @@
 // node mod_server.js
 //
 
-var server_port = '12345'
-var client_address = '127.0.0.1'
-
-console.log("listening for connections from " + client_address + " on " + server_port)
-
 var exec = require('child_process').exec
 var WebSocketServer = require('ws').Server
 var fs = require('fs')
 
-wss = new WebSocketServer({
-   port: server_port
-})
-wss.on('connection', function(ws) {
-   if (ws._socket.remoteAddress != client_address) {
+// Handle a single WebSocket message from the webinterface
+function onWsMessage(ws, data) {
+  var msg = JSON.parse(data)
+
+  if (!msg.file_command) {
+    ws.send("error: " + 'No send command specified');
+    return;
+  }
+  fs.writeFile(msg.file_name, msg.file_body, function(err) {
+     if (err) {
+       ws.send("error: failed to write temporary file, " + err.message)
+     }
+
+     var cmd = msg.file_command + ' "' + msg.file_name + '"';
+     var child = exec(cmd, function(error, stdout, stderr) {
+       fs.unlink(msg.file_name, function(err) {
+         if (err) throw err
+       })
+       console.log("command completed: " + stdout)
+       if (error == null) {
+         ws.send('sent ' + msg.file_name)
+       } else {
+         console.log("error: " + stderr)
+         ws.send("error: " + stderr)
+       }
+     });
+  });
+}
+
+// Setup the server
+function setup(options, callback) {
+  var wss = new WebSocketServer({
+     port: options.port
+  })
+  wss.on('connection', function(connection) {
+    if (connection._socket.remoteAddress != options.allowedAddress) {
       console.log("error: client address doesn't match")
       return
-   }
-   ws.on('message', function(data) {
-      var msg = JSON.parse(data)
+    }
+    connection.on('message', function(data) {
+      onWsMessage(connection, data);
+    });
+  });
+  return callback(null);
+}
 
-      if (!msg.file_command) {
-        ws.send("error: " + 'No send command specified');
-        return;
-      }
-      fs.writeFile(msg.file_name, msg.file_body, function(err) {
-         if (err) {
-            ws.send("error: failed to write temporary file, " + err.message)
-         }
+// Entrypoint for when used as script/executable
+function main() {
+  var options = {
+    port: '12345',
+    allowedAddress: '127.0.0.1'
+  };
 
-         var cmd = msg.file_command + ' "' + msg.file_name + '"';
-         var child = exec(cmd, function(error, stdout, stderr) {
-            fs.unlink(msg.file_name, function(err) {
-               if (err) throw err
-            })
-            console.log("command completed: " + stdout)
-            if (error == null) {
-               ws.send('sent ' + msg.file_name)
-            } else {
-               console.log("error: " + stderr)
-               ws.send("error: " + stderr)
-            }
+  setup(options, function(err) {
+    if (err) throw err
+    console.log("listening for connections from " + options.allowedAddress + " on " + options.port);
+  });
+}
 
-         });
-      });
-   });
-});
+if (!module.parent) {
+  main();
+};
