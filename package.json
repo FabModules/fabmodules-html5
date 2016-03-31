@@ -1,0 +1,24 @@
+{
+  "name": "fabmodules-html5",
+  "version": "1.0.0",
+  "description": "Fab Modules is a browser-based CAM system, which allows to generate toolpaths for and control lasercutters, CNC-mills and waterjets commonly found in [fablabs](https://www.fablabs.io/).",
+  "main": "main.js",
+  "dependencies": {
+    "simple-server": "^1.0.1",
+    "ws": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FabModules/fabmodules-html5.git"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/FabModules/fabmodules-html5/issues"
+  },
+  "homepage": "https://github.com/FabModules/fabmodules-html5#readme"
+}

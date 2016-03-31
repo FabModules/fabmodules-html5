@@ -1,2 +1,2 @@
-mod_server/node_modules/
+node_modules/
 mod_server/npm-debug.log
