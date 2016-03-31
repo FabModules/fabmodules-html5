@@ -38,9 +38,25 @@ Other tools
 * DXF and SVG output
 * Mesh
 
+## Installing
+
+Download Fabmodules using git
+
+    git clone https://github.com/FabModules/fabmodules-html5.git
+
+Install the node.js dependencies
+
+    npm install
+
 ## Using
 
-See [the wiki](https://github.com/FabModules/fabmodules-html5/wiki) for instructions.
+Start the server which lets webinterface communicate with hardware
+
+    npm start
+
+Note: this does not serve the HTML/JS for the webclient (yet)
+
+See [the wiki](https://github.com/FabModules/fabmodules-html5/wiki) for further instructions.
 
 ## License
 
