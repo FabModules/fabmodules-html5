@@ -21,7 +21,9 @@
 
 var exec = require('child_process').exec
 var WebSocketServer = require('ws').Server
+var http = require('http')
 var fs = require('fs')
+var StaticServer = require('node-static').Server
 
 // Handle a single WebSocket message from the webinterface
 function onWsMessage(ws, data) {
@@ -54,19 +56,30 @@ function onWsMessage(ws, data) {
 
 // Setup the server
 function setup(options, callback) {
+
+  var fileServer = new StaticServer('./');
+  var httpServer = http.createServer(function (request, response) {
+    request.addListener('end', function () {
+        fileServer.serve(request, response);
+    }).resume();
+  });
+
   var wss = new WebSocketServer({
-     port: options.port
-  })
+     server: httpServer
+  });
   wss.on('connection', function(connection) {
-    if (connection._socket.remoteAddress != options.allowedAddress) {
-      console.log("error: client address doesn't match")
+    var clientAddress = connection._socket.remoteAddress;
+    clientAddress = clientAddress.replace('::ffff:', ''); // might be IPv4 over IPv6
+    if (clientAddress != options.allowedAddress) {
+      console.log("error: client address " + clientAddress + "doesn't match");
       return
     }
     connection.on('message', function(data) {
       onWsMessage(connection, data);
     });
   });
-  return callback(null);
+
+  httpServer.listen(options.port, callback);
 }
 
 // Entrypoint for when used as script/executable

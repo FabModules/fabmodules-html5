@@ -54,7 +54,7 @@ Start the server which lets webinterface communicate with hardware
 
     npm start
 
-Note: this does not serve the HTML/JS for the webclient (yet)
+You can now open Fabmodules web interface, either at http://fabmodules.org/ or http://localhost:12345/index.html
 
 See [the wiki](https://github.com/FabModules/fabmodules-html5/wiki) for further instructions.
 
