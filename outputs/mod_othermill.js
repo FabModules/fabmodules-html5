@@ -1,9 +1,9 @@
 //
-// mod_G.js
-//   fab modules G-code output
+// mod_Othermill.js
+//   fab modules Othermill output
 //
-// Neil Gershenfeld 
-// (c) Massachusetts Institute of Technology 2014
+// Ezra Spier
+// (c) Other Machine Company 2016
 // 
 // This work may be reproduced, modified, distributed, performed, and 
 // displayed for any purpose, but must acknowledge the fab modules 
@@ -17,7 +17,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
    var ui = require('mods/mod_ui');
    var globals = require('mods/mod_globals');
    var Handlebars = require('handlebars')
-   var mod_g_controls_tpl = Handlebars.compile(require('text!templates/mod_othermill_controls.html'))
+   var mod_othermill_controls_tpl = Handlebars.compile(require('text!templates/mod_othermill_controls.html'))
    var findEl = globals.findEl
 
    var label = findEl("mod_inputs_label")
@@ -32,13 +32,14 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       //
       mod_add_process([
          ["name", "7/16 plywood (1/8 mill)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["diameter", "3.175"],
          ["cut_speed", "50"],
          ["plunge_speed", "25"],
+         ["spindle_speed", "16400"],
          ["offsets", "1"],
          ["overlap", "0"],
          ["error", "1.1"],
@@ -48,14 +49,14 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "1/2 HDPE (1/8 mill)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["diameter", "3.175"],
          ["cut_speed", "10"],
          ["plunge_speed", "5"],
-         ["spindle_speed", "10000"],
+         ["spindle_speed", "16400"],
          ["offsets", "1"],
          ["overlap", "0"],
          ["error", "1.1"],
@@ -65,13 +66,13 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "foam rough cut (1/8)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_25D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "50"],
          ["plunge_speed", "25"],
-         ["spindle_speed", "10000"],
+         ["spindle_speed", "16400"],
          ["depth", "3.175"],
          ["diameter", "3.175"],
          ["overlap", "50"],
@@ -81,13 +82,13 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "foam finish cut (1/8)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_3D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "50"],
          ["plunge_speed", "25"],
-         ["spindle_speed", "10000"],
+         ["spindle_speed", "16400"],
          ["diameter", "3.175"],
          ["length", "25.4"],
          ["overlap", "90"],
@@ -95,13 +96,13 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "PCB traces (1/64)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_21D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "4"],
          ["plunge_speed", "2"],
-         ["spindle_speed", "10000"],
+         ["spindle_speed", "16400"],
          ["depth", "0.1"],
          ["diameter", "0.4"],
          ["offsets", "4"],
@@ -111,13 +112,13 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "PCB outline (1/32)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "4"],
          ["plunge_speed", "2"],
-         ["spindle_speed", "10000"],
+         ["spindle_speed", "16400"],
          ["depth", "0.6"],
          ["thickness", "1.7"],
          ["diameter", "0.79"],
@@ -127,13 +128,13 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "PCB traces (0.010)"],
-         ["module", "G"],
+         ["module", "Othermill"],
          ["controls", "mod_path_image_21D_controls"],
-         ["routine", "mod_G_path"],
+         ["routine", "mod_Othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "2"],
          ["plunge_speed", "1"],
-         ["spindle_speed", "10000"],
+         ["spindle_speed", "16400"],
          ["depth", "0.1"],
          ["diameter", "0.254"],
          ["offsets", "1"],
@@ -148,10 +149,10 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
    //
 
    function mod_load_handler() {
-      globals.output = "G"
+      globals.output = "Othermill"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
-      controls.innerHTML = mod_g_controls_tpl();
+      controls.innerHTML = mod_othermill_controls_tpl();
       var label = findEl("mod_processes_label")
       label.innerHTML = "process"
       label.style.display = "block"
@@ -168,11 +169,11 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       }
    }
    //
-   // mod_G_path
+   // mod_Othermill_path
    //    convert path to G code
    //
 
-   function mod_G_path(path) {
+   function mod_Othermill_path(path) {
       globals.type = ".nc"
       var dx = globals.width / globals.dpi
       var nx = globals.width
@@ -249,7 +250,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
 
    return {
       mod_load_handler: mod_load_handler,
-      mod_G_path: mod_G_path
+      mod_Othermill_path: mod_Othermill_path
    }
 
 });
