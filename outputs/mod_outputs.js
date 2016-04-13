@@ -24,6 +24,7 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["Trotec laser (.tro)", "outputs/mod_Trotec.js"],
       ["GCC laser (.gcc)", "outputs/mod_GCC_laser.js"],
       ["GCC vinyl (.gcc)", "outputs/mod_GCC_vinyl.js"],
+      ["Othermill (.nc)", "outputs/mod_Othermill.js"],
       ["Oxford ulaser (.pgm)", "outputs/mod_Oxford.js"],
       ["Roland mill (.rml)", "outputs/mod_Roland_mill.js"],
       ["Roland vinyl (.camm)", "outputs/mod_Roland_vinyl.js"],
