@@ -192,7 +192,8 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       str += "G20\n"
       str += "G40\n"
       str += "G49\n"
-      str += "G54\n"
+      // Othermill assumes G55 coordinate system
+      str += "G55\n"
       str += "G80\n"
       str += "G90\n"
       str += "G94\n"
