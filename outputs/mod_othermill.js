@@ -1,9 +1,11 @@
 //
 // mod_Othermill.js
 //   fab modules Othermill output
+//   based on mod_G.js
 //
 // Ezra Spier
-// (c) Other Machine Company 2016
+// Changes (c) Other Machine Company 2016, 
+// Based on mod_G.js, (c) Massachusetts Institute of Technology 2014 
 // 
 // This work may be reproduced, modified, distributed, performed, and 
 // displayed for any purpose, but must acknowledge the fab modules 
