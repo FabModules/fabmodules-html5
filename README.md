@@ -24,6 +24,7 @@ CNC-mills
 * Shopbot
 * Roland MDX-15/20/40 and SRM-20
 * Smoothieboard
+* Othermill
 
 Speciality machines
 
