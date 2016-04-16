@@ -4,6 +4,7 @@
   "description": "Fab Modules is a browser-based CAM system, which allows to generate toolpaths for and control lasercutters, CNC-mills and waterjets commonly found in [fablabs](https://www.fablabs.io/).",
   "main": "main.js",
   "dependencies": {
+    "node-static": "0.7.7",
     "simple-server": "^1.0.1",
     "ws": "^1.0.1"
   },
