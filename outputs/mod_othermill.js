@@ -1,5 +1,5 @@
 //
-// mod_Othermill.js
+// mod_othermill.js
 //   fab modules Othermill output
 //   based on mod_G.js
 //
@@ -36,7 +36,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "7/16 plywood (1/8 mill)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["diameter", "3.175"],
          ["cut_speed", "25"],
@@ -53,7 +53,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "1/2 HDPE (1/8 mill)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["diameter", "3.175"],
          ["cut_speed", "10"],
@@ -70,7 +70,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "foam rough cut (1/8)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_25D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "25"],
          ["plunge_speed", "8.3"],
@@ -86,7 +86,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "foam finish cut (1/8)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_3D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "25"],
          ["plunge_speed", "8.3"],
@@ -100,7 +100,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "PCB traces (1/64)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_21D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "6.35"],
          ["plunge_speed", "6.35"],
@@ -116,7 +116,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "PCB outline (1/32)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_22D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "25"],
          ["plunge_speed", "6.35"],
@@ -132,7 +132,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
          ["name", "PCB traces (0.010)"],
          ["module", "Othermill"],
          ["controls", "mod_path_image_21D_controls"],
-         ["routine", "mod_Othermill_path"],
+         ["routine", "mod_othermill_path"],
          ["command", "gedit"],
          ["cut_speed", "2"],
          ["plunge_speed", "1"],
@@ -171,11 +171,11 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       }
    }
    //
-   // mod_Othermill_path
+   // mod_othermill_path
    //    convert path to G code
    //
 
-   function mod_Othermill_path(path) {
+   function mod_othermill_path(path) {
       globals.type = ".nc"
       var dx = globals.width / globals.dpi
       var nx = globals.width
@@ -252,7 +252,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
 
    return {
       mod_load_handler: mod_load_handler,
-      mod_Othermill_path: mod_Othermill_path
+      mod_othermill_path: mod_othermill_path
    }
 
 });
