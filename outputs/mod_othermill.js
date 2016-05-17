@@ -1,6 +1,6 @@
 //
 // mod_othermill.js
-//   fab modules Othermill output
+//   fab modules othermill output
 //   based on mod_G.js
 //
 // Ezra Spier
@@ -34,7 +34,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       //
       mod_add_process([
          ["name", "7/16 plywood (1/8 mill)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_22D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -51,7 +51,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "1/2 HDPE (1/8 mill)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_22D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -68,7 +68,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "foam rough cut (1/8)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_25D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -84,7 +84,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "foam finish cut (1/8)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_3D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -98,7 +98,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "PCB traces (1/64)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_21D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -114,7 +114,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "PCB outline (1/32)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_22D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -130,7 +130,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
       ])
       mod_add_process([
          ["name", "PCB traces (0.010)"],
-         ["module", "Othermill"],
+         ["module", "othermill"],
          ["controls", "mod_path_image_21D_controls"],
          ["routine", "mod_othermill_path"],
          ["command", "gedit"],
@@ -151,7 +151,7 @@ define(['require', 'handlebars', 'mods/mod_ui', 'mods/mod_globals', 'text!templa
    //
 
    function mod_load_handler() {
-      globals.output = "Othermill"
+      globals.output = "othermill"
       ui.ui_prompt("process?")
       var controls = findEl("mod_output_controls")
       controls.innerHTML = mod_othermill_controls_tpl();
