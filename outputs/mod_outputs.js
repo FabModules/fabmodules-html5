@@ -31,6 +31,7 @@ define(['require', 'mods/mod_ui'], function(require) {
       ["ShopBot (.sbp)", "outputs/mod_Shopbot.js"],
       ["G-codes (.nc)", "outputs/mod_G.js"],
       ["Smoothie (.gcode)", "outputs/mod_Smoothie_G.js"],
+      ["OctoPrint (.gcode)", "outputs/mod_Octo_G.js"],
       ["Universal laser (.uni)", ""],
       ["image (.png)", ""],
       ["DXF (.dxf)", ""],
