@@ -2,13 +2,13 @@
 // mod_Roland_mill.js
 //   fab modules Roland mill output
 //
-// Neil Gershenfeld 
+// Neil Gershenfeld
 // (c) Massachusetts Institute of Technology 2015
-// 
-// This work may be reproduced, modified, distributed, performed, and 
-// displayed for any purpose, but must acknowledge the fab modules 
-// project. Copyright is retained and must be preserved. The work is 
-// provided as is; no warranty is provided, and users accept all 
+//
+// This work may be reproduced, modified, distributed, performed, and
+// displayed for any purpose, but must acknowledge the fab modules
+// project. Copyright is retained and must be preserved. The work is
+// provided as is; no warranty is provided, and users accept all
 // liability.
 //
 
@@ -27,7 +27,7 @@ define(['require',
    var findEl = globals.findEl
    var label = findEl("mod_inputs_label")
    var input = label.innerHTML
-   var model = 'mdx_20';  
+   var model = 'mdx_20';
    var rml_units = {
       mdx_15: 40.0,
       mdx_20: 40.0,
@@ -132,7 +132,7 @@ define(['require',
          rml_unit = rml_units[this.value];
 	      model = this.value;
          if (model == 'mdx_20') {
-            if (findEl("mod_command").value == "") findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"
+            if (findEl("mod_command").value == "") findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 rtscts"
             globals.send = findEl("mod_command").value
             if (findEl("mod_x0").value == "") findEl("mod_x0").value = 10
             if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
@@ -143,7 +143,7 @@ define(['require',
             findEl("mod_zhome").value = 60.5;
             }
          else if (model == 'mdx_40') {
-            if (findEl("mod_command").value == "") findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 dsrdtr"
+            if (findEl("mod_command").value == "") findEl("mod_command").value = "mod_serial.py /dev/ttyUSB0 9600 rtscts"
             globals.send = findEl("mod_command").value
             if (findEl("mod_x0").value == "") findEl("mod_x0").value = 10
             if (findEl("mod_y0").value == "") findEl("mod_y0").value = 10
@@ -261,7 +261,7 @@ define(['require',
       var zoffset = rml_unit*z0
       var str = "PA;PA;" // plot absolute
       str += "VS" + speed + ";!VZ" + speed + ";"
-      str += "!PZ" + 0 + "," + ijog + ";" // set jog 
+      str += "!PZ" + 0 + "," + ijog + ";" // set jog
       str += "!MC1;\n" // turn motor on
       //
       // follow segments
