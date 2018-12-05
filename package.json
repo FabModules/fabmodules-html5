@@ -6,7 +6,8 @@
   "dependencies": {
     "node-static": "0.7.7",
     "simple-server": "^1.0.1",
-    "ws": "^1.0.1"
+    "ws": "^1.0.1",
+    "mime": "1.4.0"
   },
   "devDependencies": {},
   "scripts": {
