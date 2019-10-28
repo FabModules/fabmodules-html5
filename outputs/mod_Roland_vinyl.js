@@ -102,12 +102,13 @@ define(['require',
       var dy = 25.4 * globals.height / globals.dpi
       var nx = globals.width
       var ny = globals.height
-      var force = parseFloat(findEl("mod_force").value)
-      var velocity = parseFloat(findEl("mod_velocity").value)
-      var str = "PA;PA;!ST1;!FS" + force + ";VS" + velocity + ";\n"
+      var force = findEl("mod_force").value ? parseFloat(findEl("mod_force").value) : false;
+      var velocity = findEl("mod_velocity").value ? parseFloat(findEl("mod_velocity").value) : false;
+      var str = "PA;PA;!ST1;";
       var scale = 40.0 * dx / (nx - 1.0) // 40/mm
       var ox = 0
       var oy = 0
+
       if (findEl("mod_bottom_left").checked) {
          var xoffset = 40.0 * ox
          var yoffset = 40.0 * oy
@@ -121,31 +122,35 @@ define(['require',
          var xoffset = 40.0 * (ox - dx)
          var yoffset = 40.0 * (oy - dy)
       }
+
+
+      if(force) str += "!FS" + force + ";"
+      if(velocity) str += "VS" + velocity + ";"
       //
       // loop over segments
       //
       for (var seg = 0; seg < path.length; ++seg) {
          x = xoffset + scale * path[seg][0][0]
          y = yoffset + scale * path[seg][0][1]
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // move up to start point
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // hack: repeat in case comm dropped
-         str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // move down
-         str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // hack: repeat in case comm dropped
+         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up to start point
+         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // hack: repeat in case comm dropped
+         str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
+         str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // hack: repeat in case comm dropped
          //
          // loop over points
          //
          for (var pt = 1; pt < path[seg].length; ++pt) {
             x = xoffset + scale * path[seg][pt][0]
             y = yoffset + scale * path[seg][pt][1]
-            str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // move down
-            str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // hack: repeat in case comm dropped
+            str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move down
+            str += "PD" + x.toFixed(0) + "," + y.toFixed(0) + ";" // hack: repeat in case comm dropped
          }
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // move up at last point
-         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";\n" // hack: repeat in case comm dropped
+         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // move up at last point
+         str += "PU" + x.toFixed(0) + "," + y.toFixed(0) + ";" // hack: repeat in case comm dropped
       }
-      str += "PU0,0;\n" // pen up to origin
-      str += "PU0,0;\n" // hack: repeat in case comm dropped
-      return str
+      str += "PU0,0;" // pen up to origin
+      str += "PU0,0;" // hack: repeat in case comm dropped
+      return str.trim();
    }
 
    return {
